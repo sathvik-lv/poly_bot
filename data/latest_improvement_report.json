@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-04-05T09:51:03.110181+00:00",
-  "n_resolved": 3431,
-  "n_unresolved": 210,
+  "timestamp": "2026-04-05T09:51:04.440858+00:00",
+  "n_resolved": 3435,
+  "n_unresolved": 209,
   "audit": {
-    "n_predictions": 3431,
-    "brier_score": 0.06288813170212766,
-    "log_loss": 0.2564458069929678,
+    "n_predictions": 3435,
+    "brier_score": 0.06293534801164484,
+    "log_loss": 0.2565721806854525,
     "calibration_curve": [
       {
         "bin_center": 0.05,
         "mean_predicted": 0.0646,
         "mean_actual": 0.0,
-        "count": 530,
+        "count": 531,
         "gap": 0.0646
       },
       {
@@ -23,24 +23,24 @@
       },
       {
         "bin_center": 0.25,
-        "mean_predicted": 0.251,
+        "mean_predicted": 0.2511,
         "mean_actual": 0.0,
-        "count": 539,
-        "gap": 0.251
+        "count": 540,
+        "gap": 0.2511
       },
       {
         "bin_center": 0.35,
-        "mean_predicted": 0.3458,
+        "mean_predicted": 0.3459,
         "mean_actual": 0.0145,
-        "count": 344,
-        "gap": 0.3313
+        "count": 345,
+        "gap": 0.3314
       },
       {
         "bin_center": 0.45,
         "mean_predicted": 0.4434,
-        "mean_actual": 0.0838,
-        "count": 191,
-        "gap": 0.3597
+        "mean_actual": 0.0833,
+        "count": 192,
+        "gap": 0.36
       },
       {
         "bin_center": 0.55,
@@ -78,13 +78,13 @@
         "gap": 0.0564
       }
     ],
-    "expected_calibration_error": 0.19167446808510644,
-    "discrimination": 0.9977968957253565,
-    "profit_if_bet": -48.6549,
-    "roi": -0.1957,
-    "mean_edge": 0.007136490819003207,
-    "edge_hit_rate": 0.3125,
-    "timestamp": "2026-04-05T09:51:03.149547+00:00"
+    "expected_calibration_error": 0.19179441048034934,
+    "discrimination": 0.9977981912446607,
+    "profit_if_bet": -49.6771,
+    "roi": -0.199,
+    "mean_edge": 0.007173770014556041,
+    "edge_hit_rate": 0.3106,
+    "timestamp": "2026-04-05T09:51:04.485072+00:00"
   },
   "optimized_weights": {
     "weights": {
@@ -92,35 +92,35 @@
       "microstructure": 1.0
     },
     "model_brier_scores": {
-      "external_data": 0.0633,
-      "microstructure": 0.0614
+      "external_data": 0.0634,
+      "microstructure": 0.0615
     },
-    "combined_brier": 0.0614,
-    "n_predictions": 3431,
-    "improvement_vs_equal": 0.000829
+    "combined_brier": 0.0615,
+    "n_predictions": 3435,
+    "improvement_vs_equal": 0.000843
   },
   "signal_analysis": {
     "signal_rankings": [
       {
         "signal": "microstructure",
-        "correlation": 0.908,
+        "correlation": 0.9079,
         "p_value": 0.0,
         "significant": "True",
-        "brier_score": 0.0614,
-        "n_observations": 3431,
-        "mean_estimate": 0.434
+        "brier_score": 0.0615,
+        "n_observations": 3435,
+        "mean_estimate": 0.4338
       },
       {
         "signal": "external_data",
-        "correlation": 0.9059,
+        "correlation": 0.9058,
         "p_value": 0.0,
         "significant": "True",
-        "brier_score": 0.0633,
-        "n_observations": 3431,
-        "mean_estimate": 0.4432
+        "brier_score": 0.0634,
+        "n_observations": 3435,
+        "mean_estimate": 0.443
       }
     ],
-    "n_predictions": 3431,
+    "n_predictions": 3435,
     "top_signal": "microstructure",
     "n_significant": 2
   },
@@ -129,11 +129,11 @@
     "EXCELLENT: Brier score < 0.15 \u2014 predictions are well-calibrated",
     "RECALIBRATE: ECE = 0.192 \u2014 isotonic calibration should be retrained",
     "STRONG DISCRIMINATION: Model effectively separates outcomes",
-    "EDGE FAILING: Edge hit rate = 31.2% \u2014 edge detection is worse than random",
+    "EDGE FAILING: Edge hit rate = 31.1% \u2014 edge detection is worse than random",
     "BEST MODEL: 'microstructure' (weight: 1.000)",
     "CONSIDER DROPPING: 'external_data' has negligible weight (0.000)",
     "STRONG SIGNALS: microstructure, external_data",
-    "UNPROFITABLE: ROI = -19.6% \u2014 strategy needs adjustment"
+    "UNPROFITABLE: ROI = -19.9% \u2014 strategy needs adjustment"
   ],
-  "health_score": 72.8
+  "health_score": 72.5
 }
