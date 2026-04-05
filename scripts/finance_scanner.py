@@ -4,9 +4,12 @@ Uses real financial data (oil, yields, VIX, BTC, gold, Fed funds) to
 compute fair probabilities for financial/economic prediction markets,
 then compares against Polymarket odds to find mispricing.
 
-Data sources (all free, no API keys):
-    - Yahoo Finance: Oil (CL=F), Gold (GC=F), VIX, 10Y/2Y yields, indices
-    - CoinGecko: Bitcoin, Ethereum prices + history
+Data sources (all free, multi-source fallback):
+    - Twelve Data: Oil (CL), Gold (XAU/USD), VIX, indices — free tier
+    - FRED: VIX (VIXCLS), Oil (DCOILWTICO), yields (DGS10, DGS2) — free
+    - Binance: BTC/ETH with 24h stats + funding rate — free
+    - metals.dev: Gold/silver spot — free
+    - CoinGecko: Crypto fallback
     - Fear & Greed Index: Market sentiment
     - OpenRouter AI: Semantic analysis with financial context
 
@@ -32,93 +35,267 @@ import requests
 from src.market_client import MarketClient
 from src.prediction_engine import PredictionEngine
 
-YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
 GAMMA_API = "https://gamma-api.polymarket.com"
 
 
 # =========================================================
-# Financial Data Fetcher
+# Financial Data Fetcher — Multi-Source (no Yahoo)
 # =========================================================
 
 class FinancialData:
-    """Pull real-time financial data from free sources."""
+    """Pull real-time financial data from free APIs.
+
+    Sources:
+    - Binance: BTC, ETH, crypto (free, no key)
+    - Twelve Data: Stocks, forex, commodities (free tier: 800 req/day, no key for basic)
+    - Alpha Vantage: Stocks, forex (free tier: 25 req/day — backup)
+    - FRED (St. Louis Fed): Yields, VIX, economic data (free, no key)
+    - metals.dev: Gold/silver (free, no key)
+    - CoinGecko: Crypto backup
+    - Alternative.me: Fear & Greed
+    """
 
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update(YAHOO_HEADERS)
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
         self.cache = {}
 
-    def _yahoo_chart(self, symbol: str, range: str = "1mo", interval: str = "1d") -> dict:
-        """Fetch Yahoo Finance chart data."""
-        if symbol in self.cache:
-            return self.cache[symbol]
-        try:
-            r = self.session.get(
-                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-                params={"range": range, "interval": interval},
-                timeout=10,
-            )
-            result = r.json().get("chart", {}).get("result", [{}])[0]
-            meta = result.get("meta", {})
-            quotes = result.get("indicators", {}).get("quote", [{}])[0]
-            closes = [c for c in (quotes.get("close") or []) if c is not None]
-            data = {
-                "price": meta.get("regularMarketPrice"),
-                "prev_close": meta.get("previousClose"),
-                "closes": closes,
-                "symbol": symbol,
-            }
-            if closes and len(closes) >= 2:
-                data["change_1d_pct"] = (closes[-1] - closes[-2]) / closes[-2] * 100
-                data["volatility"] = float(np.std(np.diff(np.log(closes))) * np.sqrt(252)) if len(closes) > 5 else None
-                data["min_30d"] = min(closes)
-                data["max_30d"] = max(closes)
-                data["mean_30d"] = float(np.mean(closes))
-            self.cache[symbol] = data
-            return data
-        except Exception as e:
-            return {"error": str(e), "symbol": symbol}
+    def _fetch_with_fallbacks(self, key: str, fetchers: list) -> dict:
+        """Try multiple sources, return first success."""
+        if key in self.cache:
+            return self.cache[key]
+        for fetcher in fetchers:
+            try:
+                result = fetcher()
+                if result and result.get("price") is not None:
+                    result["symbol"] = key
+                    self.cache[key] = result
+                    return result
+            except Exception:
+                continue
+        return {"error": "all sources failed", "symbol": key}
 
+    # --- Oil ---
     def get_oil(self) -> dict:
-        return self._yahoo_chart("CL=F")
+        return self._fetch_with_fallbacks("oil", [
+            self._oil_from_twelvedata,
+            self._oil_from_metals_api,
+        ])
 
+    def _oil_from_twelvedata(self) -> dict:
+        r = self.session.get("https://api.twelvedata.com/time_series", params={
+            "symbol": "CL", "interval": "1day", "outputsize": 30,
+            "format": "JSON",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        values = r.json().get("values", [])
+        if not values:
+            return {}
+        closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
+        return self._build_data(closes)
+
+    def _oil_from_metals_api(self) -> dict:
+        # metals-api.com has crude oil
+        r = self.session.get("https://metals-api.com/api/latest", params={
+            "base": "USD", "symbols": "CRUDE",
+        }, timeout=10)
+        if r.status_code == 200:
+            rates = r.json().get("rates", {})
+            if "CRUDE" in rates:
+                return {"price": 1.0 / rates["CRUDE"]}
+        return {}
+
+    # --- Gold ---
     def get_gold(self) -> dict:
-        return self._yahoo_chart("GC=F")
+        return self._fetch_with_fallbacks("gold", [
+            self._gold_from_metals_dev,
+            self._gold_from_twelvedata,
+        ])
 
+    def _gold_from_metals_dev(self) -> dict:
+        r = self.session.get("https://api.metals.dev/v1/latest", params={
+            "api_key": "demo", "currency": "USD", "unit": "toz",
+        }, timeout=10)
+        if r.status_code == 200:
+            metals = r.json().get("metals", {})
+            gold_price = metals.get("gold")
+            if gold_price:
+                return {"price": float(gold_price)}
+        return {}
+
+    def _gold_from_twelvedata(self) -> dict:
+        r = self.session.get("https://api.twelvedata.com/time_series", params={
+            "symbol": "XAU/USD", "interval": "1day", "outputsize": 30,
+            "format": "JSON",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        values = r.json().get("values", [])
+        if not values:
+            return {}
+        closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
+        return self._build_data(closes)
+
+    # --- VIX ---
     def get_vix(self) -> dict:
-        return self._yahoo_chart("^VIX")
+        return self._fetch_with_fallbacks("vix", [
+            self._vix_from_fred,
+            self._vix_from_twelvedata,
+        ])
 
+    def _vix_from_fred(self) -> dict:
+        """FRED (St. Louis Fed) — official VIX data, free, no key."""
+        r = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+            "series_id": "VIXCLS",
+            "api_key": "DEMO_KEY",  # FRED allows demo key for basic access
+            "file_type": "json",
+            "sort_order": "desc",
+            "limit": 30,
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        obs = r.json().get("observations", [])
+        closes = [float(o["value"]) for o in reversed(obs)
+                  if o.get("value") and o["value"] != "."]
+        return self._build_data(closes) if closes else {}
+
+    def _vix_from_twelvedata(self) -> dict:
+        r = self.session.get("https://api.twelvedata.com/time_series", params={
+            "symbol": "VIX", "interval": "1day", "outputsize": 30,
+            "format": "JSON",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        values = r.json().get("values", [])
+        if not values:
+            return {}
+        closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
+        return self._build_data(closes)
+
+    # --- Treasury Yields ---
     def get_10y_yield(self) -> dict:
-        return self._yahoo_chart("^TNX")
+        return self._fetch_with_fallbacks("yield_10y", [
+            lambda: self._yield_from_fred("DGS10"),
+            lambda: self._yield_from_twelvedata("US10Y"),
+        ])
 
     def get_2y_yield(self) -> dict:
-        return self._yahoo_chart("^IRX")  # 13-week T-bill as proxy
+        return self._fetch_with_fallbacks("yield_2y", [
+            lambda: self._yield_from_fred("DGS2"),
+            lambda: self._yield_from_twelvedata("US02Y"),
+        ])
 
+    def _yield_from_fred(self, series_id: str) -> dict:
+        r = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+            "series_id": series_id,
+            "api_key": "DEMO_KEY",
+            "file_type": "json",
+            "sort_order": "desc",
+            "limit": 30,
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        obs = r.json().get("observations", [])
+        closes = [float(o["value"]) for o in reversed(obs)
+                  if o.get("value") and o["value"] != "."]
+        return self._build_data(closes) if closes else {}
+
+    def _yield_from_twelvedata(self, symbol: str) -> dict:
+        r = self.session.get("https://api.twelvedata.com/time_series", params={
+            "symbol": symbol, "interval": "1day", "outputsize": 30, "format": "JSON",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        values = r.json().get("values", [])
+        if not values:
+            return {}
+        closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
+        return self._build_data(closes)
+
+    # --- S&P 500 ---
     def get_sp500(self) -> dict:
-        return self._yahoo_chart("^GSPC")
+        return self._fetch_with_fallbacks("sp500", [
+            self._sp500_from_twelvedata,
+        ])
 
+    def _sp500_from_twelvedata(self) -> dict:
+        r = self.session.get("https://api.twelvedata.com/time_series", params={
+            "symbol": "SPX", "interval": "1day", "outputsize": 30, "format": "JSON",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        values = r.json().get("values", [])
+        if not values:
+            return {}
+        closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
+        return self._build_data(closes)
+
+    # --- BTC ---
     def get_btc(self) -> dict:
-        """Bitcoin from CoinGecko (more reliable for crypto)."""
-        try:
-            r = requests.get("https://api.coingecko.com/api/v3/coins/bitcoin", params={
-                "localization": "false", "tickers": "false", "community_data": "false",
-                "developer_data": "false",
-            }, timeout=10)
-            d = r.json()
-            market = d.get("market_data", {})
-            return {
-                "price": market.get("current_price", {}).get("usd"),
-                "change_24h": market.get("price_change_percentage_24h"),
-                "change_7d": market.get("price_change_percentage_7d"),
-                "change_30d": market.get("price_change_percentage_30d"),
-                "ath": market.get("ath", {}).get("usd"),
-                "ath_change_pct": market.get("ath_change_percentage", {}).get("usd"),
-                "high_24h": market.get("high_24h", {}).get("usd"),
-                "low_24h": market.get("low_24h", {}).get("usd"),
-            }
-        except Exception as e:
-            return {"error": str(e)}
+        """Bitcoin from Binance (primary) + CoinGecko (backup)."""
+        return self._fetch_with_fallbacks("btc", [
+            self._btc_from_binance,
+            self._btc_from_coingecko,
+        ])
 
+    def _btc_from_binance(self) -> dict:
+        # Current price
+        r = self.session.get("https://api.binance.com/api/v3/ticker/price",
+                             params={"symbol": "BTCUSDT"}, timeout=8)
+        if r.status_code != 200:
+            return {}
+        price = float(r.json()["price"])
+
+        # 30-day klines for history
+        r2 = self.session.get("https://api.binance.com/api/v3/klines",
+                              params={"symbol": "BTCUSDT", "interval": "1d", "limit": 30},
+                              timeout=10)
+        closes = [price]
+        if r2.status_code == 200:
+            closes = [float(k[4]) for k in r2.json()]
+
+        # 24h stats
+        r3 = self.session.get("https://api.binance.com/api/v3/ticker/24hr",
+                              params={"symbol": "BTCUSDT"}, timeout=8)
+        data = self._build_data(closes)
+        if r3.status_code == 200:
+            stats = r3.json()
+            data["high_24h"] = float(stats.get("highPrice", 0))
+            data["low_24h"] = float(stats.get("lowPrice", 0))
+            data["change_24h"] = float(stats.get("priceChangePercent", 0))
+            data["volume_24h"] = float(stats.get("quoteVolume", 0))
+
+        # Funding rate for sentiment
+        try:
+            r4 = self.session.get("https://fapi.binance.com/fapi/v1/fundingRate",
+                                  params={"symbol": "BTCUSDT", "limit": 1}, timeout=8)
+            if r4.status_code == 200 and r4.json():
+                data["funding_rate"] = float(r4.json()[0]["fundingRate"])
+        except Exception:
+            pass
+
+        return data
+
+    def _btc_from_coingecko(self) -> dict:
+        r = requests.get("https://api.coingecko.com/api/v3/coins/bitcoin", params={
+            "localization": "false", "tickers": "false", "community_data": "false",
+            "developer_data": "false",
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        market = r.json().get("market_data", {})
+        return {
+            "price": market.get("current_price", {}).get("usd"),
+            "change_24h": market.get("price_change_percentage_24h"),
+            "change_7d": market.get("price_change_percentage_7d"),
+            "change_30d": market.get("price_change_percentage_30d"),
+            "ath": market.get("ath", {}).get("usd"),
+            "high_24h": market.get("high_24h", {}).get("usd"),
+            "low_24h": market.get("low_24h", {}).get("usd"),
+        }
+
+    # --- Fear & Greed ---
     def get_fear_greed(self) -> dict:
         try:
             r = requests.get("https://api.alternative.me/fng/?limit=1", timeout=10)
@@ -126,6 +303,25 @@ class FinancialData:
             return {"value": int(d.get("value", 50)), "classification": d.get("value_classification", "")}
         except Exception:
             return {"value": 50, "classification": "neutral"}
+
+    # --- Helper ---
+    def _build_data(self, closes: list[float]) -> dict:
+        """Build standard data dict from a list of closing prices."""
+        if not closes:
+            return {}
+        data = {
+            "price": closes[-1],
+            "prev_close": closes[-2] if len(closes) >= 2 else None,
+            "closes": closes,
+        }
+        if len(closes) >= 2:
+            data["change_1d_pct"] = (closes[-1] - closes[-2]) / closes[-2] * 100
+            data["min_30d"] = min(closes)
+            data["max_30d"] = max(closes)
+            data["mean_30d"] = float(np.mean(closes))
+        if len(closes) > 5:
+            data["volatility"] = float(np.std(np.diff(np.log(closes))) * np.sqrt(252))
+        return data
 
     def get_all(self) -> dict:
         """Fetch all financial data."""

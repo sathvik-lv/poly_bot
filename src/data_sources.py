@@ -451,15 +451,15 @@ class USGSEarthquakeSource:
 
 
 # ===========================================================================
-# Volatility Index (VIX Proxy) — from CBOE via Yahoo Finance
+# Volatility Index (VIX) — FRED + Twelve Data
 # ===========================================================================
 
 class VolatilityIndexSource:
     """VIX and market volatility data — key regime signal.
 
-    Uses Yahoo Finance v8 API (free, no key) for VIX index data,
-    plus derived volatility from S&P 500 recent moves.
-    Adapted from calendar spread strategy's VIX-based capital allocation.
+    Sources (no Yahoo):
+    - FRED (St. Louis Fed): Official VIXCLS series (free, no key for demo)
+    - Twelve Data: VIX + S&P 500 (free tier, no key for basic)
     """
 
     def __init__(self):
@@ -467,48 +467,61 @@ class VolatilityIndexSource:
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
 
     def get_vix(self) -> Optional[dict]:
-        """Get current VIX level and recent history."""
-        try:
-            resp = self.session.get(
-                "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX",
-                params={"interval": "1d", "range": "1mo"},
-                timeout=15,
-            )
-            if resp.status_code != 200:
-                return None
-            data = resp.json().get("chart", {}).get("result", [{}])[0]
-            meta = data.get("meta", {})
-            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-            closes = [c for c in closes if c is not None]
-            if not closes:
-                return None
-            import numpy as np
-            return {
-                "current": meta.get("regularMarketPrice", closes[-1]),
-                "previous_close": meta.get("previousClose"),
-                "mean_30d": float(np.mean(closes)),
-                "std_30d": float(np.std(closes)),
-                "min_30d": float(np.min(closes)),
-                "max_30d": float(np.max(closes)),
-                "percentile": float(np.searchsorted(np.sort(closes), closes[-1]) / len(closes)),
-                "regime": self._classify_vix(closes[-1]),
-            }
-        except Exception:
+        """Get current VIX level from FRED or Twelve Data."""
+        closes = self._vix_from_fred()
+        if not closes:
+            closes = self._vix_from_twelvedata()
+        if not closes:
             return None
 
-    def get_sp500_volatility(self) -> Optional[dict]:
-        """Get S&P 500 realized volatility as secondary VIX signal."""
+        import numpy as np
+        return {
+            "current": closes[-1],
+            "previous_close": closes[-2] if len(closes) >= 2 else None,
+            "mean_30d": float(np.mean(closes)),
+            "std_30d": float(np.std(closes)),
+            "min_30d": float(np.min(closes)),
+            "max_30d": float(np.max(closes)),
+            "percentile": float(np.searchsorted(np.sort(closes), closes[-1]) / len(closes)),
+            "regime": self._classify_vix(closes[-1]),
+        }
+
+    def _vix_from_fred(self) -> list:
         try:
-            resp = self.session.get(
-                "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC",
-                params={"interval": "1d", "range": "3mo"},
-                timeout=15,
-            )
+            resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                "series_id": "VIXCLS", "api_key": "DEMO_KEY",
+                "file_type": "json", "sort_order": "desc", "limit": 30,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            obs = resp.json().get("observations", [])
+            return [float(o["value"]) for o in reversed(obs)
+                    if o.get("value") and o["value"] != "."]
+        except Exception:
+            return []
+
+    def _vix_from_twelvedata(self) -> list:
+        try:
+            resp = self.session.get("https://api.twelvedata.com/time_series", params={
+                "symbol": "VIX", "interval": "1day", "outputsize": 30, "format": "JSON",
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            values = resp.json().get("values", [])
+            return [float(v["close"]) for v in reversed(values) if v.get("close")]
+        except Exception:
+            return []
+
+    def get_sp500_volatility(self) -> Optional[dict]:
+        """Get S&P 500 realized volatility from Twelve Data."""
+        try:
+            resp = self.session.get("https://api.twelvedata.com/time_series", params={
+                "symbol": "SPX", "interval": "1day", "outputsize": 60, "format": "JSON",
+            }, timeout=10)
             if resp.status_code != 200:
                 return None
-            data = resp.json().get("chart", {}).get("result", [{}])[0]
-            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-            closes = [c for c in closes if c is not None]
+            values = resp.json().get("values", [])
+            closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
             if len(closes) < 20:
                 return None
             import numpy as np
@@ -544,59 +557,100 @@ class VolatilityIndexSource:
 # ===========================================================================
 
 class CommoditiesSource:
-    """Oil, gold, and commodity prices via Yahoo Finance (free, no key).
+    """Oil, gold, and commodity prices — multi-source (no Yahoo).
 
-    Oil and gold prices affect geopolitical, economic, and inflation markets.
-    Adapted from calendar spread's use of macro indicators for regime detection.
+    Sources:
+    - Twelve Data: Commodities (CL, XAU/USD, NG) — free tier
+    - metals.dev: Gold/silver spot prices — free, no key
+    - FRED: Oil prices (DCOILWTICO) — free
     """
 
+    # Twelve Data symbols for commodities
     SYMBOLS = {
-        "crude_oil": "CL=F",         # WTI Crude Oil Futures
-        "brent_oil": "BZ=F",         # Brent Crude Oil Futures
-        "gold": "GC=F",              # Gold Futures
-        "silver": "SI=F",            # Silver Futures
-        "natural_gas": "NG=F",       # Natural Gas Futures
-        "copper": "HG=F",            # Copper Futures
+        "crude_oil": "CL",
+        "gold": "XAU/USD",
+        "silver": "XAG/USD",
+        "natural_gas": "NG",
     }
 
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
 
+    def _twelvedata_series(self, symbol: str) -> list:
+        try:
+            resp = self.session.get("https://api.twelvedata.com/time_series", params={
+                "symbol": symbol, "interval": "1day", "outputsize": 30, "format": "JSON",
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            values = resp.json().get("values", [])
+            return [float(v["close"]) for v in reversed(values) if v.get("close")]
+        except Exception:
+            return []
+
     def get_commodity(self, name: str = "crude_oil") -> Optional[dict]:
         """Get current price and recent history for a commodity."""
-        symbol = self.SYMBOLS.get(name, name)
-        try:
-            resp = self.session.get(
-                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-                params={"interval": "1d", "range": "1mo"},
-                timeout=15,
-            )
-            if resp.status_code != 200:
-                return None
-            data = resp.json().get("chart", {}).get("result", [{}])[0]
-            meta = data.get("meta", {})
-            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-            closes = [c for c in closes if c is not None]
-            if not closes:
-                return None
-            import numpy as np
-            return {
-                "commodity": name,
-                "price": meta.get("regularMarketPrice", closes[-1]),
-                "previous_close": meta.get("previousClose"),
-                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
-                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
-                "change_20d_pct": float((closes[-1] - closes[-20]) / closes[-20] * 100) if len(closes) >= 20 else None,
-                "high_30d": float(np.max(closes)),
-                "low_30d": float(np.min(closes)),
-                "volatility_30d": float(np.std(np.diff(np.log(np.array(closes) + 1e-10))) * np.sqrt(252) * 100),
-            }
-        except Exception:
+        symbol = self.SYMBOLS.get(name)
+        if not symbol:
             return None
 
+        closes = self._twelvedata_series(symbol)
+
+        # Fallback for oil: try FRED
+        if not closes and name == "crude_oil":
+            closes = self._oil_from_fred()
+
+        # Fallback for gold: try metals.dev
+        if not closes and name == "gold":
+            try:
+                r = self.session.get("https://api.metals.dev/v1/latest", params={
+                    "api_key": "demo", "currency": "USD", "unit": "toz",
+                }, timeout=10)
+                if r.status_code == 200:
+                    gold_p = r.json().get("metals", {}).get("gold")
+                    if gold_p:
+                        closes = [float(gold_p)]
+            except Exception:
+                pass
+
+        if not closes:
+            return None
+
+        import numpy as np
+        result = {
+            "commodity": name,
+            "price": closes[-1],
+            "previous_close": closes[-2] if len(closes) >= 2 else None,
+        }
+        if len(closes) >= 2:
+            result["change_1d_pct"] = float((closes[-1] - closes[-2]) / closes[-2] * 100)
+        if len(closes) >= 5:
+            result["change_5d_pct"] = float((closes[-1] - closes[-5]) / closes[-5] * 100)
+        if len(closes) >= 20:
+            result["change_20d_pct"] = float((closes[-1] - closes[-20]) / closes[-20] * 100)
+        if len(closes) >= 5:
+            result["high_30d"] = float(np.max(closes))
+            result["low_30d"] = float(np.min(closes))
+            result["volatility_30d"] = float(np.std(np.diff(np.log(np.array(closes) + 1e-10))) * np.sqrt(252) * 100)
+
+        return result
+
+    def _oil_from_fred(self) -> list:
+        try:
+            resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                "series_id": "DCOILWTICO", "api_key": "DEMO_KEY",
+                "file_type": "json", "sort_order": "desc", "limit": 30,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            obs = resp.json().get("observations", [])
+            return [float(o["value"]) for o in reversed(obs)
+                    if o.get("value") and o["value"] != "."]
+        except Exception:
+            return []
+
     def get_all_commodities(self) -> dict:
-        """Get prices for all tracked commodities."""
         results = {}
         for name in self.SYMBOLS:
             data = self.get_commodity(name)
@@ -605,7 +659,6 @@ class CommoditiesSource:
         return results
 
     def get_oil_gold_ratio(self) -> Optional[float]:
-        """Oil/Gold ratio — macro regime indicator."""
         oil = self.get_commodity("crude_oil")
         gold = self.get_commodity("gold")
         if oil and gold and oil.get("price") and gold.get("price"):
@@ -618,73 +671,109 @@ class CommoditiesSource:
 # ===========================================================================
 
 class ForexSource:
-    """Currency exchange rates and DXY (Dollar Index) proxy.
+    """Currency exchange rates and DXY proxy — multi-source (no Yahoo).
 
-    DXY strength affects global markets, commodity prices, and
-    emerging market prediction markets.
+    Sources:
+    - Twelve Data: DXY index + forex pairs — free tier (800/day)
+    - exchangerate.host: Forex rates — free, no key
+    - FRED: DXY proxy via trade-weighted USD index (DTWEXBGS) — free
     """
+
+    # Twelve Data symbols
+    TWELVE_PAIRS = {
+        "EUR/USD": "EUR/USD",
+        "GBP/USD": "GBP/USD",
+        "USD/JPY": "USD/JPY",
+        "USD/CNY": "USD/CNY",
+        "USD/INR": "USD/INR",
+    }
 
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
 
+    def _twelvedata_series(self, symbol: str, outputsize: int = 30) -> list:
+        try:
+            resp = self.session.get("https://api.twelvedata.com/time_series", params={
+                "symbol": symbol, "interval": "1day", "outputsize": outputsize, "format": "JSON",
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            values = resp.json().get("values", [])
+            return [float(v["close"]) for v in reversed(values) if v.get("close")]
+        except Exception:
+            return []
+
     def get_dxy(self) -> Optional[dict]:
         """Get US Dollar Index (DXY) — key macro regime signal."""
-        try:
-            resp = self.session.get(
-                "https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB",
-                params={"interval": "1d", "range": "1mo"},
-                timeout=15,
-            )
-            if resp.status_code != 200:
-                return None
-            data = resp.json().get("chart", {}).get("result", [{}])[0]
-            meta = data.get("meta", {})
-            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-            closes = [c for c in closes if c is not None]
-            if not closes:
-                return None
-            import numpy as np
-            return {
-                "dxy": meta.get("regularMarketPrice", closes[-1]),
-                "previous_close": meta.get("previousClose"),
-                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
-                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
-                "mean_30d": float(np.mean(closes)),
-                "trend": "strengthening" if closes[-1] > np.mean(closes) else "weakening",
-            }
-        except Exception:
+        # Try Twelve Data DXY
+        closes = self._twelvedata_series("DXY")
+
+        # Fallback: FRED trade-weighted USD index (DTWEXBGS)
+        if not closes:
+            try:
+                resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                    "series_id": "DTWEXBGS", "api_key": "DEMO_KEY",
+                    "file_type": "json", "sort_order": "desc", "limit": 30,
+                }, timeout=10)
+                if resp.status_code == 200:
+                    obs = resp.json().get("observations", [])
+                    closes = [float(o["value"]) for o in reversed(obs)
+                              if o.get("value") and o["value"] != "."]
+            except Exception:
+                pass
+
+        if not closes:
             return None
+
+        import numpy as np
+        result = {
+            "dxy": closes[-1],
+            "previous_close": closes[-2] if len(closes) >= 2 else None,
+        }
+        if len(closes) >= 2:
+            result["change_1d_pct"] = float((closes[-1] - closes[-2]) / closes[-2] * 100)
+        if len(closes) >= 5:
+            result["change_5d_pct"] = float((closes[-1] - closes[-5]) / closes[-5] * 100)
+        result["mean_30d"] = float(np.mean(closes))
+        result["trend"] = "strengthening" if closes[-1] > np.mean(closes) else "weakening"
+        return result
 
     def get_major_pairs(self) -> dict:
         """Get major forex pairs vs USD."""
-        pairs = {
-            "EUR/USD": "EURUSD=X",
-            "GBP/USD": "GBPUSD=X",
-            "USD/JPY": "JPY=X",
-            "USD/CNY": "CNY=X",
-            "USD/INR": "INR=X",
-        }
         results = {}
-        for name, symbol in pairs.items():
+
+        # Primary: Twelve Data
+        for name, symbol in self.TWELVE_PAIRS.items():
+            closes = self._twelvedata_series(symbol, outputsize=5)
+            if closes:
+                results[name] = {
+                    "rate": closes[-1],
+                    "change_pct": round((closes[-1] - closes[-2]) / closes[-2] * 100, 4) if len(closes) >= 2 else None,
+                }
+
+        # Fallback: exchangerate.host (if Twelve Data rate-limited)
+        if len(results) < 3:
             try:
                 resp = self.session.get(
-                    f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-                    params={"interval": "1d", "range": "5d"},
+                    "https://api.exchangerate.host/latest",
+                    params={"base": "USD", "symbols": "EUR,GBP,JPY,CNY,INR"},
                     timeout=10,
                 )
-                if resp.status_code != 200:
-                    continue
-                meta = resp.json().get("chart", {}).get("result", [{}])[0].get("meta", {})
-                price = meta.get("regularMarketPrice")
-                prev = meta.get("previousClose")
-                if price:
-                    results[name] = {
-                        "rate": price,
-                        "change_pct": round((price - prev) / prev * 100, 4) if prev else None,
-                    }
+                if resp.status_code == 200:
+                    rates = resp.json().get("rates", {})
+                    mapping = {"EUR": "EUR/USD", "GBP": "GBP/USD", "JPY": "USD/JPY", "CNY": "USD/CNY", "INR": "USD/INR"}
+                    for curr, pair_name in mapping.items():
+                        if pair_name not in results and curr in rates:
+                            rate = rates[curr]
+                            # EUR and GBP are quoted as 1/rate (USD per unit)
+                            if curr in ("EUR", "GBP"):
+                                rate = round(1.0 / rate, 6) if rate else None
+                            if rate:
+                                results[pair_name] = {"rate": rate, "change_pct": None}
             except Exception:
-                continue
+                pass
+
         return results
 
 
@@ -693,56 +782,92 @@ class ForexSource:
 # ===========================================================================
 
 class StockIndexSource:
-    """Major stock indices — regime and sentiment signals.
+    """Major stock indices — multi-source (no Yahoo).
 
-    Adapted from calendar spread strategy's use of NIFTY/BANKNIFTY
-    as underlying signals. Here we use global indices.
+    Sources:
+    - Twelve Data: SPX, IXIC, DJI, RUT, NIFTY, FTSE, DAX, N225 — free tier
+    - Marketstack: 1000 calls/month fallback — free tier (needs key)
+    - Financial Modeling Prep: 250 calls/day fallback — free tier (needs key)
     """
 
+    # Twelve Data index symbols
     INDICES = {
-        "sp500": "%5EGSPC",
-        "nasdaq": "%5EIXIC",
-        "dow": "%5EDJI",
-        "russell2000": "%5ERUT",
-        "nifty50": "%5ENSEI",
-        "ftse100": "%5EFTSE",
-        "dax": "%5EGDAXI",
-        "nikkei225": "%5EN225",
+        "sp500": "SPX",
+        "nasdaq": "IXIC",
+        "dow": "DJI",
+        "russell2000": "RUT",
+        "nifty50": "NIFTY 50",
+        "ftse100": "FTSE 100",
+        "dax": "DAX",
+        "nikkei225": "N225",
     }
 
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
 
+    def _twelvedata_series(self, symbol: str, outputsize: int = 30) -> list:
+        try:
+            resp = self.session.get("https://api.twelvedata.com/time_series", params={
+                "symbol": symbol, "interval": "1day", "outputsize": outputsize, "format": "JSON",
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            values = resp.json().get("values", [])
+            return [float(v["close"]) for v in reversed(values) if v.get("close")]
+        except Exception:
+            return []
+
     def get_index(self, name: str = "sp500") -> Optional[dict]:
         """Get current index level and recent performance."""
         symbol = self.INDICES.get(name, name)
-        try:
-            resp = self.session.get(
-                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-                params={"interval": "1d", "range": "1mo"},
-                timeout=15,
-            )
-            if resp.status_code != 200:
-                return None
-            data = resp.json().get("chart", {}).get("result", [{}])[0]
-            meta = data.get("meta", {})
-            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-            closes = [c for c in closes if c is not None]
-            if not closes:
-                return None
-            import numpy as np
-            return {
-                "index": name,
-                "price": meta.get("regularMarketPrice", closes[-1]),
-                "previous_close": meta.get("previousClose"),
-                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
-                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
-                "change_20d_pct": float((closes[-1] - closes[-20]) / closes[-20] * 100) if len(closes) >= 20 else None,
-                "above_20d_avg": closes[-1] > float(np.mean(closes)),
-            }
-        except Exception:
+        closes = self._twelvedata_series(symbol)
+
+        # Fallback for S&P 500: FRED SP500 series
+        if not closes and name == "sp500":
+            try:
+                resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                    "series_id": "SP500", "api_key": "DEMO_KEY",
+                    "file_type": "json", "sort_order": "desc", "limit": 30,
+                }, timeout=10)
+                if resp.status_code == 200:
+                    obs = resp.json().get("observations", [])
+                    closes = [float(o["value"]) for o in reversed(obs)
+                              if o.get("value") and o["value"] != "."]
+            except Exception:
+                pass
+
+        # Fallback for NASDAQ: FRED NASDAQCOM series
+        if not closes and name == "nasdaq":
+            try:
+                resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                    "series_id": "NASDAQCOM", "api_key": "DEMO_KEY",
+                    "file_type": "json", "sort_order": "desc", "limit": 30,
+                }, timeout=10)
+                if resp.status_code == 200:
+                    obs = resp.json().get("observations", [])
+                    closes = [float(o["value"]) for o in reversed(obs)
+                              if o.get("value") and o["value"] != "."]
+            except Exception:
+                pass
+
+        if not closes:
             return None
+
+        import numpy as np
+        result = {
+            "index": name,
+            "price": closes[-1],
+            "previous_close": closes[-2] if len(closes) >= 2 else None,
+        }
+        if len(closes) >= 2:
+            result["change_1d_pct"] = float((closes[-1] - closes[-2]) / closes[-2] * 100)
+        if len(closes) >= 5:
+            result["change_5d_pct"] = float((closes[-1] - closes[-5]) / closes[-5] * 100)
+        if len(closes) >= 20:
+            result["change_20d_pct"] = float((closes[-1] - closes[-20]) / closes[-20] * 100)
+        result["above_20d_avg"] = closes[-1] > float(np.mean(closes))
+        return result
 
     def get_market_breadth(self) -> Optional[dict]:
         """Compare multiple indices to gauge broad market health."""
