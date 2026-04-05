@@ -114,36 +114,106 @@ class SportsOddsSource:
 class CryptoPriceSource:
     """Derive probability of BTC/ETH hitting price targets from market data.
 
-    Uses CoinGecko for current price + historical volatility to estimate
-    probability of hitting specific thresholds (e.g., "BTC above $100k").
+    Uses multiple free APIs for cross-validated pricing:
+    - Binance (primary — most liquid, real-time)
+    - CoinGecko (backup + market data)
+    - CoinCap (backup)
+    - Coinpaprika (backup)
+    - Binance funding rate + open interest for sentiment
     """
 
     def __init__(self):
         self.session = requests.Session()
 
     def _get_btc_price(self) -> float | None:
-        """Get current BTC price from multiple sources."""
-        # Try Binance first (free, no key, fast)
+        """Get current BTC price — cross-validated across 4 sources."""
+        prices = []
+
+        # Binance (primary — most liquid exchange)
         try:
             resp = self.session.get(
                 "https://api.binance.com/api/v3/ticker/price",
                 params={"symbol": "BTCUSDT"}, timeout=8)
             if resp.status_code == 200:
-                return float(resp.json()["price"])
+                prices.append(float(resp.json()["price"]))
         except Exception:
             pass
 
-        # Fallback: CoinGecko
+        # CoinGecko
         try:
             resp = self.session.get(
                 "https://api.coingecko.com/api/v3/simple/price",
                 params={"ids": "bitcoin", "vs_currencies": "usd"}, timeout=8)
             if resp.status_code == 200:
-                return resp.json()["bitcoin"]["usd"]
+                prices.append(resp.json()["bitcoin"]["usd"])
         except Exception:
             pass
 
-        return None
+        # CoinCap
+        try:
+            resp = self.session.get(
+                "https://api.coincap.io/v2/assets/bitcoin", timeout=8)
+            if resp.status_code == 200:
+                p = resp.json().get("data", {}).get("priceUsd")
+                if p:
+                    prices.append(float(p))
+        except Exception:
+            pass
+
+        # Coinpaprika
+        try:
+            resp = self.session.get(
+                "https://api.coinpaprika.com/v1/tickers/btc-bitcoin", timeout=8)
+            if resp.status_code == 200:
+                p = resp.json().get("quotes", {}).get("USD", {}).get("price")
+                if p:
+                    prices.append(float(p))
+        except Exception:
+            pass
+
+        if not prices:
+            return None
+        # Use median for robustness against outliers
+        import numpy as np
+        return float(np.median(prices))
+
+    def _get_funding_sentiment(self) -> dict:
+        """Get Binance futures funding rate + open interest for sentiment.
+
+        Positive funding = longs pay shorts = market is bullish
+        Negative funding = shorts pay longs = market is bearish
+        """
+        result = {"funding_rate": 0, "sentiment": "neutral"}
+        try:
+            # Funding rate
+            resp = self.session.get(
+                "https://fapi.binance.com/fapi/v1/fundingRate",
+                params={"symbol": "BTCUSDT", "limit": 1}, timeout=8)
+            if resp.status_code == 200 and resp.json():
+                rate = float(resp.json()[0]["fundingRate"])
+                result["funding_rate"] = rate
+                if rate > 0.0005:
+                    result["sentiment"] = "very_bullish"
+                elif rate > 0.0001:
+                    result["sentiment"] = "bullish"
+                elif rate < -0.0005:
+                    result["sentiment"] = "very_bearish"
+                elif rate < -0.0001:
+                    result["sentiment"] = "bearish"
+        except Exception:
+            pass
+
+        try:
+            # Open interest
+            resp = self.session.get(
+                "https://fapi.binance.com/fapi/v1/openInterest",
+                params={"symbol": "BTCUSDT"}, timeout=8)
+            if resp.status_code == 200:
+                result["open_interest"] = float(resp.json().get("openInterest", 0))
+        except Exception:
+            pass
+
+        return result
 
     def _get_btc_volatility(self) -> float | None:
         """Get BTC annualized volatility from Binance klines."""
@@ -210,11 +280,24 @@ class CryptoPriceSource:
                 return 0.95 if current < target_price else 0.05
 
         d = (np.log(current / target_price) + 0.5 * annual_vol**2 * T) / vol_T
+        base_prob = float(norm.cdf(d))
+
+        # Adjust for funding rate sentiment (small nudge)
+        sentiment = self._get_funding_sentiment()
+        sentiment_adj = 0
+        if sentiment["sentiment"] == "very_bullish":
+            sentiment_adj = 0.02
+        elif sentiment["sentiment"] == "bullish":
+            sentiment_adj = 0.01
+        elif sentiment["sentiment"] == "bearish":
+            sentiment_adj = -0.01
+        elif sentiment["sentiment"] == "very_bearish":
+            sentiment_adj = -0.02
 
         if direction == "above":
-            return float(np.clip(norm.cdf(d), 0.01, 0.99))
+            return float(np.clip(base_prob + sentiment_adj, 0.01, 0.99))
         else:
-            return float(np.clip(1 - norm.cdf(d), 0.01, 0.99))
+            return float(np.clip(1 - base_prob - sentiment_adj, 0.01, 0.99))
 
 
 # =============================================================
