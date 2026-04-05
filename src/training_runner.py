@@ -223,24 +223,9 @@ class TrainingRunner:
             cycle_result["steps"]["audit"] = {"status": "INSUFFICIENT_DATA", "n_resolved": len(resolved_preds)}
             print(f"       Need 5+ resolved predictions, have {len(resolved_preds)}")
 
-        # Step 5: Self-improvement
-        print("\n[5/6] Running self-improvement...")
-        if len(resolved_preds) >= 5:
-            improvement = self.corrector.run_improvement_cycle()
-            health = improvement.get("health_score", 0)
-            self.checkpoint["best_health_score"] = max(
-                self.checkpoint.get("best_health_score", 0), health
-            )
-            cycle_result["steps"]["improve"] = {
-                "health_score": health,
-                "n_recommendations": len(improvement.get("recommendations", [])),
-            }
-            print(f"       Health Score: {health}/100")
-            for rec in improvement.get("recommendations", [])[:3]:
-                print(f"         - {rec}")
-        else:
-            cycle_result["steps"]["improve"] = {"status": "SKIPPED"}
-            print("       Skipped (insufficient data)")
+        # Step 5: Self-improvement DISABLED — manual tuning mode
+        print("\n[5/6] Self-improvement DISABLED (protecting manual calibration/weights)")
+        cycle_result["steps"]["improve"] = {"status": "disabled_manual_tuning"}
 
         # Step 6: Checkpoint & git commit
         print("\n[6/6] Checkpointing...")
@@ -409,9 +394,10 @@ class TrainingRunner:
             print(f"  Need 5+ resolved predictions, have {len(resolved)}")
             return
 
-        report = self.corrector.run_improvement_cycle()
+        # Self-improver disabled — audit only, no overwrites
+        report = self.corrector.auditor.full_audit(resolved)
 
-        print(f"\n  Health Score: {report.get('health_score', 0)}/100")
+        print(f"\n  Audit complete ({len(resolved)} predictions)")
         print(f"  N resolved: {report.get('n_resolved', 0)}")
 
         audit = report.get("audit", {})

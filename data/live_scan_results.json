@@ -1,0 +1,988 @@
+{
+  "timestamp": "2026-04-05T14:51:57.674536+00:00",
+  "n_scanned": 26,
+  "n_with_edge": 5,
+  "results": [
+    {
+      "market": {
+        "id": "658931",
+        "question": "Will Michigan win the 2026 NCAA Tournament?",
+        "current_price": 0.725,
+        "spread": 0.01,
+        "volume_24h": 254446.52862700052,
+        "liquidity": 136310.9382
+      },
+      "prediction": {
+        "probability": 0.401,
+        "raw_probability": 0.401,
+        "std": 0.0813,
+        "ci_95": [
+          0.2417,
+          0.5603
+        ],
+        "uncertainty": {
+          "mean": 0.401,
+          "ci_95": [
+            0.3858,
+            0.4164
+          ],
+          "p_resolve_yes": 0.0,
+          "skewness": 0.0031
+        }
+      },
+      "edge": {
+        "edge": -0.324,
+        "ev_per_dollar": -0.324,
+        "edge_confidence": "HIGH"
+      },
+      "sizing": {
+        "kelly_fraction": -0.25,
+        "kelly_full": -1.178299,
+        "shrinkage_factor": 0.7995,
+        "action": "BUY_NO",
+        "edge": -0.324032,
+        "expected_value": -0.324032,
+        "uncertainty_ratio": 0.2508
+      },
+      "ensemble": {
+        "n_models": 4,
+        "model_names": [
+          "microstructure",
+          "external_data",
+          "orderbook",
+          "ai_semantic"
+        ],
+        "weights": [
+          0.1979,
+          0.2202,
+          0.1101,
+          0.4718
+        ],
+        "model_agreement": 0.0034
+      },
+      "sub_models": {
+        "microstructure": {
+          "estimate": 0.742,
+          "variance": 0.03337931034482759,
+          "signals": {
+            "buying_pressure": -0.5,
+            "spread_pct": 0.013793103448275874,
+            "market_efficiency": 0.9310344827586207,
+            "log_volume": 5.405596530240077,
+            "volume_confirmation": 0.013199999999999998,
+            "tight_spread_confirm": 0.008799999999999999
+          },
+          "model": "microstructure"
+        },
+        "external_data": {
+          "estimate": 0.745,
+          "variance": 0.03,
+          "signals": {
+            "fear_greed_value": 12,
+            "fear_greed_class": "Extreme Fear",
+            "vix_current": 23.87,
+            "vix_regime": "elevated",
+            "vix_percentile": 0.21739130434782608,
+            "vix_mean_30d": 25.656521921572477,
+            "dxy": 100.186,
+            "dxy_trend": "strengthening",
+            "dxy_change_5d": -0.11982301023831975,
+            "n_news_headlines": 5,
+            "news_sources": [
+              "Yahoo Sports",
+              "CBS Sports",
+              "University of Michigan Athletics"
+            ],
+            "market_volume": 1689602.265362,
+            "volume_signal": "high",
+            "market_liquidity": 136310.9382,
+            "liquidity_signal": "deep"
+          },
+          "adjustments": [
+            [
+              "fear_greed_contrarian",
+              0.02
+            ],
+            [
+              "high_volume_accuracy",
+              0
+            ]
+          ],
+          "model": "external_data"
+        },
+        "orderbook": {
+          "estimate": 0.6897526805652033,
+          "variance": 0.06,
+          "signals": {
+            "midpoint": 0.725,
+            "weighted_mid": 0.95205,
+            "spread": 0.01,
+            "imbalance": -0.83034,
+            "bid_depth": 164665.79,
+            "ask_depth": 1776461.0699999998,
+            "liquidity_score": 85,
+            "n_whale_bids": 2,
+            "n_whale_asks": 2,
+            "near_bid_vol": 89266.82,
+            "near_ask_vol": 183125.06999999998,
+            "near_imbalance": -0.3446,
+            "adjustment": -0.0352
+          },
+          "model": "orderbook"
+        },
+        "ai_semantic": {
+          "estimate": 0.03,
+          "variance": 0.013999999999999997,
+          "signals": {
+            "ai_probability": 0.03,
+            "ai_confidence": 0.9,
+            "ai_reasoning": "NCAA tournament structure caps any team's win probability at ~1.5% pre-tournament and ~50-60% in the championship game; 72.5% is mathematically inconsistent with single-elimination odds and indicates severe mispricing or a stale market past its stated resolution date.",
+            "ai_edge": -0.695,
+            "ai_model": "qwen/qwen3.6-plus:free",
+            "models_tried": 1
+          },
+          "model": "ai_semantic"
+        }
+      },
+      "timestamp": "2026-04-05T14:51:28.524338+00:00",
+      "strategy": {
+        "should_enter": false,
+        "regime": "neutral",
+        "filters": {
+          "pass": false,
+          "filters": {
+            "spread_sanity": {
+              "pass": true,
+              "value": 0.0137,
+              "threshold": 0.1
+            },
+            "liquidity": {
+              "pass": true,
+              "value": 136310.9382,
+              "threshold": 500
+            },
+            "volume": {
+              "pass": true,
+              "value": 254446.52862700052,
+              "threshold": 100
+            },
+            "model_agreement": {
+              "pass": false,
+              "value": 0.0034,
+              "threshold": 0.4
+            },
+            "edge_significance": {
+              "pass": "True",
+              "value": 0.324,
+              "threshold": 0.02
+            },
+            "price_sanity": {
+              "pass": true,
+              "value": 0.725,
+              "threshold": [
+                0.05,
+                0.95
+              ]
+            },
+            "imbalance": {
+              "pass": true,
+              "value": 0.8303,
+              "threshold": 0.85
+            }
+          },
+          "failed_filters": [
+            "model_agreement"
+          ],
+          "n_passed": 6,
+          "n_total": 7
+        },
+        "sizing_adjusted": {
+          "action": "NO_BET",
+          "reason": "Failed filters: ['model_agreement']"
+        },
+        "is_contrarian": false
+      }
+    },
+    {
+      "market": {
+        "id": "665374",
+        "question": "Will the U.S. invade Iran before 2027?",
+        "current_price": 0.575,
+        "spread": 0.01,
+        "volume_24h": 723560.6054240001,
+        "liquidity": 222022.9802
+      },
+      "prediction": {
+        "probability": 0.3458,
+        "raw_probability": 0.3458,
+        "std": 0.0839,
+        "ci_95": [
+          0.1814,
+          0.5102
+        ],
+        "uncertainty": {
+          "mean": 0.3474,
+          "ci_95": [
+            0.2493,
+            0.457
+          ],
+          "p_resolve_yes": 0.0036,
+          "skewness": 0.0331
+        }
+      },
+      "edge": {
+        "edge": -0.2292,
+        "ev_per_dollar": -0.2292,
+        "edge_confidence": "HIGH"
+      },
+      "sizing": {
+        "kelly_fraction": -0.25,
+        "kelly_full": -0.539239,
+        "shrinkage_factor": 0.7321,
+        "action": "BUY_NO",
+        "edge": -0.229177,
+        "expected_value": -0.229177,
+        "uncertainty_ratio": 0.366
+      },
+      "ensemble": {
+        "n_models": 4,
+        "model_names": [
+          "microstructure",
+          "external_data",
+          "orderbook",
+          "ai_semantic"
+        ],
+        "weights": [
+          0.2085,
+          0.2345,
+          0.1173,
+          0.4397
+        ],
+        "model_agreement": 0.1689
+      },
+      "sub_models": {
+        "microstructure": {
+          "estimate": 0.61,
+          "variance": 0.03373913043478261,
+          "signals": {
+            "buying_pressure": 0.5,
+            "spread_pct": 0.017391304347826105,
+            "market_efficiency": 0.9130434782608695,
+            "log_volume": 5.859474913477004
+          },
+          "model": "microstructure"
+        },
+        "external_data": {
+          "estimate": 0.595,
+          "variance": 0.03,
+          "signals": {
+            "fear_greed_value": 12,
+            "fear_greed_class": "Extreme Fear",
+            "vix_current": 23.87,
+            "vix_regime": "elevated",
+            "vix_percentile": 0.21739130434782608,
+            "vix_mean_30d": 25.656521921572477,
+            "dxy": 100.186,
+            "dxy_trend": "strengthening",
+            "dxy_change_5d": -0.11982301023831975,
+            "n_news_headlines": 5,
+            "news_sources": [
+              "BBC",
+              "Al Jazeera",
+              "CNBC"
+            ],
+            "market_volume": 3465133.854451976,
+            "volume_signal": "high",
+            "market_liquidity": 222022.9802,
+            "liquidity_signal": "deep"
+          },
+          "adjustments": [
+            [
+              "fear_greed_contrarian",
+              0.02
+            ],
+            [
+              "high_volume_accuracy",
+              0
+            ]
+          ],
+          "model": "external_data"
+        },
+        "orderbook": {
+          "estimate": 0.599508030797227,
+          "variance": 0.06,
+          "signals": {
+            "midpoint": 0.575,
+            "weighted_mid": 0.069344,
+            "spread": 0.01,
+            "imbalance": 0.765038,
+            "bid_depth": 2896000.4100000006,
+            "ask_depth": 385515.93999999994,
+            "liquidity_score": 85,
+            "n_whale_bids": 3,
+            "n_whale_asks": 3,
+            "near_bid_vol": 119023.53000000001,
+            "near_ask_vol": 107279.24,
+            "near_imbalance": 0.0519,
+            "adjustment": 0.0245
+          },
+          "model": "orderbook"
+        },
+        "ai_semantic": {
+          "estimate": 0.02,
+          "variance": 0.015999999999999997,
+          "signals": {
+            "ai_probability": 0.02,
+            "ai_confidence": 0.85,
+            "ai_reasoning": "Historical base rates and overwhelming strategic, logistical, and domestic political barriers make a full-scale U.S. ground invasion of Iran extremely unlikely, especially within a nine-month window.",
+            "ai_edge": -0.555,
+            "ai_model": "qwen/qwen3.6-plus:free",
+            "models_tried": 1
+          },
+          "model": "ai_semantic"
+        }
+      },
+      "timestamp": "2026-04-05T14:45:25.052953+00:00",
+      "strategy": {
+        "should_enter": false,
+        "regime": "neutral",
+        "filters": {
+          "pass": false,
+          "filters": {
+            "spread_sanity": {
+              "pass": true,
+              "value": 0.0172,
+              "threshold": 0.1
+            },
+            "liquidity": {
+              "pass": true,
+              "value": 222022.9802,
+              "threshold": 500
+            },
+            "volume": {
+              "pass": true,
+              "value": 723560.6054240001,
+              "threshold": 100
+            },
+            "model_agreement": {
+              "pass": false,
+              "value": 0.1689,
+              "threshold": 0.4
+            },
+            "edge_significance": {
+              "pass": "True",
+              "value": 0.2292,
+              "threshold": 0.02
+            },
+            "price_sanity": {
+              "pass": true,
+              "value": 0.575,
+              "threshold": [
+                0.05,
+                0.95
+              ]
+            },
+            "imbalance": {
+              "pass": true,
+              "value": 0.765,
+              "threshold": 0.85
+            }
+          },
+          "failed_filters": [
+            "model_agreement"
+          ],
+          "n_passed": 6,
+          "n_total": 7
+        },
+        "sizing_adjusted": {
+          "action": "NO_BET",
+          "reason": "Failed filters: ['model_agreement']"
+        },
+        "is_contrarian": false
+      }
+    },
+    {
+      "market": {
+        "id": "1688319",
+        "question": "Will Olympique Lyonnais win on 2026-04-05?",
+        "current_price": 0.285,
+        "spread": 0.01,
+        "volume_24h": 2500587.9643720007,
+        "liquidity": 7205.4492
+      },
+      "prediction": {
+        "probability": 0.2368,
+        "raw_probability": 0.2368,
+        "std": 0.0914,
+        "ci_95": [
+          0.0578,
+          0.4159
+        ],
+        "uncertainty": {
+          "mean": 0.2369,
+          "ci_95": [
+            0.2241,
+            0.25
+          ],
+          "p_resolve_yes": 0.0,
+          "skewness": 0.007
+        }
+      },
+      "edge": {
+        "edge": -0.0482,
+        "ev_per_dollar": -0.0482,
+        "edge_confidence": "LOW"
+      },
+      "sizing": {
+        "kelly_fraction": -0.023251,
+        "kelly_full": -0.067356,
+        "shrinkage_factor": 0.3452,
+        "action": "BUY_NO",
+        "edge": -0.04816,
+        "expected_value": -0.04816,
+        "uncertainty_ratio": 1.8969
+      },
+      "ensemble": {
+        "n_models": 4,
+        "model_names": [
+          "microstructure",
+          "external_data",
+          "orderbook",
+          "ai_semantic"
+        ],
+        "weights": [
+          0.235,
+          0.2782,
+          0.1391,
+          0.3477
+        ],
+        "model_agreement": 0.7171
+      },
+      "sub_models": {
+        "microstructure": {
+          "estimate": 0.08599999999999935,
+          "variance": 0.035508771929824545,
+          "signals": {
+            "buying_pressure": -2.500000000000011,
+            "spread_pct": 0.035087719298245446,
+            "market_efficiency": 0.8245614035087727,
+            "log_volume": 6.398042136535926,
+            "volume_confirmation": -0.0144,
+            "tight_spread_confirm": -0.0096
+          },
+          "model": "microstructure"
+        },
+        "external_data": {
+          "estimate": 0.305,
+          "variance": 0.03,
+          "signals": {
+            "fear_greed_value": 12,
+            "fear_greed_class": "Extreme Fear",
+            "vix_current": 23.87,
+            "vix_regime": "elevated",
+            "vix_percentile": 0.21739130434782608,
+            "vix_mean_30d": 25.656521921572477,
+            "dxy": 100.186,
+            "dxy_trend": "strengthening",
+            "dxy_change_5d": -0.11982301023831975,
+            "n_news_headlines": 5,
+            "news_sources": [
+              "BBC",
+              "BBC",
+              "beinsports.com"
+            ],
+            "market_volume": 2503872.694582011,
+            "volume_signal": "high",
+            "market_liquidity": 7205.4492
+          },
+          "adjustments": [
+            [
+              "fear_greed_contrarian",
+              0.02
+            ],
+            [
+              "high_volume_accuracy",
+              0
+            ]
+          ],
+          "model": "external_data"
+        },
+        "orderbook": {
+          "estimate": 0.235,
+          "variance": 0.06,
+          "signals": {
+            "midpoint": 0.195,
+            "weighted_mid": 0.892078,
+            "spread": 0.01,
+            "imbalance": -0.619793,
+            "bid_depth": 36218.23,
+            "ask_depth": 154300.31999999998,
+            "liquidity_score": 85,
+            "n_whale_bids": 1,
+            "n_whale_asks": 3,
+            "near_bid_vol": 323.68,
+            "near_ask_vol": 19017.070000000003,
+            "near_imbalance": -0.9665,
+            "adjustment": -0.05
+          },
+          "model": "orderbook"
+        },
+        "ai_semantic": {
+          "estimate": 0.285,
+          "variance": 0.024,
+          "signals": {
+            "ai_probability": 0.285,
+            "ai_confidence": 0.65,
+            "ai_reasoning": "Without real-time 2026 fixture, lineup, or injury data, the market price efficiently aggregates current betting odds, team form, and historical Ligue 1 win base rates; I defer to the consensus.",
+            "ai_edge": 0.0,
+            "ai_model": "qwen/qwen3.6-plus:free",
+            "models_tried": 4
+          },
+          "model": "ai_semantic"
+        }
+      },
+      "timestamp": "2026-04-05T14:44:13.837397+00:00",
+      "strategy": {
+        "should_enter": true,
+        "regime": "neutral",
+        "filters": {
+          "pass": true,
+          "filters": {
+            "spread_sanity": {
+              "pass": true,
+              "value": 0.0345,
+              "threshold": 0.1
+            },
+            "liquidity": {
+              "pass": true,
+              "value": 7205.4492,
+              "threshold": 500
+            },
+            "volume": {
+              "pass": true,
+              "value": 2500587.9643720007,
+              "threshold": 100
+            },
+            "model_agreement": {
+              "pass": true,
+              "value": 0.7171,
+              "threshold": 0.4
+            },
+            "edge_significance": {
+              "pass": "True",
+              "value": 0.0482,
+              "threshold": 0.02
+            },
+            "price_sanity": {
+              "pass": true,
+              "value": 0.285,
+              "threshold": [
+                0.05,
+                0.95
+              ]
+            },
+            "imbalance": {
+              "pass": true,
+              "value": 0.6198,
+              "threshold": 0.85
+            }
+          },
+          "failed_filters": [],
+          "n_passed": 7,
+          "n_total": 7
+        },
+        "sizing_adjusted": {
+          "size_dollars": 77.5,
+          "size_pct": 0.0078,
+          "action": "BUY_NO",
+          "kelly_raw": -0.0233,
+          "kelly_adjusted": -0.0078,
+          "regime": "neutral",
+          "budget_category": "LOW",
+          "max_per_market": 0.12,
+          "deployment_used": 0.0,
+          "deployment_remaining": 0.6
+        },
+        "is_contrarian": false
+      }
+    },
+    {
+      "market": {
+        "id": "567561",
+        "question": "Will the next Prime Minister of Hungary be P\u00e9ter Magyar?",
+        "current_price": 0.645,
+        "spread": 0.01,
+        "volume_24h": 248586.66424200003,
+        "liquidity": 260573.9696
+      },
+      "prediction": {
+        "probability": 0.6706,
+        "raw_probability": 0.6706,
+        "std": 0.1119,
+        "ci_95": [
+          0.4512,
+          0.89
+        ],
+        "uncertainty": {
+          "mean": 0.6676,
+          "ci_95": [
+            0.5226,
+            0.7911
+          ],
+          "p_resolve_yes": 0.9876,
+          "skewness": -0.0477
+        }
+      },
+      "edge": {
+        "edge": 0.0256,
+        "ev_per_dollar": 0.0256,
+        "edge_confidence": "LOW"
+      },
+      "sizing": {
+        "kelly_fraction": 0.013419,
+        "kelly_full": 0.072103,
+        "shrinkage_factor": 0.1861,
+        "action": "BUY_YES",
+        "edge": 0.025597,
+        "expected_value": 0.025597,
+        "uncertainty_ratio": 4.3732
+      },
+      "ensemble": {
+        "n_models": 3,
+        "model_names": [
+          "microstructure",
+          "external_data",
+          "orderbook"
+        ],
+        "weights": [
+          0.3735,
+          0.4177,
+          0.2088
+        ],
+        "model_agreement": 0.9234
+      },
+      "sub_models": {
+        "microstructure": {
+          "estimate": 0.6950000000000001,
+          "variance": 0.03355038759689923,
+          "signals": {
+            "buying_pressure": 0.5,
+            "spread_pct": 0.015503875968992262,
+            "market_efficiency": 0.9224806201550387,
+            "log_volume": 5.395477826632823,
+            "volume_confirmation": 0.009000000000000001,
+            "tight_spread_confirm": 0.006000000000000001
+          },
+          "model": "microstructure"
+        },
+        "external_data": {
+          "estimate": 0.665,
+          "variance": 0.03,
+          "signals": {
+            "fear_greed_value": 12,
+            "fear_greed_class": "Extreme Fear",
+            "vix_current": 23.87,
+            "vix_regime": "elevated",
+            "vix_percentile": 0.21739130434782608,
+            "vix_mean_30d": 25.656521921572477,
+            "dxy": 100.186,
+            "dxy_trend": "strengthening",
+            "dxy_change_5d": -0.11982301023831975,
+            "n_news_headlines": 5,
+            "news_sources": [
+              "BBC",
+              "Reuters",
+              "Asia Society"
+            ],
+            "market_volume": 6247791.370497024,
+            "volume_signal": "high",
+            "market_liquidity": 260573.9696,
+            "liquidity_signal": "deep"
+          },
+          "adjustments": [
+            [
+              "fear_greed_contrarian",
+              0.02
+            ],
+            [
+              "high_volume_accuracy",
+              0
+            ]
+          ],
+          "model": "external_data"
+        },
+        "orderbook": {
+          "estimate": 0.6381482656819113,
+          "variance": 0.06,
+          "signals": {
+            "midpoint": 0.645,
+            "weighted_mid": 0.767339,
+            "spread": 0.01,
+            "imbalance": -0.44619,
+            "bid_depth": 1023583.0499999999,
+            "ask_depth": 2672927.6500000004,
+            "liquidity_score": 85,
+            "n_whale_bids": 3,
+            "n_whale_asks": 2,
+            "near_bid_vol": 204741.24,
+            "near_ask_vol": 172847.97,
+            "near_imbalance": 0.0845,
+            "adjustment": -0.0069
+          },
+          "model": "orderbook"
+        }
+      },
+      "timestamp": "2026-04-05T14:51:57.673534+00:00",
+      "strategy": {
+        "should_enter": false,
+        "regime": "neutral",
+        "filters": {
+          "pass": true,
+          "filters": {
+            "spread_sanity": {
+              "pass": true,
+              "value": 0.0154,
+              "threshold": 0.1
+            },
+            "liquidity": {
+              "pass": true,
+              "value": 260573.9696,
+              "threshold": 500
+            },
+            "volume": {
+              "pass": true,
+              "value": 248586.66424200003,
+              "threshold": 100
+            },
+            "model_agreement": {
+              "pass": true,
+              "value": 0.9234,
+              "threshold": 0.4
+            },
+            "edge_significance": {
+              "pass": "True",
+              "value": 0.0256,
+              "threshold": 0.02
+            },
+            "price_sanity": {
+              "pass": true,
+              "value": 0.645,
+              "threshold": [
+                0.05,
+                0.95
+              ]
+            },
+            "imbalance": {
+              "pass": true,
+              "value": 0.4462,
+              "threshold": 0.85
+            }
+          },
+          "failed_filters": [],
+          "n_passed": 7,
+          "n_total": 7
+        },
+        "sizing_adjusted": {
+          "size_dollars": 0,
+          "size_pct": 0,
+          "action": "NO_BET",
+          "reason": "Below minimum position size",
+          "kelly_raw": 0.013419,
+          "kelly_adjusted": 0.0044729999999999995,
+          "regime": "neutral",
+          "budget_category": "LOW"
+        },
+        "is_contrarian": false
+      }
+    },
+    {
+      "market": {
+        "id": "559653",
+        "question": "Will Alexandria Ocasio-Cortez win the 2028 Democratic presidential nomination?",
+        "current_price": 0.0795,
+        "spread": 0.001,
+        "volume_24h": 527330.9269130001,
+        "liquidity": 473327.08666
+      },
+      "prediction": {
+        "probability": 0.0593,
+        "raw_probability": 0.0593,
+        "std": 0.1118,
+        "ci_95": [
+          0,
+          0.2783
+        ],
+        "uncertainty": {
+          "mean": 0.0623,
+          "ci_95": [
+            0.0328,
+            0.1048
+          ],
+          "p_resolve_yes": 0.0,
+          "skewness": 0.0311
+        }
+      },
+      "edge": {
+        "edge": -0.0202,
+        "ev_per_dollar": -0.0202,
+        "edge_confidence": "LOW"
+      },
+      "sizing": {
+        "kelly_fraction": -0.00336,
+        "kelly_full": -0.021949,
+        "shrinkage_factor": 0.1531,
+        "action": "NO_BET",
+        "edge": -0.020204,
+        "expected_value": -0.020204,
+        "uncertainty_ratio": 5.5314
+      },
+      "ensemble": {
+        "n_models": 3,
+        "model_names": [
+          "microstructure",
+          "external_data",
+          "orderbook"
+        ],
+        "weights": [
+          0.3755,
+          0.4163,
+          0.2082
+        ],
+        "model_agreement": 0.8777
+      },
+      "sub_models": {
+        "microstructure": {
+          "estimate": 0.01,
+          "variance": 0.033257861635220126,
+          "signals": {
+            "buying_pressure": -0.5,
+            "spread_pct": 0.012578616352201269,
+            "market_efficiency": 0.9371069182389936,
+            "log_volume": 5.722083242588412,
+            "volume_confirmation": -0.025259999999999998,
+            "tight_spread_confirm": -0.01684
+          },
+          "model": "microstructure"
+        },
+        "external_data": {
+          "estimate": 0.0995,
+          "variance": 0.03,
+          "signals": {
+            "fear_greed_value": 12,
+            "fear_greed_class": "Extreme Fear",
+            "vix_current": 23.87,
+            "vix_regime": "elevated",
+            "vix_percentile": 0.21739130434782608,
+            "vix_mean_30d": 25.656521921572477,
+            "dxy": 100.186,
+            "dxy_trend": "strengthening",
+            "dxy_change_5d": -0.11982301023831975,
+            "n_news_headlines": 5,
+            "news_sources": [
+              "The Nation",
+              "The Hill",
+              "Pittsburgh Post-Gazette"
+            ],
+            "market_volume": 8560537.511950178,
+            "volume_signal": "high",
+            "market_liquidity": 473327.08666,
+            "liquidity_signal": "deep"
+          },
+          "adjustments": [
+            [
+              "fear_greed_contrarian",
+              0.02
+            ],
+            [
+              "high_volume_accuracy",
+              0
+            ]
+          ],
+          "model": "external_data"
+        },
+        "orderbook": {
+          "estimate": 0.0678229406051775,
+          "variance": 0.06,
+          "signals": {
+            "midpoint": 0.079,
+            "weighted_mid": 0.891823,
+            "spread": 0.002,
+            "imbalance": -0.774294,
+            "bid_depth": 1408458.9899999995,
+            "ask_depth": 11071995.490000004,
+            "liquidity_score": 100,
+            "n_whale_bids": 3,
+            "n_whale_asks": 8,
+            "near_bid_vol": 1408458.9899999995,
+            "near_ask_vol": 260243.30999999994,
+            "near_imbalance": 0.6881,
+            "adjustment": -0.0117
+          },
+          "model": "orderbook"
+        }
+      },
+      "timestamp": "2026-04-05T14:46:37.386964+00:00",
+      "strategy": {
+        "should_enter": false,
+        "regime": "neutral",
+        "filters": {
+          "pass": true,
+          "filters": {
+            "spread_sanity": {
+              "pass": true,
+              "value": 0.0125,
+              "threshold": 0.1
+            },
+            "liquidity": {
+              "pass": true,
+              "value": 473327.08666,
+              "threshold": 500
+            },
+            "volume": {
+              "pass": true,
+              "value": 527330.9269130001,
+              "threshold": 100
+            },
+            "model_agreement": {
+              "pass": true,
+              "value": 0.8777,
+              "threshold": 0.4
+            },
+            "edge_significance": {
+              "pass": "True",
+              "value": 0.0202,
+              "threshold": 0.02
+            },
+            "price_sanity": {
+              "pass": true,
+              "value": 0.0795,
+              "threshold": [
+                0.05,
+                0.95
+              ]
+            },
+            "imbalance": {
+              "pass": true,
+              "value": 0.7743,
+              "threshold": 0.85
+            }
+          },
+          "failed_filters": [],
+          "n_passed": 7,
+          "n_total": 7
+        },
+        "sizing_adjusted": {
+          "size_dollars": 0,
+          "size_pct": 0,
+          "action": "NO_BET",
+          "reason": "Below minimum position size",
+          "kelly_raw": -0.00336,
+          "kelly_adjusted": -0.00112,
+          "regime": "neutral",
+          "budget_category": "LOW"
+        },
+        "is_contrarian": false
+      }
+    }
+  ]
+}
