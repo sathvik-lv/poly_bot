@@ -7,10 +7,18 @@ Architecture:
     1. Market Microstructure Analyzer — bid/ask dynamics, volume patterns
     2. Statistical Time Series Models — HMM regime, GARCH vol, Hurst exponent
     3. Multi-Source Data Fusion — crypto, fear/greed, economic indicators
-    4. AI Semantic Analyzer — OpenRouter LLM for question understanding
-    5. Bayesian Ensemble — inverse-variance weighted combination
-    6. Calibration Layer — isotonic regression to debias
-    7. Kelly Sizing — uncertainty-adjusted position sizing
+    4. AI Semantic Analyzer — OpenRouter LLM with RAG news context
+    5. CLOB Orderbook Analyzer — real depth, imbalance, whale detection
+    6. Arbitrage Detector — complete-set mispricing (from ent0n29/polybot)
+    7. Bayesian Ensemble — inverse-variance weighted combination
+    8. Calibration Layer — isotonic regression to debias
+    9. Kelly Sizing — uncertainty-adjusted position sizing
+
+Integrations from reference repos:
+    - ent0n29/polybot: Complete-set arbitrage, orderbook analysis
+    - Polymarket/agents: RAG-style news context for AI predictions
+    - Polymarket/agent-skills: CLOB API patterns, market data queries
+    - discountry/polymarket-trading-bot: Gamma API, 15-min market patterns
 
 Each sub-model produces (estimate, variance). The ensemble optimally
 combines them, then calibration corrects systematic bias, and Kelly
@@ -30,6 +38,8 @@ from scipy import stats as sp_stats
 
 from src.market_client import MarketClient
 from src.data_sources import CryptoDataSource, FearGreedIndex, EconomicDataSource, NewsDataSource
+from src.clob_client import ClobClient, ArbitrageDetector, OrderbookAnalyzer
+from src.news_rag import NewsRAGEngine
 from src.statistics import (
     BetaBinomialModel,
     GaussianHMM,
@@ -318,7 +328,80 @@ class ExternalDataModel:
 
 
 # ===========================================================================
-# Sub-Model: AI Semantic Analysis (OpenRouter)
+# Sub-Model: CLOB Orderbook Analysis (from ent0n29/polybot patterns)
+# ===========================================================================
+
+class OrderbookModel:
+    """Extract edge signals from real CLOB orderbook data.
+
+    This goes deeper than the Gamma API microstructure signals by
+    analyzing actual order depth, whale activity, and imbalance.
+    """
+
+    def __init__(self):
+        self.clob = ClobClient()
+        self.analyzer = OrderbookAnalyzer(self.clob)
+
+    def analyze(self, token_id: Optional[str] = None) -> dict:
+        """Analyze CLOB orderbook for a token.
+
+        Returns estimate adjustment and variance based on orderbook signals.
+        """
+        if not token_id:
+            return {
+                "estimate": None, "variance": None,
+                "signals": {"no_token_id": True}, "model": "orderbook",
+            }
+
+        try:
+            analysis = self.analyzer.full_analysis(token_id)
+            if not analysis:
+                return {
+                    "estimate": None, "variance": None,
+                    "signals": {"fetch_failed": True}, "model": "orderbook",
+                }
+
+            signals = {
+                "midpoint": analysis.get("midpoint"),
+                "weighted_mid": analysis.get("weighted_mid"),
+                "spread": analysis.get("spread"),
+                "imbalance": analysis.get("imbalance"),
+                "bid_depth": analysis.get("bid_depth"),
+                "ask_depth": analysis.get("ask_depth"),
+                "liquidity_score": analysis.get("liquidity_score"),
+                "n_whale_bids": len(analysis.get("whale_bids", [])),
+                "n_whale_asks": len(analysis.get("whale_asks", [])),
+            }
+
+            # Use weighted midpoint as base estimate
+            estimate = analysis.get("weighted_mid") or analysis.get("midpoint")
+            if estimate is None:
+                return {"estimate": None, "variance": None, "signals": signals, "model": "orderbook"}
+
+            # Adjust based on imbalance (buy pressure = higher prob)
+            imbalance = analysis.get("imbalance", 0) or 0
+            estimate += imbalance * 0.02  # small directional nudge
+            estimate = float(np.clip(estimate, 0.01, 0.99))
+
+            # Variance inversely proportional to liquidity
+            liq_score = analysis.get("liquidity_score", 50)
+            variance = 0.04 * (1 - liq_score / 200)  # more liquid = less uncertainty
+
+            return {
+                "estimate": estimate,
+                "variance": max(variance, 0.002),
+                "signals": signals,
+                "model": "orderbook",
+            }
+        except Exception as e:
+            return {
+                "estimate": None, "variance": None,
+                "signals": {"error": str(e)}, "model": "orderbook",
+            }
+
+
+# ===========================================================================
+# Sub-Model: AI Semantic Analysis (OpenRouter + RAG Context)
 # ===========================================================================
 
 class AISemanticModel:
@@ -334,6 +417,7 @@ class AISemanticModel:
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
         self.model = model
         self.enabled = bool(self.api_key)
+        self.rag = NewsRAGEngine()
 
     def analyze(self, market: dict) -> dict:
         """Ask LLM to estimate probability for a market question.
@@ -352,12 +436,21 @@ class AISemanticModel:
         question = market.get("question", "")
         current_price = market.get("outcome_prices", {}).get("Yes", 0.5)
 
+        # RAG: Gather relevant news context
+        try:
+            rag_context = self.rag.gather_context(question, max_items=8)
+            context_text = rag_context.get("context_text", "")
+        except Exception:
+            context_text = ""
+
         prompt = f"""You are an expert superforecaster and prediction market analyst.
-Your calibration is excellent — when you say 70%, events happen 70% of the time.
+Your calibration is excellent -- when you say 70%, events happen 70% of the time.
 
 MARKET QUESTION: {question}
 
 CURRENT MARKET PRICE: {current_price} (this is the market's implied probability)
+
+{context_text}
 
 TODAY'S DATE: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
 
@@ -464,7 +557,9 @@ class PredictionEngine:
         self.microstructure = MicrostructureModel()
         self.time_series = TimeSeriesModel()
         self.external_data = ExternalDataModel()
+        self.orderbook_model = OrderbookModel()
         self.ai_model = AISemanticModel(api_key=openrouter_api_key, model=ai_model)
+        self.arbitrage = ArbitrageDetector()
         self.ensemble = EnsemblePredictor()
         self.mc = MonteCarloSimulator(n_simulations=30000, seed=None)
 
@@ -483,6 +578,7 @@ class PredictionEngine:
         market_data: Optional[dict] = None,
         price_history: Optional[list[float]] = None,
         time_remaining_frac: float = 0.5,
+        token_id: Optional[str] = None,
     ) -> dict:
         """Generate a full prediction for a market.
 
@@ -526,7 +622,13 @@ class PredictionEngine:
         ext_result = self.external_data.analyze(market_data, keywords)
         sub_results["external_data"] = ext_result
 
-        # 2d. AI semantic analysis
+        # 2d. CLOB orderbook analysis (from ent0n29/polybot + agent-skills)
+        if token_id:
+            ob_result = self.orderbook_model.analyze(token_id)
+            if ob_result["estimate"] is not None:
+                sub_results["orderbook"] = ob_result
+
+        # 2e. AI semantic analysis (with RAG context from Polymarket/agents)
         ai_result = self.ai_model.analyze(market_data)
         if ai_result["estimate"] is not None:
             sub_results["ai_semantic"] = ai_result
