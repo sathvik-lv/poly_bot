@@ -451,6 +451,389 @@ class USGSEarthquakeSource:
 
 
 # ===========================================================================
+# Volatility Index (VIX Proxy) — from CBOE via Yahoo Finance
+# ===========================================================================
+
+class VolatilityIndexSource:
+    """VIX and market volatility data — key regime signal.
+
+    Uses Yahoo Finance v8 API (free, no key) for VIX index data,
+    plus derived volatility from S&P 500 recent moves.
+    Adapted from calendar spread strategy's VIX-based capital allocation.
+    """
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    def get_vix(self) -> Optional[dict]:
+        """Get current VIX level and recent history."""
+        try:
+            resp = self.session.get(
+                "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX",
+                params={"interval": "1d", "range": "1mo"},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("chart", {}).get("result", [{}])[0]
+            meta = data.get("meta", {})
+            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+            closes = [c for c in closes if c is not None]
+            if not closes:
+                return None
+            import numpy as np
+            return {
+                "current": meta.get("regularMarketPrice", closes[-1]),
+                "previous_close": meta.get("previousClose"),
+                "mean_30d": float(np.mean(closes)),
+                "std_30d": float(np.std(closes)),
+                "min_30d": float(np.min(closes)),
+                "max_30d": float(np.max(closes)),
+                "percentile": float(np.searchsorted(np.sort(closes), closes[-1]) / len(closes)),
+                "regime": self._classify_vix(closes[-1]),
+            }
+        except Exception:
+            return None
+
+    def get_sp500_volatility(self) -> Optional[dict]:
+        """Get S&P 500 realized volatility as secondary VIX signal."""
+        try:
+            resp = self.session.get(
+                "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC",
+                params={"interval": "1d", "range": "3mo"},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("chart", {}).get("result", [{}])[0]
+            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+            closes = [c for c in closes if c is not None]
+            if len(closes) < 20:
+                return None
+            import numpy as np
+            prices = np.array(closes)
+            returns = np.diff(np.log(prices))
+            return {
+                "realized_vol_20d": float(np.std(returns[-20:]) * np.sqrt(252) * 100),
+                "realized_vol_60d": float(np.std(returns[-60:]) * np.sqrt(252) * 100) if len(returns) >= 60 else None,
+                "sp500_last": float(closes[-1]),
+                "sp500_change_1d": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
+                "sp500_change_5d": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
+                "sp500_change_20d": float((closes[-1] - closes[-20]) / closes[-20] * 100) if len(closes) >= 20 else None,
+            }
+        except Exception:
+            return None
+
+    @staticmethod
+    def _classify_vix(vix_value: float) -> str:
+        if vix_value < 14:
+            return "low_vol"
+        elif vix_value < 20:
+            return "normal"
+        elif vix_value < 25:
+            return "elevated"
+        elif vix_value < 35:
+            return "high"
+        else:
+            return "extreme"
+
+
+# ===========================================================================
+# Commodities Data (Oil, Gold, etc.)
+# ===========================================================================
+
+class CommoditiesSource:
+    """Oil, gold, and commodity prices via Yahoo Finance (free, no key).
+
+    Oil and gold prices affect geopolitical, economic, and inflation markets.
+    Adapted from calendar spread's use of macro indicators for regime detection.
+    """
+
+    SYMBOLS = {
+        "crude_oil": "CL=F",         # WTI Crude Oil Futures
+        "brent_oil": "BZ=F",         # Brent Crude Oil Futures
+        "gold": "GC=F",              # Gold Futures
+        "silver": "SI=F",            # Silver Futures
+        "natural_gas": "NG=F",       # Natural Gas Futures
+        "copper": "HG=F",            # Copper Futures
+    }
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    def get_commodity(self, name: str = "crude_oil") -> Optional[dict]:
+        """Get current price and recent history for a commodity."""
+        symbol = self.SYMBOLS.get(name, name)
+        try:
+            resp = self.session.get(
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+                params={"interval": "1d", "range": "1mo"},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("chart", {}).get("result", [{}])[0]
+            meta = data.get("meta", {})
+            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+            closes = [c for c in closes if c is not None]
+            if not closes:
+                return None
+            import numpy as np
+            return {
+                "commodity": name,
+                "price": meta.get("regularMarketPrice", closes[-1]),
+                "previous_close": meta.get("previousClose"),
+                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
+                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
+                "change_20d_pct": float((closes[-1] - closes[-20]) / closes[-20] * 100) if len(closes) >= 20 else None,
+                "high_30d": float(np.max(closes)),
+                "low_30d": float(np.min(closes)),
+                "volatility_30d": float(np.std(np.diff(np.log(np.array(closes) + 1e-10))) * np.sqrt(252) * 100),
+            }
+        except Exception:
+            return None
+
+    def get_all_commodities(self) -> dict:
+        """Get prices for all tracked commodities."""
+        results = {}
+        for name in self.SYMBOLS:
+            data = self.get_commodity(name)
+            if data:
+                results[name] = data
+        return results
+
+    def get_oil_gold_ratio(self) -> Optional[float]:
+        """Oil/Gold ratio — macro regime indicator."""
+        oil = self.get_commodity("crude_oil")
+        gold = self.get_commodity("gold")
+        if oil and gold and oil.get("price") and gold.get("price"):
+            return round(oil["price"] / gold["price"], 6)
+        return None
+
+
+# ===========================================================================
+# Forex / Currency Data
+# ===========================================================================
+
+class ForexSource:
+    """Currency exchange rates and DXY (Dollar Index) proxy.
+
+    DXY strength affects global markets, commodity prices, and
+    emerging market prediction markets.
+    """
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    def get_dxy(self) -> Optional[dict]:
+        """Get US Dollar Index (DXY) — key macro regime signal."""
+        try:
+            resp = self.session.get(
+                "https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB",
+                params={"interval": "1d", "range": "1mo"},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("chart", {}).get("result", [{}])[0]
+            meta = data.get("meta", {})
+            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+            closes = [c for c in closes if c is not None]
+            if not closes:
+                return None
+            import numpy as np
+            return {
+                "dxy": meta.get("regularMarketPrice", closes[-1]),
+                "previous_close": meta.get("previousClose"),
+                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
+                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
+                "mean_30d": float(np.mean(closes)),
+                "trend": "strengthening" if closes[-1] > np.mean(closes) else "weakening",
+            }
+        except Exception:
+            return None
+
+    def get_major_pairs(self) -> dict:
+        """Get major forex pairs vs USD."""
+        pairs = {
+            "EUR/USD": "EURUSD=X",
+            "GBP/USD": "GBPUSD=X",
+            "USD/JPY": "JPY=X",
+            "USD/CNY": "CNY=X",
+            "USD/INR": "INR=X",
+        }
+        results = {}
+        for name, symbol in pairs.items():
+            try:
+                resp = self.session.get(
+                    f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+                    params={"interval": "1d", "range": "5d"},
+                    timeout=10,
+                )
+                if resp.status_code != 200:
+                    continue
+                meta = resp.json().get("chart", {}).get("result", [{}])[0].get("meta", {})
+                price = meta.get("regularMarketPrice")
+                prev = meta.get("previousClose")
+                if price:
+                    results[name] = {
+                        "rate": price,
+                        "change_pct": round((price - prev) / prev * 100, 4) if prev else None,
+                    }
+            except Exception:
+                continue
+        return results
+
+
+# ===========================================================================
+# Stock Market Indices
+# ===========================================================================
+
+class StockIndexSource:
+    """Major stock indices — regime and sentiment signals.
+
+    Adapted from calendar spread strategy's use of NIFTY/BANKNIFTY
+    as underlying signals. Here we use global indices.
+    """
+
+    INDICES = {
+        "sp500": "%5EGSPC",
+        "nasdaq": "%5EIXIC",
+        "dow": "%5EDJI",
+        "russell2000": "%5ERUT",
+        "nifty50": "%5ENSEI",
+        "ftse100": "%5EFTSE",
+        "dax": "%5EGDAXI",
+        "nikkei225": "%5EN225",
+    }
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    def get_index(self, name: str = "sp500") -> Optional[dict]:
+        """Get current index level and recent performance."""
+        symbol = self.INDICES.get(name, name)
+        try:
+            resp = self.session.get(
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+                params={"interval": "1d", "range": "1mo"},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("chart", {}).get("result", [{}])[0]
+            meta = data.get("meta", {})
+            closes = data.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+            closes = [c for c in closes if c is not None]
+            if not closes:
+                return None
+            import numpy as np
+            return {
+                "index": name,
+                "price": meta.get("regularMarketPrice", closes[-1]),
+                "previous_close": meta.get("previousClose"),
+                "change_1d_pct": float((closes[-1] - closes[-2]) / closes[-2] * 100) if len(closes) >= 2 else None,
+                "change_5d_pct": float((closes[-1] - closes[-5]) / closes[-5] * 100) if len(closes) >= 5 else None,
+                "change_20d_pct": float((closes[-1] - closes[-20]) / closes[-20] * 100) if len(closes) >= 20 else None,
+                "above_20d_avg": closes[-1] > float(np.mean(closes)),
+            }
+        except Exception:
+            return None
+
+    def get_market_breadth(self) -> Optional[dict]:
+        """Compare multiple indices to gauge broad market health."""
+        results = {}
+        for name in ["sp500", "nasdaq", "dow", "russell2000"]:
+            data = self.get_index(name)
+            if data and data.get("change_5d_pct") is not None:
+                results[name] = data["change_5d_pct"]
+
+        if len(results) < 2:
+            return None
+
+        import numpy as np
+        changes = list(results.values())
+        return {
+            "indices": results,
+            "avg_change_5d": float(np.mean(changes)),
+            "breadth": "bullish" if all(c > 0 for c in changes) else "bearish" if all(c < 0 for c in changes) else "mixed",
+            "dispersion": float(np.std(changes)),
+        }
+
+
+# ===========================================================================
+# News Sentiment Sources (additional)
+# ===========================================================================
+
+class GNewsSource:
+    """Google News RSS — free, no key. Headline sentiment analysis."""
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    def search_headlines(self, query: str, max_results: int = 10) -> list[dict]:
+        """Search Google News for headlines related to a query."""
+        try:
+            import xml.etree.ElementTree as ET
+            url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+            resp = self.session.get(url, timeout=15)
+            if resp.status_code != 200:
+                return []
+            root = ET.fromstring(resp.content)
+            items = root.findall(".//item")
+            results = []
+            for item in items[:max_results]:
+                title = item.find("title")
+                pub_date = item.find("pubDate")
+                source = item.find("source")
+                results.append({
+                    "title": title.text if title is not None else "",
+                    "published": pub_date.text if pub_date is not None else "",
+                    "source": source.text if source is not None else "",
+                })
+            return results
+        except Exception:
+            return []
+
+
+class EventRegistrySource:
+    """NewsAPI.org-style event tracking via free Currents API."""
+
+    BASE_URL = "https://api.currentsapi.services/v1"
+
+    def __init__(self):
+        self.session = requests.Session()
+
+    def search_news(self, query: str, language: str = "en") -> list[dict]:
+        """Search recent news. Note: free tier has limits."""
+        try:
+            # Currents API free endpoint (no key for limited access)
+            resp = self.session.get(
+                f"{self.BASE_URL}/search",
+                params={"keywords": query, "language": language, "type": 1},
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return []
+            return [
+                {
+                    "title": n.get("title", ""),
+                    "description": n.get("description", "")[:200],
+                    "published": n.get("published", ""),
+                    "category": n.get("category", []),
+                }
+                for n in resp.json().get("news", [])[:10]
+            ]
+        except Exception:
+            return []
+
+
+# ===========================================================================
 # Cross-Validation Engine
 # ===========================================================================
 

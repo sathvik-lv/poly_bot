@@ -166,64 +166,69 @@ class TestGARCH:
 
 
 # ===========================================================================
-# Monte Carlo Simulator Tests
+# Analytical Uncertainty Tests (Deterministic — replaces Monte Carlo)
 # ===========================================================================
 
-class TestMonteCarloSimulator:
+class TestAnalyticalUncertainty:
 
     def test_mean_near_base_prob(self):
-        mc = MonteCarloSimulator(n_simulations=50000, seed=42)
-        result = mc.simulate_binary_outcome(
+        au = MonteCarloSimulator()  # alias for AnalyticalUncertainty
+        result = au.estimate_binary_outcome(
             base_prob=0.6, volatility=0.5, time_remaining_frac=0.5
         )
         assert abs(result["mean"] - 0.6) < 0.05
 
     def test_ci_contains_base_prob(self):
-        mc = MonteCarloSimulator(n_simulations=50000, seed=42)
-        result = mc.simulate_binary_outcome(
+        au = MonteCarloSimulator()
+        result = au.estimate_binary_outcome(
             base_prob=0.7, volatility=0.3, time_remaining_frac=0.3
         )
         assert result["ci_95"][0] < 0.7 < result["ci_95"][1]
 
     def test_higher_volatility_wider_ci(self):
-        mc = MonteCarloSimulator(n_simulations=30000, seed=42)
-        low_vol = mc.simulate_binary_outcome(0.5, 0.1, 0.5)
-        high_vol = mc.simulate_binary_outcome(0.5, 2.0, 0.5)
+        au = MonteCarloSimulator()
+        low_vol = au.estimate_binary_outcome(0.5, 0.1, 0.5)
+        high_vol = au.estimate_binary_outcome(0.5, 2.0, 0.5)
         low_width = low_vol["ci_95"][1] - low_vol["ci_95"][0]
         high_width = high_vol["ci_95"][1] - high_vol["ci_95"][0]
         assert high_width > low_width
 
-    def test_antithetic_reduces_variance(self):
-        """Antithetic variates should have lower variance than naive."""
-        mc1 = MonteCarloSimulator(n_simulations=10000, seed=42)
-        mc2 = MonteCarloSimulator(n_simulations=10000, seed=42)
-
-        # Run multiple times to check variance of estimates
-        estimates_anti = []
-        for s in range(10):
-            mc = MonteCarloSimulator(n_simulations=5000, seed=s)
-            r = mc.simulate_binary_outcome(0.5, 1.0, 0.5)
-            estimates_anti.append(r["mean"])
-        # Mean should be close to 0.5 with low variance
-        assert abs(np.mean(estimates_anti) - 0.5) < 0.05
+    def test_deterministic_same_inputs_same_output(self):
+        """No randomness — same inputs always produce identical results."""
+        au = MonteCarloSimulator()
+        r1 = au.estimate_binary_outcome(0.5, 1.0, 0.5)
+        r2 = au.estimate_binary_outcome(0.5, 1.0, 0.5)
+        assert r1["mean"] == r2["mean"]
+        assert r1["ci_95"] == r2["ci_95"]
+        assert r1["std"] == r2["std"]
 
     def test_extreme_probs_handled(self):
-        mc = MonteCarloSimulator(n_simulations=1000, seed=42)
-        # prob = 0 or 1 should return unchanged
-        r0 = mc.simulate_binary_outcome(0.0, 1.0, 0.5)
+        au = MonteCarloSimulator()
+        r0 = au.estimate_binary_outcome(0.0, 1.0, 0.5)
         assert r0["mean"] == 0.0
-        r1 = mc.simulate_binary_outcome(1.0, 1.0, 0.5)
+        r1 = au.estimate_binary_outcome(1.0, 1.0, 0.5)
         assert r1["mean"] == 1.0
 
     def test_correlated_markets(self):
-        mc = MonteCarloSimulator(n_simulations=10000, seed=42)
+        au = MonteCarloSimulator()
         corr = np.array([[1.0, 0.8], [0.8, 1.0]])
-        results = mc.simulate_correlated_markets(
+        results = au.estimate_correlated_markets(
             probs=[0.6, 0.4], correlation_matrix=corr,
             volatilities=[0.5, 0.5], time_remaining=0.5,
         )
         assert len(results) == 2
         assert all("mean" in r for r in results)
+
+    def test_p_resolve_yes_near_half_for_fair_coin(self):
+        au = MonteCarloSimulator()
+        result = au.estimate_binary_outcome(0.5, 0.5, 0.5)
+        assert abs(result["p_resolve_yes"] - 0.5) < 0.1
+
+    def test_all_keys_present(self):
+        au = MonteCarloSimulator()
+        result = au.estimate_binary_outcome(0.6, 0.5, 0.5)
+        for key in ["mean", "std", "ci_95", "ci_99", "p_resolve_yes", "skewness", "kurtosis", "var_95"]:
+            assert key in result, f"Missing key: {key}"
 
 
 # ===========================================================================

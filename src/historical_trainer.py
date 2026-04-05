@@ -36,6 +36,7 @@ from src.self_improver import (
     SelfCorrector,
 )
 from src.safeguard import Safeguard, ApproachManager
+from src.strategy_adapter import StrategyAdapter
 
 DATA_DIR = str(PROJECT_ROOT / "data")
 HISTORICAL_FILE = os.path.join(DATA_DIR, "historical_markets.jsonl")
@@ -227,11 +228,26 @@ class HistoricalDownloader:
 class Backtester:
     """Backtest prediction engine on historical data with safeguard checks."""
 
-    def __init__(self):
-        self.engine = PredictionEngine()
+    def __init__(self, equity: float = 10000.0):
+        # Load calibration data if available — critical for accurate predictions
+        cal_data = None
+        cal_path = os.path.join(DATA_DIR, "calibration.json")
+        if os.path.exists(cal_path):
+            try:
+                with open(cal_path) as f:
+                    cal_json = json.load(f)
+                if "x" in cal_json and "y" in cal_json:
+                    cal_data = (np.array(cal_json["x"]), np.array(cal_json["y"]))
+                    print(f"  Loaded calibration data: {len(cal_json['x'])} points")
+            except Exception:
+                pass
+
+        self.engine = PredictionEngine(total_equity=equity, calibration_data=cal_data, backtest_mode=True)
+        self.strategy = self.engine.strategy  # Calendar spread adapter
         self.auditor = CalibrationAuditor()
         self.safeguard = Safeguard()
         self.approach_mgr = ApproachManager()
+        self.equity = equity
         os.makedirs(DATA_DIR, exist_ok=True)
 
     def load_historical(self) -> list[dict]:
@@ -289,9 +305,25 @@ class Backtester:
                 market = markets[i]
                 try:
                     outcome = market["resolved_outcome"]
-                    np.random.seed(hash(market.get("id", str(i))) % 2**31)
-                    noise = np.random.normal(0, 0.15)
-                    sim_price = float(np.clip(outcome * 0.6 + 0.2 + noise, 0.05, 0.95))
+
+                    # Use ACTUAL stored market price — no fabricated data
+                    stored_price = market.get("last_trade_price")
+                    yes_price = market.get("outcome_prices", {}).get("Yes")
+
+                    # HONEST FILTER: Skip markets with post-resolution prices
+                    # Prices near 0 or 1 mean the market already resolved — predicting
+                    # these is cheating because the answer is in the price.
+                    price_to_use = stored_price if stored_price else yes_price
+                    if price_to_use is None:
+                        continue  # No price data at all — skip
+                    price_to_use = float(price_to_use)
+                    if price_to_use < 0.05 or price_to_use > 0.95:
+                        continue  # Post-resolution price — skip (would inflate metrics)
+
+                    sim_price = price_to_use
+                    stored_spread = market.get("spread") or 0.02
+                    stored_bid = market.get("best_bid") or (sim_price - stored_spread / 2)
+                    stored_ask = market.get("best_ask") or (sim_price + stored_spread / 2)
 
                     market_data = {
                         "id": market.get("id"),
@@ -299,12 +331,12 @@ class Backtester:
                         "outcomes": market.get("outcomes", ["Yes", "No"]),
                         "outcome_prices": {"Yes": sim_price, "No": 1 - sim_price},
                         "volume": market.get("volume"),
-                        "volume_24h": None,
+                        "volume_24h": market.get("volume"),
                         "liquidity": market.get("liquidity"),
                         "last_trade_price": sim_price,
-                        "best_bid": sim_price - 0.01,
-                        "best_ask": sim_price + 0.01,
-                        "spread": 0.02,
+                        "best_bid": stored_bid,
+                        "best_ask": stored_ask,
+                        "spread": stored_spread,
                         "end_date": market.get("end_date"),
                         "active": True, "closed": False,
                     }
@@ -356,13 +388,12 @@ class Backtester:
                 elif protection["action"] == "SWITCH_APPROACH":
                     print(f"    ** DEGRADING: {protection['details']}")
 
-                # Run self-improvement every 5 batches
-                if batch_num % 5 == 0 and len(resolved) >= 20:
-                    corrector = SelfCorrector(DATA_DIR)
-                    # Temporarily point corrector at backtest data
-                    corrector.tracker = tracker
-                    improvement = corrector.run_improvement_cycle()
-                    print(f"    Self-improvement: Health={improvement.get('health_score', 0)}/100")
+                # Self-improver DISABLED — it overwrites calibration/weights
+                # with data from broken models. We tune manually until models are solid.
+                # if batch_num % 5 == 0 and len(resolved) >= 20:
+                #     corrector = SelfCorrector(DATA_DIR)
+                #     corrector.tracker = tracker
+                #     improvement = corrector.run_improvement_cycle()
 
             # Checkpoint
             self._save_checkpoint({"last_idx": batch_end, "approach": current_approach, "batch": batch_num})
@@ -384,6 +415,256 @@ class Backtester:
             "n_batches": batch_num,
             "final_approach": current_approach,
             "audit": final_audit,
+        }
+
+    def run_strategy_backtest(self, batch_size: int = 50) -> dict:
+        """Backtest with strategy adapter — compares baseline vs strategy-filtered.
+
+        Runs every market through the prediction engine, then applies
+        the calendar spread strategy adapter (entry gates, 1/3 Kelly,
+        regime allocation) to see how filtering and sizing affect ROI.
+
+        Returns A/B comparison: baseline (bet everything) vs strategy (filtered).
+        """
+        markets = self.load_historical()
+        if not markets:
+            return {"error": "No historical data"}
+
+        total = len(markets)
+        print(f"\n{'=' * 70}")
+        print(f"  STRATEGY BACKTEST: Baseline vs Calendar-Spread-Adapted")
+        print(f"  Markets: {total} | Equity: ${self.equity:,.0f}")
+        print(f"  Strategy: 1/3 Kelly | 60% max deploy | 7 entry filters")
+        print(f"{'=' * 70}")
+
+        # Track both approaches
+        baseline = {"trades": 0, "wins": 0, "pnl": 0.0, "bets": []}
+        strategy = {"trades": 0, "wins": 0, "pnl": 0.0, "bets": [],
+                     "filtered_out": 0, "filter_reasons": {}}
+
+        equity_baseline = self.equity
+        equity_strategy = self.equity
+        equity_curve_baseline = [self.equity]
+        equity_curve_strategy = [self.equity]
+
+        batch_num = 0
+        for batch_start in range(0, total, batch_size):
+            batch_end = min(batch_start + batch_size, total)
+            batch_num += 1
+
+            for i in range(batch_start, batch_end):
+                market = markets[i]
+                try:
+                    outcome = market["resolved_outcome"]
+
+                    # HONEST FILTER: Only use pre-resolution prices
+                    stored_price = market.get("last_trade_price")
+                    yes_price = market.get("outcome_prices", {}).get("Yes")
+                    price_to_use = stored_price if stored_price else yes_price
+                    if price_to_use is None:
+                        continue
+                    price_to_use = float(price_to_use)
+                    if price_to_use < 0.05 or price_to_use > 0.95:
+                        continue  # Post-resolution — skip
+
+                    sim_price = price_to_use
+                    stored_spread = market.get("spread") or 0.02
+                    stored_bid = market.get("best_bid") or (sim_price - stored_spread / 2)
+                    stored_ask = market.get("best_ask") or (sim_price + stored_spread / 2)
+
+                    market_data = {
+                        "id": market.get("id"),
+                        "question": market.get("question", ""),
+                        "outcomes": market.get("outcomes", ["Yes", "No"]),
+                        "outcome_prices": {"Yes": sim_price, "No": 1 - sim_price},
+                        "volume": market.get("volume"),
+                        "volume_24h": market.get("volume") or 500,
+                        "liquidity": market.get("liquidity") or 1000,
+                        "last_trade_price": sim_price,
+                        "best_bid": stored_bid,
+                        "best_ask": stored_ask,
+                        "spread": stored_spread,
+                        "end_date": market.get("end_date"),
+                        "active": True, "closed": False,
+                    }
+
+                    prediction = self.engine.predict(market_data=market_data, time_remaining_frac=0.5)
+                    edge = prediction["edge"]["edge"]
+                    prob = prediction["prediction"]["probability"]
+                    kelly = prediction["sizing"]["kelly_fraction"]
+
+                    # === BASELINE: bet on everything with positive edge ===
+                    if abs(edge) > 0.005:
+                        bet_size_base = min(abs(kelly) * equity_baseline, equity_baseline * 0.25)
+                        if bet_size_base > 0:
+                            baseline["trades"] += 1
+                            if edge > 0:
+                                if outcome == 1:
+                                    profit = bet_size_base * (1 - sim_price) / sim_price
+                                    baseline["wins"] += 1
+                                else:
+                                    profit = -bet_size_base
+                            else:
+                                if outcome == 0:
+                                    profit = bet_size_base * sim_price / (1 - sim_price)
+                                    baseline["wins"] += 1
+                                else:
+                                    profit = -bet_size_base
+
+                            baseline["pnl"] += profit
+                            equity_baseline += profit
+                            equity_baseline = max(equity_baseline, 100)  # floor
+
+                    # === STRATEGY: apply calendar spread adapter ===
+                    strat_eval = prediction.get("strategy", {})
+                    should_enter = strat_eval.get("should_enter", False)
+
+                    if should_enter and abs(edge) > 0.005:
+                        sizing = strat_eval.get("sizing_adjusted", {})
+                        bet_size_strat = sizing.get("size_dollars", 0)
+                        # Scale to current equity
+                        size_pct = sizing.get("size_pct", 0)
+                        bet_size_strat = size_pct * equity_strategy
+
+                        if bet_size_strat > 0:
+                            strategy["trades"] += 1
+                            if edge > 0:
+                                if outcome == 1:
+                                    profit = bet_size_strat * (1 - sim_price) / sim_price
+                                    strategy["wins"] += 1
+                                else:
+                                    profit = -bet_size_strat
+                            else:
+                                if outcome == 0:
+                                    profit = bet_size_strat * sim_price / (1 - sim_price)
+                                    strategy["wins"] += 1
+                                else:
+                                    profit = -bet_size_strat
+
+                            strategy["pnl"] += profit
+                            equity_strategy += profit
+                            equity_strategy = max(equity_strategy, 100)
+
+                            # Track model outcomes for WR x payoff optimization
+                            for model_name in prediction.get("ensemble", {}).get("model_names", []):
+                                sub = prediction.get("sub_models", {}).get(model_name, {})
+                                if sub.get("estimate") is not None:
+                                    self.strategy.record_model_outcome(
+                                        model_name, sub["estimate"], sim_price, int(outcome)
+                                    )
+                    else:
+                        strategy["filtered_out"] += 1
+                        if not should_enter:
+                            failed = strat_eval.get("filters", {}).get("failed_filters", ["unknown"])
+                            for f in failed:
+                                strategy["filter_reasons"][f] = strategy["filter_reasons"].get(f, 0) + 1
+
+                except Exception:
+                    continue
+
+            equity_curve_baseline.append(equity_baseline)
+            equity_curve_strategy.append(equity_strategy)
+
+            # Progress
+            if batch_num % 20 == 0 or batch_end == total:
+                b_wr = baseline["wins"] / max(baseline["trades"], 1) * 100
+                s_wr = strategy["wins"] / max(strategy["trades"], 1) * 100
+                print(f"  Batch {batch_num:>4} | "
+                      f"Base: ${equity_baseline:>10,.0f} ({b_wr:.0f}% WR, {baseline['trades']} trades) | "
+                      f"Strat: ${equity_strategy:>10,.0f} ({s_wr:.0f}% WR, {strategy['trades']} trades)")
+
+        # === FINAL REPORT ===
+        print(f"\n{'=' * 70}")
+        print(f"  STRATEGY BACKTEST RESULTS")
+        print(f"{'=' * 70}")
+
+        b_wr = baseline["wins"] / max(baseline["trades"], 1)
+        s_wr = strategy["wins"] / max(strategy["trades"], 1)
+        b_roi = (equity_baseline - self.equity) / self.equity
+        s_roi = (equity_strategy - self.equity) / self.equity
+
+        print(f"\n  {'Metric':<30} {'Baseline':>15} {'Strategy':>15} {'Delta':>12}")
+        print(f"  {'-'*30} {'-'*15} {'-'*15} {'-'*12}")
+        print(f"  {'Starting Equity':<30} {'${:,.0f}'.format(self.equity):>15} {'${:,.0f}'.format(self.equity):>15}")
+        print(f"  {'Final Equity':<30} {'${:,.0f}'.format(equity_baseline):>15} {'${:,.0f}'.format(equity_strategy):>15} "
+              f"{'${:+,.0f}'.format(equity_strategy - equity_baseline):>12}")
+        print(f"  {'Total Return':<30} {b_roi:>14.1%} {s_roi:>14.1%} {s_roi - b_roi:>+11.1%}")
+        print(f"  {'Total Trades':<30} {baseline['trades']:>15,} {strategy['trades']:>15,} "
+              f"{strategy['trades'] - baseline['trades']:>+12,}")
+        print(f"  {'Win Rate':<30} {b_wr:>14.1%} {s_wr:>14.1%} {s_wr - b_wr:>+11.1%}")
+        print(f"  {'Filtered Out':<30} {'N/A':>15} {strategy['filtered_out']:>15,}")
+        print(f"  {'Avg Bet (Base)':<30} {'${:,.0f}'.format(abs(baseline['pnl']) / max(baseline['trades'], 1)):>15}")
+        print(f"  {'Kelly Mode':<30} {'Full Kelly':>15} {'1/3 Kelly':>15}")
+        print(f"  {'Max Deploy':<30} {'25% cap':>15} {'60% total cap':>15}")
+
+        # Filter breakdown
+        if strategy["filter_reasons"]:
+            print(f"\n  Entry Filter Rejection Breakdown:")
+            for reason, count in sorted(strategy["filter_reasons"].items(), key=lambda x: -x[1]):
+                print(f"    {reason:<25} {count:>6} ({count/max(strategy['filtered_out'],1)*100:.0f}%)")
+
+        # Max drawdown
+        def max_drawdown(curve):
+            peak = curve[0]
+            max_dd = 0
+            for v in curve:
+                if v > peak:
+                    peak = v
+                dd = (peak - v) / peak
+                if dd > max_dd:
+                    max_dd = dd
+            return max_dd
+
+        b_dd = max_drawdown(equity_curve_baseline)
+        s_dd = max_drawdown(equity_curve_strategy)
+        print(f"\n  {'Max Drawdown':<30} {b_dd:>14.1%} {s_dd:>14.1%} {s_dd - b_dd:>+11.1%}")
+
+        # Sharpe-like ratio (return / volatility)
+        b_returns = [(equity_curve_baseline[i+1] - equity_curve_baseline[i]) / max(equity_curve_baseline[i], 1)
+                     for i in range(len(equity_curve_baseline) - 1)]
+        s_returns = [(equity_curve_strategy[i+1] - equity_curve_strategy[i]) / max(equity_curve_strategy[i], 1)
+                     for i in range(len(equity_curve_strategy) - 1)]
+
+        b_sharpe = np.mean(b_returns) / max(np.std(b_returns), 1e-6)
+        s_sharpe = np.mean(s_returns) / max(np.std(s_returns), 1e-6)
+        print(f"  {'Sharpe Ratio (batch)':<30} {b_sharpe:>14.3f} {s_sharpe:>14.3f} {s_sharpe - b_sharpe:>+11.3f}")
+
+        # Model performance report from WR x payoff allocator
+        model_report = self.strategy.wr_allocator.get_model_report()
+        if model_report:
+            print(f"\n  Sub-Model Performance (Calendar-Style WR x Payoff Table):")
+            print(f"  {'Model':<20} {'Preds':>6} {'WR':>7} {'AvgWin':>8} {'AvgLoss':>8} {'Payoff':>7} {'Kelly%':>7}")
+            print(f"  {'-'*20} {'-'*6} {'-'*7} {'-'*8} {'-'*8} {'-'*7} {'-'*7}")
+            for m in model_report:
+                print(f"  {m['model']:<20} {m['predictions']:>6} {m['win_rate']:>6.1%} "
+                      f"{m['avg_payoff']:>8.4f} {m['avg_risk']:>8.4f} {m['payoff_ratio']:>6.2f}x {m['kelly_pct']:>6.1f}%")
+
+        # Git commit
+        self._git_commit(
+            f"strategy-backtest: Base ROI={b_roi:.1%} vs Strategy ROI={s_roi:.1%} | "
+            f"Base WR={b_wr:.1%} vs Strat WR={s_wr:.1%} | "
+            f"Filtered={strategy['filtered_out']}"
+        )
+
+        return {
+            "baseline": {
+                "equity": equity_baseline, "trades": baseline["trades"],
+                "win_rate": b_wr, "roi": b_roi, "max_drawdown": b_dd,
+                "sharpe": b_sharpe,
+            },
+            "strategy": {
+                "equity": equity_strategy, "trades": strategy["trades"],
+                "win_rate": s_wr, "roi": s_roi, "max_drawdown": s_dd,
+                "sharpe": s_sharpe, "filtered_out": strategy["filtered_out"],
+            },
+            "improvement": {
+                "roi_delta": s_roi - b_roi,
+                "wr_delta": s_wr - b_wr,
+                "dd_delta": s_dd - b_dd,
+                "sharpe_delta": s_sharpe - b_sharpe,
+                "trade_reduction": baseline["trades"] - strategy["trades"],
+            },
+            "model_report": model_report,
         }
 
     def _load_checkpoint(self) -> dict:
@@ -436,28 +717,9 @@ class HistoricalTrainer:
             audit = result["audit"]
             self._print_audit(audit, result)
 
-        # Step 3: Final self-improvement
-        print("\n[3/3] Final self-improvement cycle...")
-        corrector = SelfCorrector(DATA_DIR)
-        # Copy backtest data to main predictions
-        bt_tracker = PredictionTracker(BACKTEST_FILE)
-        resolved = bt_tracker.get_resolved_predictions()
-        if resolved:
-            main_path = os.path.join(DATA_DIR, "predictions.jsonl")
-            with open(main_path, "w") as f:
-                for p in resolved:
-                    f.write(json.dumps(p) + "\n")
-
-            improvement = corrector.run_improvement_cycle()
-            print(f"  Health Score: {improvement.get('health_score', 0)}/100")
-            for rec in improvement.get("recommendations", [])[:5]:
-                print(f"    - {rec}")
-
-            weights = improvement.get("optimized_weights", {}).get("weights", {})
-            if weights:
-                print(f"\n  Optimized Model Weights:")
-                for model, w in sorted(weights.items(), key=lambda x: -x[1]):
-                    print(f"    {model:25s} {w:.4f} {'#' * int(w * 40)}")
+        # Step 3: Self-improvement DISABLED — manual tuning until models are solid
+        print("\n[3/3] Self-improvement DISABLED (manual tuning mode)")
+        print("  Skipping auto weight/calibration overwrite to protect manual fixes.")
 
         # Git commit final state
         self._git_commit(
@@ -549,7 +811,9 @@ def main():
     parser.add_argument("--download", action="store_true", help="Download only")
     parser.add_argument("--train", action="store_true", help="Train on existing data only")
     parser.add_argument("--report", action="store_true", help="Show progression report")
+    parser.add_argument("--strategy", action="store_true", help="Run strategy A/B backtest (baseline vs calendar-adapted)")
     parser.add_argument("--max-markets", type=int, default=1000, help="Max markets to download")
+    parser.add_argument("--equity", type=float, default=10000.0, help="Starting equity for strategy backtest")
     args = parser.parse_args()
 
     trainer = HistoricalTrainer()
@@ -560,6 +824,9 @@ def main():
         trainer.backtester.run_backtest()
     elif args.report:
         trainer.show_report()
+    elif args.strategy:
+        backtester = Backtester(equity=args.equity)
+        backtester.run_strategy_backtest()
     else:
         trainer.run_full_pipeline(max_markets=args.max_markets)
 
