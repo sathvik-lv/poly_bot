@@ -43,16 +43,22 @@ GAMMA_API = "https://gamma-api.polymarket.com"
 # =========================================================
 
 class FinancialData:
-    """Pull real-time financial data from free APIs.
+    """Pull real-time financial data from free APIs — deep fallback chain.
 
     Sources:
     - Binance: BTC, ETH, crypto (free, no key)
-    - Twelve Data: Stocks, forex, commodities (free tier: 800 req/day, no key for basic)
-    - Alpha Vantage: Stocks, forex (free tier: 25 req/day — backup)
-    - FRED (St. Louis Fed): Yields, VIX, economic data (free, no key)
+    - Twelve Data: Stocks, forex, commodities (free: 800 req/day)
+    - Financial Modeling Prep: Stocks, commodities, forex (free: 250 req/day)
+    - Alpha Vantage: Stocks, forex (free: 25 req/day — last resort)
+    - FRED (St. Louis Fed): Yields, VIX, S&P 500, oil (free, no key)
     - metals.dev: Gold/silver (free, no key)
     - CoinGecko: Crypto backup
     - Alternative.me: Fear & Greed
+
+    Optional env vars for premium tiers:
+    - FMP_API_KEY: Financial Modeling Prep (get free at financialmodelingprep.com)
+    - ALPHA_VANTAGE_KEY: Alpha Vantage (get free at alphavantage.co)
+    - MARKETSTACK_KEY: Marketstack (get free at marketstack.com)
     """
 
     def __init__(self):
@@ -79,8 +85,34 @@ class FinancialData:
     def get_oil(self) -> dict:
         return self._fetch_with_fallbacks("oil", [
             self._oil_from_twelvedata,
+            self._oil_from_fmp,
+            self._oil_from_fred,
             self._oil_from_metals_api,
         ])
+
+    def _oil_from_fmp(self) -> dict:
+        fmp_key = os.environ.get("FMP_API_KEY", "demo")
+        r = self.session.get(
+            f"https://financialmodelingprep.com/api/v3/historical-price-full/CLUSD",
+            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+        )
+        if r.status_code != 200:
+            return {}
+        historical = r.json().get("historical", [])
+        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        return self._build_data(closes) if closes else {}
+
+    def _oil_from_fred(self) -> dict:
+        r = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+            "series_id": "DCOILWTICO", "api_key": "DEMO_KEY",
+            "file_type": "json", "sort_order": "desc", "limit": 30,
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        obs = r.json().get("observations", [])
+        closes = [float(o["value"]) for o in reversed(obs)
+                  if o.get("value") and o["value"] != "."]
+        return self._build_data(closes) if closes else {}
 
     def _oil_from_twelvedata(self) -> dict:
         r = self.session.get("https://api.twelvedata.com/time_series", params={
@@ -111,7 +143,20 @@ class FinancialData:
         return self._fetch_with_fallbacks("gold", [
             self._gold_from_metals_dev,
             self._gold_from_twelvedata,
+            self._gold_from_fmp,
         ])
+
+    def _gold_from_fmp(self) -> dict:
+        fmp_key = os.environ.get("FMP_API_KEY", "demo")
+        r = self.session.get(
+            f"https://financialmodelingprep.com/api/v3/historical-price-full/GCUSD",
+            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+        )
+        if r.status_code != 200:
+            return {}
+        historical = r.json().get("historical", [])
+        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        return self._build_data(closes) if closes else {}
 
     def _gold_from_metals_dev(self) -> dict:
         r = self.session.get("https://api.metals.dev/v1/latest", params={
@@ -217,6 +262,9 @@ class FinancialData:
     def get_sp500(self) -> dict:
         return self._fetch_with_fallbacks("sp500", [
             self._sp500_from_twelvedata,
+            self._sp500_from_fmp,
+            self._sp500_from_av,
+            self._sp500_from_fred,
         ])
 
     def _sp500_from_twelvedata(self) -> dict:
@@ -230,6 +278,46 @@ class FinancialData:
             return {}
         closes = [float(v["close"]) for v in reversed(values) if v.get("close")]
         return self._build_data(closes)
+
+    def _sp500_from_fmp(self) -> dict:
+        """Financial Modeling Prep (250 calls/day free)."""
+        fmp_key = os.environ.get("FMP_API_KEY", "demo")
+        r = self.session.get(
+            f"https://financialmodelingprep.com/api/v3/historical-price-full/^GSPC",
+            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+        )
+        if r.status_code != 200:
+            return {}
+        historical = r.json().get("historical", [])
+        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        return self._build_data(closes) if closes else {}
+
+    def _sp500_from_av(self) -> dict:
+        """Alpha Vantage SPY ETF as S&P proxy (25 calls/day free)."""
+        av_key = os.environ.get("ALPHA_VANTAGE_KEY", "demo")
+        r = self.session.get("https://www.alphavantage.co/query", params={
+            "function": "TIME_SERIES_DAILY", "symbol": "SPY",
+            "outputsize": "compact", "apikey": av_key,
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        ts = r.json().get("Time Series (Daily)", {})
+        sorted_dates = sorted(ts.keys())[-30:]
+        closes = [float(ts[d]["4. close"]) for d in sorted_dates]
+        return self._build_data(closes) if closes else {}
+
+    def _sp500_from_fred(self) -> dict:
+        """FRED S&P 500 index (free)."""
+        r = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+            "series_id": "SP500", "api_key": "DEMO_KEY",
+            "file_type": "json", "sort_order": "desc", "limit": 30,
+        }, timeout=10)
+        if r.status_code != 200:
+            return {}
+        obs = r.json().get("observations", [])
+        closes = [float(o["value"]) for o in reversed(obs)
+                  if o.get("value") and o["value"] != "."]
+        return self._build_data(closes) if closes else {}
 
     # --- BTC ---
     def get_btc(self) -> dict:

@@ -6,6 +6,7 @@ Sources: CoinGecko, CoinCap, Coinpaprika, Fear & Greed Index,
          USGS Earthquakes, WHO disease data, exchangerate.host
 """
 
+import os
 import requests
 from datetime import datetime, timezone
 from typing import Optional
@@ -671,10 +672,11 @@ class CommoditiesSource:
 # ===========================================================================
 
 class ForexSource:
-    """Currency exchange rates and DXY proxy — multi-source (no Yahoo).
+    """Currency exchange rates and DXY proxy — multi-source.
 
     Sources:
     - Twelve Data: DXY index + forex pairs — free tier (800/day)
+    - Alpha Vantage: Forex pairs — free tier (25/day)
     - exchangerate.host: Forex rates — free, no key
     - FRED: DXY proxy via trade-weighted USD index (DTWEXBGS) — free
     """
@@ -688,9 +690,19 @@ class ForexSource:
         "USD/INR": "USD/INR",
     }
 
+    # Alpha Vantage forex mapping (from_currency, to_currency)
+    AV_PAIRS = {
+        "EUR/USD": ("EUR", "USD"),
+        "GBP/USD": ("GBP", "USD"),
+        "USD/JPY": ("USD", "JPY"),
+        "USD/CNY": ("USD", "CNY"),
+        "USD/INR": ("USD", "INR"),
+    }
+
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
+        self._av_key = os.environ.get("ALPHA_VANTAGE_KEY", "demo")
 
     def _twelvedata_series(self, symbol: str, outputsize: int = 30) -> list:
         try:
@@ -703,6 +715,22 @@ class ForexSource:
             return [float(v["close"]) for v in reversed(values) if v.get("close")]
         except Exception:
             return []
+
+    def _av_forex_rate(self, from_curr: str, to_curr: str) -> Optional[float]:
+        """Alpha Vantage currency exchange rate (25 calls/day free)."""
+        try:
+            resp = self.session.get("https://www.alphavantage.co/query", params={
+                "function": "CURRENCY_EXCHANGE_RATE",
+                "from_currency": from_curr, "to_currency": to_curr,
+                "apikey": self._av_key,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return None
+            data = resp.json().get("Realtime Currency Exchange Rate", {})
+            rate = data.get("5. Exchange Rate")
+            return float(rate) if rate else None
+        except Exception:
+            return None
 
     def get_dxy(self) -> Optional[dict]:
         """Get US Dollar Index (DXY) — key macro regime signal."""
@@ -723,6 +751,10 @@ class ForexSource:
             except Exception:
                 pass
 
+        # Fallback: FMP DXY
+        if not closes:
+            closes = self._fmp_series("DX-Y.NYB")
+
         if not closes:
             return None
 
@@ -739,6 +771,21 @@ class ForexSource:
         result["trend"] = "strengthening" if closes[-1] > np.mean(closes) else "weakening"
         return result
 
+    def _fmp_series(self, symbol: str) -> list:
+        """Financial Modeling Prep historical prices (250 calls/day free)."""
+        fmp_key = os.environ.get("FMP_API_KEY", "demo")
+        try:
+            resp = self.session.get(
+                f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}",
+                params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+            )
+            if resp.status_code != 200:
+                return []
+            historical = resp.json().get("historical", [])
+            return [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        except Exception:
+            return []
+
     def get_major_pairs(self) -> dict:
         """Get major forex pairs vs USD."""
         results = {}
@@ -752,7 +799,15 @@ class ForexSource:
                     "change_pct": round((closes[-1] - closes[-2]) / closes[-2] * 100, 4) if len(closes) >= 2 else None,
                 }
 
-        # Fallback: exchangerate.host (if Twelve Data rate-limited)
+        # Fallback 1: Alpha Vantage (if Twelve Data rate-limited)
+        if len(results) < 3:
+            for name, (from_c, to_c) in self.AV_PAIRS.items():
+                if name not in results:
+                    rate = self._av_forex_rate(from_c, to_c)
+                    if rate:
+                        results[name] = {"rate": rate, "change_pct": None}
+
+        # Fallback 2: exchangerate.host
         if len(results) < 3:
             try:
                 resp = self.session.get(
@@ -766,11 +821,28 @@ class ForexSource:
                     for curr, pair_name in mapping.items():
                         if pair_name not in results and curr in rates:
                             rate = rates[curr]
-                            # EUR and GBP are quoted as 1/rate (USD per unit)
                             if curr in ("EUR", "GBP"):
                                 rate = round(1.0 / rate, 6) if rate else None
                             if rate:
                                 results[pair_name] = {"rate": rate, "change_pct": None}
+            except Exception:
+                pass
+
+        # Fallback 3: FMP forex
+        if len(results) < 3:
+            fmp_key = os.environ.get("FMP_API_KEY", "demo")
+            try:
+                resp = self.session.get(
+                    "https://financialmodelingprep.com/api/v3/fx",
+                    params={"apikey": fmp_key}, timeout=10,
+                )
+                if resp.status_code == 200:
+                    fmp_map = {"EUR/USD": "EUR/USD", "GBP/USD": "GBP/USD", "USD/JPY": "USD/JPY",
+                               "USD/CNY": "USD/CNY", "USD/INR": "USD/INR"}
+                    for fx in resp.json():
+                        ticker = fx.get("ticker", "")
+                        if ticker in fmp_map and fmp_map[ticker] not in results:
+                            results[fmp_map[ticker]] = {"rate": float(fx["ask"]), "change_pct": None}
             except Exception:
                 pass
 
@@ -782,12 +854,14 @@ class ForexSource:
 # ===========================================================================
 
 class StockIndexSource:
-    """Major stock indices — multi-source (no Yahoo).
+    """Major stock indices — multi-source with deep fallback chain.
 
     Sources:
-    - Twelve Data: SPX, IXIC, DJI, RUT, NIFTY, FTSE, DAX, N225 — free tier
-    - Marketstack: 1000 calls/month fallback — free tier (needs key)
-    - Financial Modeling Prep: 250 calls/day fallback — free tier (needs key)
+    - Twelve Data: SPX, IXIC, DJI, RUT, global indices — free tier (800/day)
+    - Financial Modeling Prep: ^GSPC, ^IXIC, etc. — free tier (250/day)
+    - Alpha Vantage: SPY, QQQ ETFs as index proxy — free tier (25/day)
+    - Marketstack: Global indices — free tier (1000/month, needs key)
+    - FRED: SP500, NASDAQCOM — free
     """
 
     # Twelve Data index symbols
@@ -800,6 +874,42 @@ class StockIndexSource:
         "ftse100": "FTSE 100",
         "dax": "DAX",
         "nikkei225": "N225",
+    }
+
+    # FMP symbols
+    FMP_INDICES = {
+        "sp500": "^GSPC",
+        "nasdaq": "^IXIC",
+        "dow": "^DJI",
+        "russell2000": "^RUT",
+        "nifty50": "^NSEI",
+        "ftse100": "^FTSE",
+        "dax": "^GDAXI",
+        "nikkei225": "^N225",
+    }
+
+    # Alpha Vantage: use ETF proxies since indices need premium
+    AV_PROXIES = {
+        "sp500": "SPY",
+        "nasdaq": "QQQ",
+        "dow": "DIA",
+        "russell2000": "IWM",
+    }
+
+    # Marketstack symbols
+    MSTACK_INDICES = {
+        "sp500": "SPX.INDX",
+        "nasdaq": "IXIC.INDX",
+        "dow": "DJI.INDX",
+        "ftse100": "UKX.INDX",
+        "dax": "DAX.INDX",
+        "nikkei225": "NI225.INDX",
+    }
+
+    # FRED series
+    FRED_INDICES = {
+        "sp500": "SP500",
+        "nasdaq": "NASDAQCOM",
     }
 
     def __init__(self):
@@ -818,38 +928,88 @@ class StockIndexSource:
         except Exception:
             return []
 
+    def _fmp_series(self, symbol: str) -> list:
+        """Financial Modeling Prep historical prices (250 calls/day free)."""
+        fmp_key = os.environ.get("FMP_API_KEY", "demo")
+        try:
+            resp = self.session.get(
+                f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}",
+                params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+            )
+            if resp.status_code != 200:
+                return []
+            historical = resp.json().get("historical", [])
+            return [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        except Exception:
+            return []
+
+    def _av_series(self, symbol: str) -> list:
+        """Alpha Vantage daily series (25 calls/day free)."""
+        av_key = os.environ.get("ALPHA_VANTAGE_KEY", "demo")
+        try:
+            resp = self.session.get("https://www.alphavantage.co/query", params={
+                "function": "TIME_SERIES_DAILY",
+                "symbol": symbol, "outputsize": "compact", "apikey": av_key,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            ts = resp.json().get("Time Series (Daily)", {})
+            sorted_dates = sorted(ts.keys())[-30:]
+            return [float(ts[d]["4. close"]) for d in sorted_dates]
+        except Exception:
+            return []
+
+    def _marketstack_series(self, symbol: str) -> list:
+        """Marketstack EOD data (1000 calls/month free)."""
+        ms_key = os.environ.get("MARKETSTACK_KEY")
+        if not ms_key:
+            return []
+        try:
+            resp = self.session.get("http://api.marketstack.com/v1/eod", params={
+                "access_key": ms_key, "symbols": symbol, "limit": 30,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            data = resp.json().get("data", [])
+            return [float(d["close"]) for d in reversed(data) if d.get("close")]
+        except Exception:
+            return []
+
+    def _fred_series(self, series_id: str) -> list:
+        try:
+            resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
+                "series_id": series_id, "api_key": "DEMO_KEY",
+                "file_type": "json", "sort_order": "desc", "limit": 30,
+            }, timeout=10)
+            if resp.status_code != 200:
+                return []
+            obs = resp.json().get("observations", [])
+            return [float(o["value"]) for o in reversed(obs)
+                    if o.get("value") and o["value"] != "."]
+        except Exception:
+            return []
+
     def get_index(self, name: str = "sp500") -> Optional[dict]:
-        """Get current index level and recent performance."""
+        """Get current index level and recent performance. Deep fallback chain."""
+        # 1. Twelve Data (primary)
         symbol = self.INDICES.get(name, name)
         closes = self._twelvedata_series(symbol)
 
-        # Fallback for S&P 500: FRED SP500 series
-        if not closes and name == "sp500":
-            try:
-                resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
-                    "series_id": "SP500", "api_key": "DEMO_KEY",
-                    "file_type": "json", "sort_order": "desc", "limit": 30,
-                }, timeout=10)
-                if resp.status_code == 200:
-                    obs = resp.json().get("observations", [])
-                    closes = [float(o["value"]) for o in reversed(obs)
-                              if o.get("value") and o["value"] != "."]
-            except Exception:
-                pass
+        # 2. FMP
+        if not closes and name in self.FMP_INDICES:
+            closes = self._fmp_series(self.FMP_INDICES[name])
 
-        # Fallback for NASDAQ: FRED NASDAQCOM series
-        if not closes and name == "nasdaq":
-            try:
-                resp = self.session.get("https://api.stlouisfed.org/fred/series/observations", params={
-                    "series_id": "NASDAQCOM", "api_key": "DEMO_KEY",
-                    "file_type": "json", "sort_order": "desc", "limit": 30,
-                }, timeout=10)
-                if resp.status_code == 200:
-                    obs = resp.json().get("observations", [])
-                    closes = [float(o["value"]) for o in reversed(obs)
-                              if o.get("value") and o["value"] != "."]
-            except Exception:
-                pass
+        # 3. Alpha Vantage ETF proxy
+        if not closes and name in self.AV_PROXIES:
+            closes = self._av_series(self.AV_PROXIES[name])
+
+        # 4. Marketstack
+        if not closes and name in self.MSTACK_INDICES:
+            closes = self._marketstack_series(self.MSTACK_INDICES[name])
+
+        # 5. FRED (S&P 500, NASDAQ only)
+        if not closes and name in self.FRED_INDICES:
+            closes = self._fred_series(self.FRED_INDICES[name])
 
         if not closes:
             return None
