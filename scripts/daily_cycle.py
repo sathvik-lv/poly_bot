@@ -104,8 +104,16 @@ def run_cycle():
     print(f"\n--- STEP 9: Cross-Platform Comparison ---")
     run_script("cross_platform.py", timeout=180)
 
-    # 10. Git commit
-    print(f"\n--- STEP 10: Git Checkpoint ---")
+    # 10. Logical arbitrage (constraint graph)
+    print(f"\n--- STEP 10: Logical Arbitrage ---")
+    run_script("logical_arb.py", timeout=120)
+
+    # 11. Niche data alpha (crypto quant + sports odds)
+    print(f"\n--- STEP 11: Niche Data Scanner ---")
+    run_script("niche_scanner.py", timeout=120)
+
+    # 12. Git commit
+    print(f"\n--- STEP 12: Git Checkpoint ---")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     git_commit(f"daily: cycle {now} | paper trades + accuracy tracking")
 

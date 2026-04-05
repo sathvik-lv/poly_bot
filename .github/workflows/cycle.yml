@@ -78,6 +78,16 @@ jobs:
         timeout-minutes: 5
         continue-on-error: true
 
+      - name: Run logical arbitrage
+        run: python scripts/logical_arb.py
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Run niche data scanner
+        run: python scripts/niche_scanner.py
+        timeout-minutes: 3
+        continue-on-error: true
+
       - name: Run price snapshots
         run: python scripts/price_snapshots.py
         timeout-minutes: 2
