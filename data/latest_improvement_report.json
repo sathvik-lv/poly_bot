@@ -1,90 +1,90 @@
 {
-  "timestamp": "2026-04-05T07:48:48.624935+00:00",
-  "n_resolved": 1500,
+  "timestamp": "2026-04-05T07:50:04.810599+00:00",
+  "n_resolved": 1750,
   "n_unresolved": 0,
   "audit": {
-    "n_predictions": 1500,
-    "brier_score": 0.06668627096,
-    "log_loss": 0.2680162737207209,
+    "n_predictions": 1750,
+    "brier_score": 0.06762323067428572,
+    "log_loss": 0.26997897097265483,
     "calibration_curve": [
       {
         "bin_center": 0.05,
-        "mean_predicted": 0.0756,
+        "mean_predicted": 0.0727,
         "mean_actual": 0.0,
-        "count": 241,
-        "gap": 0.0756
+        "count": 292,
+        "gap": 0.0727
       },
       {
         "bin_center": 0.15,
-        "mean_predicted": 0.1528,
+        "mean_predicted": 0.1525,
         "mean_actual": 0.0,
-        "count": 246,
-        "gap": 0.1528
+        "count": 297,
+        "gap": 0.1525
       },
       {
         "bin_center": 0.25,
-        "mean_predicted": 0.2482,
+        "mean_predicted": 0.2486,
         "mean_actual": 0.0,
-        "count": 323,
-        "gap": 0.2482
+        "count": 386,
+        "gap": 0.2486
       },
       {
         "bin_center": 0.35,
-        "mean_predicted": 0.3435,
-        "mean_actual": 0.0,
-        "count": 251,
-        "gap": 0.3435
+        "mean_predicted": 0.345,
+        "mean_actual": 0.0035,
+        "count": 284,
+        "gap": 0.3415
       },
       {
         "bin_center": 0.45,
-        "mean_predicted": 0.4451,
-        "mean_actual": 0.0208,
-        "count": 96,
-        "gap": 0.4243
+        "mean_predicted": 0.4439,
+        "mean_actual": 0.0261,
+        "count": 115,
+        "gap": 0.4178
       },
       {
         "bin_center": 0.55,
-        "mean_predicted": 0.5465,
-        "mean_actual": 0.3478,
-        "count": 46,
-        "gap": 0.1987
+        "mean_predicted": 0.5485,
+        "mean_actual": 0.3448,
+        "count": 58,
+        "gap": 0.2037
       },
       {
         "bin_center": 0.65,
-        "mean_predicted": 0.6542,
-        "mean_actual": 0.9189,
-        "count": 37,
-        "gap": 0.2647
+        "mean_predicted": 0.6517,
+        "mean_actual": 0.878,
+        "count": 41,
+        "gap": 0.2264
       },
       {
         "bin_center": 0.75,
-        "mean_predicted": 0.7476,
+        "mean_predicted": 0.7499,
         "mean_actual": 1.0,
-        "count": 67,
-        "gap": 0.2524
+        "count": 76,
+        "gap": 0.2501
       },
       {
         "bin_center": 0.85,
         "mean_predicted": 0.8502,
         "mean_actual": 1.0,
-        "count": 78,
+        "count": 81,
         "gap": 0.1498
       },
       {
         "bin_center": 0.95,
-        "mean_predicted": 0.9587,
+        "mean_predicted": 0.9578,
         "mean_actual": 1.0,
-        "count": 115,
-        "gap": 0.0413
+        "count": 120,
+        "gap": 0.0422
       }
     ],
-    "expected_calibration_error": 0.21013733333333331,
-    "discrimination": 0.9991542022792023,
-    "profit_if_bet": -97.768,
-    "roi": -0.2595,
-    "mean_edge": 0.025592333333333335,
-    "edge_hit_rate": 0.2787,
-    "timestamp": "2026-04-05T07:48:48.641057+00:00"
+    "expected_calibration_error": 0.20844194285714285,
+    "discrimination": 0.9983199665673347,
+    "profit_if_bet": -102.4827,
+    "roi": -0.2686,
+    "mean_edge": 0.0224116,
+    "edge_hit_rate": 0.273,
+    "timestamp": "2026-04-05T07:50:04.829559+00:00"
   },
   "optimized_weights": {
     "weights": {
@@ -92,48 +92,48 @@
       "microstructure": 1.0
     },
     "model_brier_scores": {
-      "external_data": 0.0686,
-      "microstructure": 0.0604
+      "external_data": 0.0693,
+      "microstructure": 0.062
     },
-    "combined_brier": 0.0604,
-    "n_predictions": 1500,
-    "improvement_vs_equal": 0.003686
+    "combined_brier": 0.062,
+    "n_predictions": 1750,
+    "improvement_vs_equal": 0.003302
   },
   "signal_analysis": {
     "signal_rankings": [
       {
         "signal": "external_data",
-        "correlation": 0.8848,
+        "correlation": 0.8734,
         "p_value": 0.0,
         "significant": "True",
-        "brier_score": 0.0686,
-        "n_observations": 1500,
-        "mean_estimate": 0.368
+        "brier_score": 0.0693,
+        "n_observations": 1750,
+        "mean_estimate": 0.3555
       },
       {
         "signal": "microstructure",
-        "correlation": 0.8832,
+        "correlation": 0.8716,
         "p_value": 0.0,
         "significant": "True",
-        "brier_score": 0.0604,
-        "n_observations": 1500,
-        "mean_estimate": 0.335
+        "brier_score": 0.062,
+        "n_observations": 1750,
+        "mean_estimate": 0.3266
       }
     ],
-    "n_predictions": 1500,
+    "n_predictions": 1750,
     "top_signal": "external_data",
     "n_significant": 2
   },
   "calibration_updated": true,
   "recommendations": [
     "EXCELLENT: Brier score < 0.15 \u2014 predictions are well-calibrated",
-    "RECALIBRATE: ECE = 0.210 \u2014 isotonic calibration should be retrained",
+    "RECALIBRATE: ECE = 0.208 \u2014 isotonic calibration should be retrained",
     "STRONG DISCRIMINATION: Model effectively separates outcomes",
-    "EDGE FAILING: Edge hit rate = 27.9% \u2014 edge detection is worse than random",
+    "EDGE FAILING: Edge hit rate = 27.3% \u2014 edge detection is worse than random",
     "BEST MODEL: 'microstructure' (weight: 1.000)",
     "CONSIDER DROPPING: 'external_data' has negligible weight (0.000)",
     "STRONG SIGNALS: external_data, microstructure",
-    "UNPROFITABLE: ROI = -25.9% \u2014 strategy needs adjustment"
+    "UNPROFITABLE: ROI = -26.9% \u2014 strategy needs adjustment"
   ],
-  "health_score": 72.0
+  "health_score": 71.8
 }
