@@ -26,6 +26,8 @@ from difflib import SequenceMatcher
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 GAMMA_API = "https://gamma-api.polymarket.com"
 DATA_DIR = "data"
