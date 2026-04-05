@@ -93,13 +93,14 @@ class FinancialData:
     def _oil_from_fmp(self) -> dict:
         fmp_key = os.environ.get("FMP_API_KEY", "demo")
         r = self.session.get(
-            f"https://financialmodelingprep.com/api/v3/historical-price-full/CLUSD",
-            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+            "https://financialmodelingprep.com/stable/historical-price-eod/full",
+            params={"symbol": "CLUSD", "apikey": fmp_key}, timeout=10,
         )
         if r.status_code != 200:
             return {}
-        historical = r.json().get("historical", [])
-        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        data = r.json()
+        entries = data[:30] if isinstance(data, list) else data.get("historical", [])[:30]
+        closes = [float(h["close"]) for h in reversed(entries) if h.get("close")]
         return self._build_data(closes) if closes else {}
 
     def _oil_from_fred(self) -> dict:
@@ -149,13 +150,14 @@ class FinancialData:
     def _gold_from_fmp(self) -> dict:
         fmp_key = os.environ.get("FMP_API_KEY", "demo")
         r = self.session.get(
-            f"https://financialmodelingprep.com/api/v3/historical-price-full/GCUSD",
-            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+            "https://financialmodelingprep.com/stable/historical-price-eod/full",
+            params={"symbol": "GCUSD", "apikey": fmp_key}, timeout=10,
         )
         if r.status_code != 200:
             return {}
-        historical = r.json().get("historical", [])
-        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        data = r.json()
+        entries = data[:30] if isinstance(data, list) else data.get("historical", [])[:30]
+        closes = [float(h["close"]) for h in reversed(entries) if h.get("close")]
         return self._build_data(closes) if closes else {}
 
     def _gold_from_metals_dev(self) -> dict:
@@ -283,13 +285,14 @@ class FinancialData:
         """Financial Modeling Prep (250 calls/day free)."""
         fmp_key = os.environ.get("FMP_API_KEY", "demo")
         r = self.session.get(
-            f"https://financialmodelingprep.com/api/v3/historical-price-full/^GSPC",
-            params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+            "https://financialmodelingprep.com/stable/historical-price-eod/full",
+            params={"symbol": "SPY", "apikey": fmp_key}, timeout=10,
         )
         if r.status_code != 200:
             return {}
-        historical = r.json().get("historical", [])
-        closes = [float(h["close"]) for h in reversed(historical) if h.get("close")]
+        data = r.json()
+        entries = data[:30] if isinstance(data, list) else data.get("historical", [])[:30]
+        closes = [float(h["close"]) for h in reversed(entries) if h.get("close")]
         return self._build_data(closes) if closes else {}
 
     def _sp500_from_av(self) -> dict:

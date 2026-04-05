@@ -771,17 +771,23 @@ class ForexSource:
         result["trend"] = "strengthening" if closes[-1] > np.mean(closes) else "weakening"
         return result
 
-    def _fmp_series(self, symbol: str) -> list:
-        """Financial Modeling Prep historical prices (250 calls/day free)."""
+    def _fmp_series(self, symbol: str, limit: int = 30) -> list:
+        """Financial Modeling Prep historical prices (250 calls/day free). Uses /stable/ API."""
         fmp_key = os.environ.get("FMP_API_KEY", "demo")
         try:
             resp = self.session.get(
-                f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}",
-                params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+                f"https://financialmodelingprep.com/stable/historical-price-eod/full",
+                params={"symbol": symbol, "apikey": fmp_key}, timeout=10,
             )
             if resp.status_code != 200:
                 return []
-            historical = resp.json().get("historical", [])
+            data = resp.json()
+            # Stable API returns flat list, most recent first
+            if isinstance(data, list):
+                entries = data[:limit]
+                return [float(h["close"]) for h in reversed(entries) if h.get("close")]
+            # Legacy format fallback
+            historical = data.get("historical", [])[:limit]
             return [float(h["close"]) for h in reversed(historical) if h.get("close")]
         except Exception:
             return []
@@ -828,23 +834,25 @@ class ForexSource:
             except Exception:
                 pass
 
-        # Fallback 3: FMP forex
+        # Fallback 3: FMP forex via profile endpoint
         if len(results) < 3:
             fmp_key = os.environ.get("FMP_API_KEY", "demo")
-            try:
-                resp = self.session.get(
-                    "https://financialmodelingprep.com/api/v3/fx",
-                    params={"apikey": fmp_key}, timeout=10,
-                )
-                if resp.status_code == 200:
-                    fmp_map = {"EUR/USD": "EUR/USD", "GBP/USD": "GBP/USD", "USD/JPY": "USD/JPY",
-                               "USD/CNY": "USD/CNY", "USD/INR": "USD/INR"}
-                    for fx in resp.json():
-                        ticker = fx.get("ticker", "")
-                        if ticker in fmp_map and fmp_map[ticker] not in results:
-                            results[fmp_map[ticker]] = {"rate": float(fx["ask"]), "change_pct": None}
-            except Exception:
-                pass
+            fmp_fx = {"EUR/USD": "EURUSD", "GBP/USD": "GBPUSD", "USD/JPY": "USDJPY"}
+            for pair_name, fmp_sym in fmp_fx.items():
+                if pair_name not in results:
+                    try:
+                        resp = self.session.get(
+                            "https://financialmodelingprep.com/stable/profile",
+                            params={"symbol": fmp_sym, "apikey": fmp_key}, timeout=10,
+                        )
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            item = data[0] if isinstance(data, list) and data else data
+                            price = item.get("price")
+                            if price:
+                                results[pair_name] = {"rate": float(price), "change_pct": None}
+                    except Exception:
+                        pass
 
         return results
 
@@ -928,17 +936,21 @@ class StockIndexSource:
         except Exception:
             return []
 
-    def _fmp_series(self, symbol: str) -> list:
-        """Financial Modeling Prep historical prices (250 calls/day free)."""
+    def _fmp_series(self, symbol: str, limit: int = 30) -> list:
+        """Financial Modeling Prep historical prices (250 calls/day free). Uses /stable/ API."""
         fmp_key = os.environ.get("FMP_API_KEY", "demo")
         try:
             resp = self.session.get(
-                f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}",
-                params={"apikey": fmp_key, "timeseries": 30}, timeout=10,
+                "https://financialmodelingprep.com/stable/historical-price-eod/full",
+                params={"symbol": symbol, "apikey": fmp_key}, timeout=10,
             )
             if resp.status_code != 200:
                 return []
-            historical = resp.json().get("historical", [])
+            data = resp.json()
+            if isinstance(data, list):
+                entries = data[:limit]
+                return [float(h["close"]) for h in reversed(entries) if h.get("close")]
+            historical = data.get("historical", [])[:limit]
             return [float(h["close"]) for h in reversed(historical) if h.get("close")]
         except Exception:
             return []
