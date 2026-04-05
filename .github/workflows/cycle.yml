@@ -37,6 +37,10 @@ jobs:
           echo "METACULUS_API_TOKEN=${{ secrets.METACULUS_API_TOKEN }}" >> .env
           echo "RELAYER_API_KEY=${{ secrets.RELAYER_API_KEY }}" >> .env
           echo "RELAYER_API_KEY_ADDRESS=${{ secrets.RELAYER_API_KEY_ADDRESS }}" >> .env
+          echo "FMP_API_KEY=${{ secrets.FMP_API_KEY }}" >> .env
+          echo "MARKETSTACK_KEY=${{ secrets.MARKETSTACK_KEY }}" >> .env
+          echo "ALPHA_VANTAGE_KEY=${{ secrets.ALPHA_VANTAGE_KEY }}" >> .env
+          echo "ODDS_API_KEY=${{ secrets.ODDS_API_KEY }}" >> .env
 
       - name: Run paper trader scan
         run: python scripts/paper_trader.py --scan -n 30
