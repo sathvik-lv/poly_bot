@@ -107,7 +107,10 @@ class PredictionTracker:
             for line in f:
                 line = line.strip()
                 if line:
-                    records.append(json.loads(line))
+                    try:
+                        records.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue  # skip corrupted lines
         return records
 
     def _save_all(self, records: list[dict]):
