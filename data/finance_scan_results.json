@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-06T18:47:51.300774+00:00",
+  "timestamp": "2026-04-07T01:25:48.920709+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
       "symbol": "oil"
     },
     "gold": {
-      "price": 4689.2,
+      "price": 4668.3,
       "prev_close": 4659.3,
       "closes": [
         5311.6,
@@ -38,13 +38,13 @@
         4813.1,
         4679.7,
         4659.3,
-        4689.2
+        4668.3
       ],
-      "change_1d_pct": 0.6417272980919803,
+      "change_1d_pct": 0.19316206297083252,
       "min_30d": 4353.6,
       "max_30d": 5311.6,
-      "mean_30d": 4830.786666666667,
-      "volatility": 0.3635883122592005,
+      "mean_30d": 4830.089999999999,
+      "volatility": 0.3626756574035405,
       "symbol": "gold"
     },
     "vix": {
@@ -60,7 +60,7 @@
       "symbol": "yield_2y"
     },
     "sp500": {
-      "price": 657.83002,
+      "price": 658.93,
       "prev_close": 655.83,
       "closes": [
         682.39,
@@ -92,110 +92,104 @@
         650.34,
         655.24,
         655.83,
-        657.83002
+        658.93
       ],
-      "change_1d_pct": 0.3049601268621364,
+      "change_1d_pct": 0.4726834698016115,
       "min_30d": 631.97,
       "max_30d": 693.15,
-      "mean_30d": 666.9743340000002,
-      "volatility": 0.1638398031933043,
+      "mean_30d": 667.0110000000002,
+      "volatility": 0.16429246968645989,
       "symbol": "sp500"
     },
     "btc": {
-      "price": 69776,
-      "change_24h": 3.50174,
-      "change_7d": 4.52826,
-      "change_30d": 2.93614,
-      "ath": 126080,
-      "high_24h": 70243,
-      "low_24h": 67279,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 13,
+      "value": 11,
       "classification": "Extreme Fear"
     }
   },
-  "n_markets": 11,
-  "n_with_edge": 10,
+  "n_markets": 13,
+  "n_with_edge": 13,
   "results": [
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $200 in April?",
-      "market_price": 0.0315,
+      "market_price": 0.0325,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.01,
-      "ai_reasoning": "A surge from $70 to $200 in 24 days requires a ~186% gain, exceeding 8 standard deviations given 2.5% daily volatility and lacking any historical precedent in crude markets. Structural demand destruction, strategic reserve releases, and the severe macroeconomic stress reflected in extreme fear and depressed equities would mechanically cap any parabolic supply shock. The quantitative model's 1% baseline accurately reflects the mathematical and fundamental impossibility of this move within the remaining timeframe.",
-      "edge": -0.0215,
-      "real_edge": -0.0215,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.0225,
+      "real_edge": -0.0225,
       "categories": [
         "oil"
       ],
-      "models": "quant(13%)+AI(87%)",
-      "n_models": 2,
-      "volume": 1862866.6840140726,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1902960.5158530744,
       "signals": {
         "current_price": 70,
         "target": 200.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 8.57,
+        "z_score": 8.76,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $130 in April?",
-      "market_price": 0.425,
+      "market_price": 0.45,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.415,
-      "real_edge": -0.415,
+      "edge": -0.44,
+      "real_edge": -0.44,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1065554.520963997,
+      "volume": 1097796.4221399953,
       "signals": {
         "current_price": 70,
         "target": 130.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 5.05,
+        "z_score": 5.16,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in April?",
-      "market_price": 0.715,
-      "our_estimate": 0.01,
+      "market_price": 0.76,
+      "our_estimate": 0.2264,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.705,
-      "real_edge": -0.705,
+      "ai_estimate": 0.35,
+      "ai_reasoning": "The current price of WTI Crude Oil is $70, which is relatively low compared to its historical levels. However, the z-score of 4.5 indicates a strong upward momentum, and the VIX is at 20, suggesting a moderate level of market volatility. Considering these factors, I estimate a 35% probability of WTI hitting $120 in April, with a high confidence level of 0.8.",
+      "edge": -0.5336,
+      "real_edge": -0.5336,
       "categories": [
         "oil"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 954269.4767029979,
+      "models": "quant(36%)+AI(64%)",
+      "n_models": 2,
+      "volume": 979056.867659997,
       "signals": {
         "current_price": 70,
         "target": 120.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 4.4,
+        "z_score": 4.5,
         "recent_closes": [],
         "vix": 20
       }
@@ -214,196 +208,260 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 871587.1427549978,
+      "volume": 893193.7892399976,
       "signals": {
         "current_price": 70,
         "target": 150.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 6.22,
+        "z_score": 6.36,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in April?",
-      "market_price": 0.275,
+      "market_price": 0.29,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.265,
-      "real_edge": -0.265,
+      "edge": -0.28,
+      "real_edge": -0.28,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 743802.5716559995,
+      "volume": 759842.5485399998,
       "signals": {
         "current_price": 70,
         "target": 140.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 5.66,
+        "z_score": 5.78,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will Bitcoin dip to $50,000 in April?",
-      "market_price": 0.045,
-      "our_estimate": 0.0519,
-      "quant_estimate": 0.0519,
+      "market_price": 0.065,
+      "our_estimate": 0.2774,
+      "quant_estimate": 0.2774,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0069,
-      "real_edge": 0.0,
+      "edge": 0.2124,
+      "real_edge": 0.2124,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 655815.0899059994,
+      "volume": 692615.1411239993,
       "signals": {
-        "current_price": 69776,
+        "current_price": 60000,
         "target": 50000.0,
         "direction": "DIP",
-        "change_24h": 3.5,
-        "change_7d": 4.53,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 24,
-        "high_24h": 70243,
-        "low_24h": 67279
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $80 in April?",
-      "market_price": 0.255,
-      "our_estimate": 0.1378,
-      "quant_estimate": 0.1378,
+      "market_price": 0.245,
+      "our_estimate": 0.1327,
+      "quant_estimate": 0.1327,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.1172,
-      "real_edge": -0.1172,
+      "edge": -0.1123,
+      "real_edge": -0.1123,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 629782.8134950002,
+      "volume": 643950.3608950004,
       "signals": {
         "current_price": 70,
         "target": 80.0,
         "direction": "HIGH",
-        "days_left": 24,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 1.09,
+        "z_score": 1.11,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will Bitcoin dip to $60,000 in April?",
-      "market_price": 0.285,
-      "our_estimate": 0.3787,
-      "quant_estimate": 0.3787,
+      "market_price": 0.335,
+      "our_estimate": 0.9,
+      "quant_estimate": 0.9,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0937,
-      "real_edge": 0.0937,
+      "edge": 0.565,
+      "real_edge": 0.565,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 455280.82558899955,
+      "volume": 470329.4283819999,
       "signals": {
-        "current_price": 69776,
+        "current_price": 60000,
         "target": 60000.0,
         "direction": "DIP",
-        "change_24h": 3.5,
-        "change_7d": 4.53,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 24,
-        "high_24h": 70243,
-        "low_24h": 67279
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will Bitcoin reach $85,000 in April?",
-      "market_price": 0.0565,
-      "our_estimate": 0.3594,
+      "market_price": 0.0515,
+      "our_estimate": 0.4206,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.25,
-      "ai_reasoning": "Bitcoin requires a ~22% rally in 24 days, which is statistically plausible given its 3.5% daily volatility but faces significant headwinds from extreme fear sentiment and lack of immediate macro catalysts. While oversold conditions could trigger a sharp bounce, sustaining momentum to $85k within the month remains unlikely without a major positive catalyst.",
-      "edge": 0.3029,
-      "real_edge": 0.3029,
+      "ai_estimate": 0.35,
+      "ai_reasoning": "Bitcoin is currently trading at $60,000, well below the $85,000 target. With only 23 days left in April, the daily gain needed to reach the target is very high at 6.4%, especially given the current low volatility regime. However, the Fear & Greed Index at 11 suggests extreme fear, which could potentially lead to a strong relief rally if sentiment shifts.",
+      "edge": 0.3691,
+      "real_edge": 0.3691,
       "categories": [
         "crypto"
       ],
-      "models": "quant(44%)+AI(56%)",
+      "models": "quant(47%)+AI(53%)",
       "n_models": 2,
-      "volume": 358279.1966570004,
+      "volume": 376934.1458980005,
       "signals": {
-        "current_price": 69776,
+        "current_price": 60000,
         "target": 85000.0,
         "direction": "UNKNOWN",
-        "change_24h": 3.5,
-        "change_7d": 4.53,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 24,
-        "high_24h": 70243,
-        "low_24h": 67279
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
-      "question": "S&P 500 (SPX) Up or Down on April 6?",
-      "market_price": 0.88,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will the price of Ethereum be above $2,100 on April 9?",
+      "market_price": 0.565,
+      "our_estimate": 0.95,
+      "quant_estimate": 0.95,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.38,
-      "real_edge": -0.38,
-      "categories": [
-        "stocks"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 174711.45371600008,
-      "signals": {}
-    },
-    {
-      "question": "Will Bitcoin dip to $67,000 on April 6?",
-      "market_price": 0.037,
-      "our_estimate": 0.8128,
-      "quant_estimate": 0.8128,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.7758,
-      "real_edge": 0.7758,
+      "edge": 0.385,
+      "real_edge": 0.385,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 96402.19433599991,
+      "volume": 174836.21660699995,
       "signals": {
-        "current_price": 69776,
-        "target": 67000.0,
-        "direction": "DIP",
-        "change_24h": 3.5,
-        "change_7d": 4.53,
+        "current_price": 60000,
+        "target": 2100.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 24,
-        "high_24h": 70243,
-        "low_24h": 67279
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $66,000 on April 7?",
+      "market_price": 0.9445,
+      "our_estimate": 0.2851,
+      "quant_estimate": 0.2851,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.6594,
+      "real_edge": -0.6594,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 150321.36378200012,
+      "signals": {
+        "current_price": 60000,
+        "target": 66000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $68,000 on April 7?",
+      "market_price": 0.695,
+      "our_estimate": 0.2917,
+      "quant_estimate": 0.2279,
+      "ai_estimate": 0.32,
+      "ai_reasoning": "The current price of Bitcoin is at $60,000, with a 7-day change of 0% and daily volatility of 0.035. Given the Extreme Fear index and recent market downturn, the probability of Bitcoin reaching $68,000 in 23 days is low, but not impossible, as the crypto market can be highly volatile and subject to sudden shifts in sentiment.",
+      "edge": -0.4033,
+      "real_edge": -0.4033,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(31%)+AI(69%)",
+      "n_models": 2,
+      "volume": 121784.04204400003,
+      "signals": {
+        "current_price": 60000,
+        "target": 68000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will Bitcoin dip to $68,000 on April 6?",
+      "market_price": 0.135,
+      "our_estimate": 0.84,
+      "quant_estimate": 0.9,
+      "ai_estimate": 0.8,
+      "ai_reasoning": "Bitcoin is currently trading at $60,000, which is $8,000 below the target price of $68,000. With 23 days left until April 6, there is a reasonable chance that Bitcoin could dip to $68,000, especially given the current high volatility of 3.5% daily. However, the Fear & Greed Index at 11 suggests extreme fear in the market, which could limit further downside.",
+      "edge": 0.705,
+      "real_edge": 0.705,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(40%)+AI(60%)",
+      "n_models": 2,
+      "volume": 99205.81572500001,
+      "signals": {
+        "current_price": 60000,
+        "target": 68000.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     }
   ]
