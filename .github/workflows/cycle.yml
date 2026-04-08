@@ -1,8 +1,7 @@
-name: Poly Bot Scan (Hourly)
+name: Poly Bot (Hourly)
 
 on:
   schedule:
-    # Every hour — catch short-lived markets (sports, crypto events)
     - cron: '0 * * * *'
   workflow_dispatch:
 
@@ -13,9 +12,9 @@ env:
   PYTHONPATH: ${{ github.workspace }}
 
 jobs:
-  scan:
+  cycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repo
@@ -72,10 +71,35 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      - name: Finance scanner
+        run: python scripts/finance_scanner.py
+        timeout-minutes: 5
+        continue-on-error: true
+
+      - name: Arbitrage scanner
+        run: python scripts/arbitrage_scanner.py
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Cross-platform comparison
+        run: python scripts/cross_platform.py
+        timeout-minutes: 5
+        continue-on-error: true
+
+      - name: Logical arbitrage
+        run: python scripts/logical_arb.py
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Niche data scanner
+        run: python scripts/niche_scanner.py
+        timeout-minutes: 3
+        continue-on-error: true
+
       - name: Commit results
         run: |
           git config user.name "poly-bot[bot]"
           git config user.email "poly-bot[bot]@users.noreply.github.com"
           git add data/
-          git diff --staged --quiet || git commit -m "auto: scan $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git diff --staged --quiet || git commit -m "auto: cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
           git push
