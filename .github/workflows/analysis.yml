@@ -1,9 +1,9 @@
-name: Poly Bot Scan (Hourly)
+name: Poly Bot Analysis (Every 6h)
 
 on:
   schedule:
-    # Every hour — catch short-lived markets (sports, crypto events)
-    - cron: '0 * * * *'
+    # Heavy analysis every 6 hours — finance, arbitrage, cross-platform
+    - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:
 
 permissions:
@@ -13,7 +13,7 @@ env:
   PYTHONPATH: ${{ github.workspace }}
 
 jobs:
-  scan:
+  analysis:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -34,42 +34,35 @@ jobs:
       - name: Create .env
         run: |
           echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env
-          echo "METACULUS_API_TOKEN=${{ secrets.METACULUS_API_TOKEN }}" >> .env
-          echo "RELAYER_API_KEY=${{ secrets.RELAYER_API_KEY }}" >> .env
-          echo "RELAYER_API_KEY_ADDRESS=${{ secrets.RELAYER_API_KEY_ADDRESS }}" >> .env
           echo "FMP_API_KEY=${{ secrets.FMP_API_KEY }}" >> .env
           echo "MARKETSTACK_KEY=${{ secrets.MARKETSTACK_KEY }}" >> .env
           echo "ALPHA_VANTAGE_KEY=${{ secrets.ALPHA_VANTAGE_KEY }}" >> .env
           echo "ODDS_API_KEY=${{ secrets.ODDS_API_KEY }}" >> .env
+          echo "METACULUS_API_TOKEN=${{ secrets.METACULUS_API_TOKEN }}" >> .env
 
-      - name: Scan + paper trade
-        run: python scripts/paper_trader.py --scan -n 30
-        timeout-minutes: 15
+      - name: Finance scanner
+        run: python scripts/finance_scanner.py
+        timeout-minutes: 5
         continue-on-error: true
 
-      - name: Resolve paper trades
-        run: python scripts/paper_trader.py --resolve
+      - name: Arbitrage scanner
+        run: python scripts/arbitrage_scanner.py
         timeout-minutes: 3
         continue-on-error: true
 
-      - name: Paper trade report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
+      - name: Cross-platform comparison
+        run: python scripts/cross_platform.py
+        timeout-minutes: 5
         continue-on-error: true
 
-      - name: Resolve live predictions
-        run: python scripts/live_tracker.py --resolve
+      - name: Logical arbitrage
+        run: python scripts/logical_arb.py
         timeout-minutes: 3
         continue-on-error: true
 
-      - name: Live tracker report
-        run: python scripts/live_tracker.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-
-      - name: Price snapshots
-        run: python scripts/price_snapshots.py
-        timeout-minutes: 2
+      - name: Niche data scanner
+        run: python scripts/niche_scanner.py
+        timeout-minutes: 3
         continue-on-error: true
 
       - name: Commit results
@@ -77,5 +70,5 @@ jobs:
           git config user.name "poly-bot[bot]"
           git config user.email "poly-bot[bot]@users.noreply.github.com"
           git add data/
-          git diff --staged --quiet || git commit -m "auto: scan $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git diff --staged --quiet || git commit -m "auto: analysis $(date -u +'%Y-%m-%d %H:%M') UTC"
           git push
