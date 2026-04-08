@@ -2,8 +2,8 @@ name: Poly Bot Analysis (Every 6h)
 
 on:
   schedule:
-    # Heavy analysis every 6 hours — finance, arbitrage, cross-platform
-    - cron: '0 0,6,12,18 * * *'
+    # Every hour — maximize data collection
+    - cron: '15 * * * *'
   workflow_dispatch:
 
 permissions:
