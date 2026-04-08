@@ -131,12 +131,80 @@ def scan_markets(n_markets: int = 20):
     predicted_ids = {r["market_id"] for r in existing if not r.get("resolved")}
     print(f"  Already tracking {len(predicted_ids)} unresolved predictions")
 
-    raw_markets = client.session.get(
-        f"{client.base_url}/markets",
-        params={"limit": 60, "active": True, "closed": False,
-                "order": "volume24hr", "ascending": False},
-        timeout=15,
-    ).json()
+    # Only scan markets resolving within 14 days — fast feedback for analytics
+    MAX_DAYS = 14
+    now = datetime.now(timezone.utc)
+    seen_ids = set()
+    raw_markets = []
+
+    def passes_end_date_filter(m):
+        end_str = m.get("endDate", "")
+        if not end_str:
+            return None
+        try:
+            end_dt = datetime.fromisoformat(end_str.replace("Z", "+00:00"))
+            days_left = (end_dt - now).total_seconds() / 86400
+            if 0.5 < days_left <= MAX_DAYS:
+                return round(days_left, 1)
+        except Exception:
+            pass
+        return None
+
+    # Pool 1: Top volume (filtered ≤14 days)
+    try:
+        vol_markets = client.session.get(
+            f"{client.base_url}/markets",
+            params={"limit": 100, "active": True, "closed": False,
+                    "order": "volume24hr", "ascending": False},
+            timeout=15,
+        ).json()
+        for m in vol_markets:
+            mid = m.get("id")
+            days_left = passes_end_date_filter(m)
+            if mid and mid not in seen_ids and days_left is not None:
+                seen_ids.add(mid)
+                m["_days_left"] = days_left
+                raw_markets.append(m)
+    except Exception:
+        pass
+
+    # Pool 2: Ending soonest (filtered ≤14 days)
+    try:
+        ending_soon = client.session.get(
+            f"{client.base_url}/markets",
+            params={"limit": 100, "active": True, "closed": False,
+                    "order": "endDate", "ascending": True},
+            timeout=15,
+        ).json()
+        for m in ending_soon:
+            mid = m.get("id")
+            days_left = passes_end_date_filter(m)
+            if mid and mid not in seen_ids and days_left is not None:
+                seen_ids.add(mid)
+                m["_days_left"] = days_left
+                raw_markets.append(m)
+    except Exception:
+        pass
+
+    # Pool 3: Recently created (filtered ≤14 days)
+    try:
+        recent_markets = client.session.get(
+            f"{client.base_url}/markets",
+            params={"limit": 100, "active": True, "closed": False,
+                    "order": "startDate", "ascending": False},
+            timeout=15,
+        ).json()
+        for m in recent_markets:
+            mid = m.get("id")
+            days_left = passes_end_date_filter(m)
+            if mid and mid not in seen_ids and days_left is not None:
+                seen_ids.add(mid)
+                m["_days_left"] = days_left
+                raw_markets.append(m)
+    except Exception:
+        pass
+
+    print(f"  Fetched {len(raw_markets)} markets resolving within {MAX_DAYS} days")
 
     candidates = []
     for raw in raw_markets:
@@ -151,9 +219,13 @@ def scan_markets(n_markets: int = 20):
 
         token_ids = parse_token_ids(raw)
         parsed["_token_id"] = token_ids[0] if token_ids else None
+        parsed["_days_left"] = raw.get("_days_left", 999)
         candidates.append(parsed)
 
-    print(f"  Found {len(candidates)} new tradeable markets")
+    # Sort: soonest resolving first
+    candidates.sort(key=lambda x: x.get("_days_left", 999))
+
+    print(f"  Found {len(candidates)} new tradeable markets (≤{MAX_DAYS} days)")
     new_count = 0
 
     for i, market in enumerate(candidates[:n_markets]):

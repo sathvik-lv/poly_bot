@@ -14,7 +14,7 @@ env:
 jobs:
   cycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repo
@@ -106,5 +106,10 @@ jobs:
           git config user.name "poly-bot[bot]"
           git config user.email "poly-bot[bot]@users.noreply.github.com"
           git add data/
-          git diff --staged --quiet || git commit -m "auto: cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
-          git push
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "auto: cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git pull --rebase
+            git push
+          fi
