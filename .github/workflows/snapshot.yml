@@ -2,8 +2,8 @@ name: Price Snapshot
 
 on:
   schedule:
-    # Run every 2 hours (on odd hours so it doesn't overlap with full cycle)
-    - cron: '0 1,3,5,7,9,11,13,15,17,19,21,23 * * *'
+    # Run every 30 minutes for fast time series data accumulation
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:

@@ -897,38 +897,35 @@ class PredictionEngine:
         category = self._classify_category(question)
 
         # Step 2: Run sub-models — ROUTE BY CATEGORY
-        # Backtest on 5000 markets proved: not all models work on all markets.
-        # Microstructure alone can't beat market on ANY category.
-        # AI semantic is strongest on reasoning-heavy markets (geopolitics, elections, macro).
-        # Time series is strongest on price-pattern markets (crypto, oil, finance).
-        # External data is useful for macro/finance (Fear & Greed, VIX, yields).
+        # BACKTEST (5,211 markets): micro + external have zero edge alone.
+        # BUT live results (4 trades) show they're complementary with orderbook:
+        #   orderbook 3-1 (catches NO outcomes), micro+external catch YES outcomes.
+        # Keep all 5 models. AI semantic is primary, others are supporting signals.
+        # Low weight on micro+external = high variance = small ensemble contribution.
         sub_results = {}
 
-        # Category -> which models to trust (higher variance = less trust)
-        # Based on backtest findings:
         MODEL_ROUTING = {
-            # AI-dominant: reasoning matters more than market data
-            "geopolitics": {"microstructure": 0.15, "external_data": 0.10, "ai_semantic": 1.0, "orderbook": 0.10},
-            "elections":   {"microstructure": 0.15, "external_data": 0.10, "ai_semantic": 1.0, "orderbook": 0.10},
-            "macro":       {"microstructure": 0.15, "external_data": 0.80, "ai_semantic": 0.80, "orderbook": 0.10},
-            "tech_ai":     {"microstructure": 0.15, "external_data": 0.10, "ai_semantic": 1.0, "orderbook": 0.10},
-            # Data-dominant: price data and external signals matter more
-            "crypto":      {"microstructure": 0.20, "external_data": 0.80, "ai_semantic": 0.30, "orderbook": 0.30, "time_series": 1.0},
-            "oil_energy":  {"microstructure": 0.20, "external_data": 0.80, "ai_semantic": 0.30, "orderbook": 0.20, "time_series": 0.80},
-            "fed_rate":    {"microstructure": 0.15, "external_data": 0.80, "ai_semantic": 0.60, "orderbook": 0.15},
-            # Low-alpha: microstructure adds noise, defer to AI + market
-            "sports":      {"microstructure": 0.05, "external_data": 0.05, "ai_semantic": 0.50, "orderbook": 0.05},
-            "weather":     {"microstructure": 0.05, "external_data": 0.05, "ai_semantic": 0.30, "orderbook": 0.05},
-            "tweets":      {"microstructure": 0.05, "external_data": 0.05, "ai_semantic": 0.30, "orderbook": 0.05},
-            # Default: balanced
-            "other":       {"microstructure": 0.15, "external_data": 0.20, "ai_semantic": 0.60, "orderbook": 0.15},
+            # AI-dominant: reasoning matters most, micro/ext as light support
+            "geopolitics": {"ai_semantic": 1.0, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.10},
+            "elections":   {"ai_semantic": 1.0, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.10},
+            "macro":       {"ai_semantic": 0.80, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.20},
+            "tech_ai":     {"ai_semantic": 1.0, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.10},
+            # Data-dominant: time series leads, others support
+            "crypto":      {"ai_semantic": 0.30, "orderbook": 0.50, "time_series": 1.0, "microstructure": 0.10, "external_data": 0.15},
+            "oil_energy":  {"ai_semantic": 0.30, "orderbook": 0.40, "time_series": 0.80, "microstructure": 0.10, "external_data": 0.15},
+            "fed_rate":    {"ai_semantic": 0.60, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.20},
+            # Sports: orderbook leads (3-0 on NO), micro/ext complement on YES
+            "sports":      {"ai_semantic": 0.50, "orderbook": 0.50, "microstructure": 0.15, "external_data": 0.15},
+            "weather":     {"ai_semantic": 0.30, "orderbook": 0.20, "microstructure": 0.10, "external_data": 0.10},
+            "tweets":      {"ai_semantic": 0.30, "orderbook": 0.20, "microstructure": 0.10, "external_data": 0.10},
+            # Default
+            "other":       {"ai_semantic": 0.60, "orderbook": 0.30, "microstructure": 0.10, "external_data": 0.10},
         }
         routing = MODEL_ROUTING.get(category, MODEL_ROUTING["other"])
 
-        # 2a. Microstructure analysis
+        # 2a. Microstructure (low weight — complementary signal, not primary)
         if routing.get("microstructure", 0) > 0:
             micro_result = self.microstructure.analyze(market_data)
-            # Scale variance inversely with routing weight (lower weight = higher variance = less trust)
             w = routing["microstructure"]
             micro_result["variance"] = micro_result.get("variance", 0.08) / max(w, 0.01)
             sub_results["microstructure"] = micro_result
@@ -942,13 +939,13 @@ class PredictionEngine:
                     price_history = get_price_history(market_id)
             except Exception:
                 pass
-        if price_history and len(price_history) >= 10 and routing.get("time_series", 0) > 0:
+        if price_history and len(price_history) >= 5 and routing.get("time_series", 0) > 0:
             ts_result = self.time_series.analyze(price_history, current_price, time_remaining_frac)
             w = routing.get("time_series", 0.5)
             ts_result["variance"] = ts_result.get("variance", 0.04) / max(w, 0.01)
             sub_results["time_series"] = ts_result
 
-        # 2c. External data fusion
+        # 2c. External data (low weight — complementary signal)
         if routing.get("external_data", 0) > 0:
             ext_result = self.external_data.analyze(market_data, keywords)
             w = routing["external_data"]
@@ -963,7 +960,7 @@ class PredictionEngine:
                 ob_result["variance"] = ob_result.get("variance", 0.06) / max(w, 0.01)
                 sub_results["orderbook"] = ob_result
 
-        # 2e. AI semantic analysis — strongest on reasoning-heavy categories
+        # 2e. AI semantic analysis — primary edge source
         if routing.get("ai_semantic", 0) > 0:
             ai_result = self.ai_model.analyze(market_data)
             if ai_result["estimate"] is not None:
@@ -997,13 +994,12 @@ class PredictionEngine:
         raw_estimate = ensemble_result["probability"]
         estimate_std = ensemble_result["std"]
 
-        # Step 4: Shrinkage calibration — backtest on 5000 resolved markets showed
-        # ensemble is systematically overconfident (predicts 45%, actual 17%).
-        # Fix: shrink the adjustment away from market price by 70%.
-        # This keeps our directional signal but reduces magnitude to match reality.
-        # AI semantic and time_series can still move the estimate — they just
-        # need to have strong enough signal to survive the shrinkage.
-        SHRINKAGE = 0.30  # keep 30% of our adjustment vs market price
+        # Step 4: Shrinkage calibration
+        # Dead models (microstructure, external_data) removed — they were causing
+        # the overconfidence by echoing market price and diluting real signals.
+        # With only AI semantic + time series + orderbook, keep more of the signal.
+        # Still shrink somewhat since we're testing these models live.
+        SHRINKAGE = 0.50  # keep 50% of adjustment (was 30% when dead models diluted)
         adjustment = raw_estimate - current_price
         calibrated_estimate = current_price + adjustment * SHRINKAGE
         calibrated_estimate = float(np.clip(calibrated_estimate, 0.01, 0.99))

@@ -88,32 +88,36 @@ def run_cycle():
     print(f"\n--- STEP 5: Prediction Accuracy Report ---")
     run_script("live_tracker.py", ["--report"], timeout=30)
 
-    # 6. Finance scanner
-    print(f"\n--- STEP 6: Financial Markets ---")
+    # 6. Rolling backtest (incremental accuracy tracking)
+    print(f"\n--- STEP 6: Rolling Backtest (incremental) ---")
+    run_script("rolling_backtest.py", ["--batch", "75"], timeout=600)
+
+    # 7. Finance scanner
+    print(f"\n--- STEP 7: Financial Markets ---")
     run_script("finance_scanner.py", timeout=300)
 
-    # 7. Price snapshots (build time series data)
-    print(f"\n--- STEP 7: Price Snapshots ---")
+    # 8. Price snapshots (build time series data)
+    print(f"\n--- STEP 8: Price Snapshots ---")
     run_script("price_snapshots.py", timeout=60)
 
-    # 8. Arbitrage scanner
-    print(f"\n--- STEP 8: Arbitrage Scanner ---")
+    # 9. Arbitrage scanner
+    print(f"\n--- STEP 9: Arbitrage Scanner ---")
     run_script("arbitrage_scanner.py", timeout=120)
 
-    # 9. Cross-platform odds comparison
-    print(f"\n--- STEP 9: Cross-Platform Comparison ---")
+    # 10. Cross-platform odds comparison
+    print(f"\n--- STEP 10: Cross-Platform Comparison ---")
     run_script("cross_platform.py", timeout=180)
 
-    # 10. Logical arbitrage (constraint graph)
-    print(f"\n--- STEP 10: Logical Arbitrage ---")
+    # 11. Logical arbitrage (constraint graph)
+    print(f"\n--- STEP 11: Logical Arbitrage ---")
     run_script("logical_arb.py", timeout=120)
 
-    # 11. Niche data alpha (crypto quant + sports odds)
-    print(f"\n--- STEP 11: Niche Data Scanner ---")
+    # 12. Niche data alpha (crypto quant + sports odds)
+    print(f"\n--- STEP 12: Niche Data Scanner ---")
     run_script("niche_scanner.py", timeout=120)
 
-    # 12. Git commit
-    print(f"\n--- STEP 12: Git Checkpoint ---")
+    # 13. Git commit
+    print(f"\n--- STEP 13: Git Checkpoint ---")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     git_commit(f"daily: cycle {now} | paper trades + accuracy tracking")
 
@@ -129,7 +133,7 @@ def main():
     args = parser.parse_args()
 
     if args.loop:
-        print(f"  Running in loop mode (every {args.interval//3600}h)")
+        print(f"  Running in loop mode (every {args.interval}s / {args.interval//3600}h)")
         while True:
             try:
                 run_cycle()

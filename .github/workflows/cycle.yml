@@ -2,7 +2,7 @@ name: Poly Bot Cycle
 
 on:
   schedule:
-    # Run every 6 hours: midnight, 6am, noon, 6pm UTC
+    # Full cycle every 6 hours (paper trading + all scanners is heavy)
     - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:  # Allow manual trigger from GitHub UI
 
@@ -65,6 +65,11 @@ jobs:
       - name: Run live tracker report
         run: python scripts/live_tracker.py --report
         timeout-minutes: 1
+        continue-on-error: true
+
+      - name: Run rolling backtest (incremental accuracy)
+        run: python scripts/rolling_backtest.py --batch 150
+        timeout-minutes: 10
         continue-on-error: true
 
       - name: Run finance scanner

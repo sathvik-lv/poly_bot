@@ -37,6 +37,33 @@ DATA_DIR = "data"
 TRACKER_FILE = os.path.join(DATA_DIR, "live_predictions.jsonl")
 GAMMA_API = "https://gamma-api.polymarket.com"
 
+# Category classification
+CATEGORY_RULES = [
+    ("fed_rate",    ["fed ", "interest rate", "fomc", "federal reserve", "bps"]),
+    ("crypto",      ["bitcoin", "btc ", "ethereum", "eth ", "crypto", "solana"]),
+    ("oil_energy",  ["oil", "crude", "wti ", "brent", "opec", "energy"]),
+    ("macro",       ["gdp", "inflation", "cpi ", "recession", "unemployment", "tariff"]),
+    ("geopolitics", ["invade", "invasion", "war ", "military", "regime", "sanctions",
+                     "iran", "taiwan", "ukraine", "russia"]),
+    ("elections",   ["election", "president", "governor", "senate", "nominee", "primary",
+                     "democrat", "republican"]),
+    ("sports",      ["fifa", "world cup", "nba ", "nfl ", "mlb ", "f1 ", "champion",
+                     "tournament", "lakers", "celtics", "warriors", "yankees", "dodgers",
+                     "match", "winner", "beat", "vs.", "points", "goals", "ufc", "nhl ",
+                     "counter-strike", "league of legends", "dota", "esports"]),
+    ("tech_ai",     ["openai", "chatgpt", "artificial intelligence", " ai ", "google",
+                     "apple", "tesla"]),
+]
+
+
+def classify_market(question: str) -> str:
+    q = question.lower()
+    for category, keywords in CATEGORY_RULES:
+        for kw in keywords:
+            if kw in q:
+                return category
+    return "other"
+
 
 def parse_token_ids(raw_market: dict) -> list[str]:
     clob = raw_market.get("clobTokenIds", "[]")
@@ -142,11 +169,13 @@ def scan_markets(n_markets: int = 20):
             )
 
             # Build tracking record with full per-model detail
+            question_text = market.get("question", "")
             record = {
                 "pred_id": f"live_{int(time.time()*1000)}_{i}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "market_id": market.get("id"),
-                "question": market.get("question", ""),
+                "question": question_text,
+                "category": classify_market(question_text),
                 "market_price": prediction["market"]["current_price"],
                 "predicted_prob": prediction["prediction"]["probability"],
                 "edge": prediction["edge"]["edge"],
@@ -270,7 +299,7 @@ def resolve_predictions():
 # =========================================================
 
 def report():
-    """Generate accuracy report from tracked predictions."""
+    """Generate accuracy report — per-model, per-category, per-market detail."""
     records = load_tracked()
     resolved = [r for r in records if r.get("resolved")]
     unresolved = [r for r in records if not r.get("resolved")]
@@ -282,127 +311,184 @@ def report():
     print(f"  Resolved:           {len(resolved)}")
     print(f"  Unresolved:         {len(unresolved)}")
 
-    if len(resolved) < 3:
-        print(f"\n  Need at least 3 resolved predictions for metrics.")
-        print(f"  Keep running --scan periodically, markets will resolve over time.")
-
-        # Show unresolved predictions
+    if not resolved:
+        print(f"\n  No resolved predictions yet.")
         if unresolved:
-            print(f"\n  PENDING PREDICTIONS:")
+            print(f"\n  PENDING ({len(unresolved)}):")
             for r in unresolved[:15]:
                 q = r.get("question", "")[:50]
-                edge = r.get("edge", 0)
+                cat = r.get("category", classify_market(r.get("question", "")))
                 models = ",".join(r.get("model_names", []))
-                ai = r.get("ai_reasoning", "")
-                print(f"    {q}")
-                print(f"      Price={r['market_price']:.3f} Pred={r['predicted_prob']:.3f} "
-                      f"Edge={edge:+.3f} Models={models}")
-                if ai:
-                    print(f"      AI: {ai[:80]}")
+                print(f"    [{cat:<12}] {q}")
+                print(f"      Price={r['market_price']:.3f} Pred={r['predicted_prob']:.3f} Models={models}")
         return
 
     # === ENSEMBLE METRICS ===
     preds = np.array([r["predicted_prob"] for r in resolved])
     outcomes = np.array([r["outcome"] for r in resolved])
     prices = np.array([r["market_price"] for r in resolved])
-    edges = np.array([r.get("edge", 0) for r in resolved])
 
     brier = float(np.mean((preds - outcomes) ** 2))
     market_brier = float(np.mean((prices - outcomes) ** 2))
 
-    # Edge hit rate
-    edge_mask = np.abs(edges) > 0.01
-    if edge_mask.sum() > 0:
-        edge_correct = ((edges[edge_mask] > 0) & (outcomes[edge_mask] == 1)) | \
-                       ((edges[edge_mask] < 0) & (outcomes[edge_mask] == 0))
-        edge_hit_rate = float(edge_correct.mean())
-    else:
-        edge_hit_rate = 0
+    print(f"\n  ENSEMBLE:")
+    print(f"    Brier (ours): {brier:.4f}  Brier (mkt): {market_brier:.4f}  "
+          f"Delta: {market_brier - brier:+.4f} {'BETTER' if brier < market_brier else 'WORSE'}")
 
-    # ROI
-    profit = 0.0
-    wagered = 0.0
+    # ================================================================
+    # PER-MODEL, PER-MARKET DETAIL (the full ledger)
+    # ================================================================
+    print(f"\n{'='*70}")
+    print(f"  PER-MODEL TRADE LEDGER")
+    print(f"{'='*70}")
+
+    # Collect all model names
+    all_models = set()
     for r in resolved:
-        e = r.get("edge", 0)
-        o = r["outcome"]
-        mp = r["market_price"]
-        if abs(e) > 0.01:
-            if e > 0:
-                wagered += mp
-                profit += (1 - mp) if o == 1 else -mp
-            else:
-                wagered += (1 - mp)
-                profit += mp if o == 0 else -(1 - mp)
+        for name in r.get("sub_model_estimates", {}).keys():
+            all_models.add(name)
 
-    roi = profit / max(wagered, 0.01)
+    for model in sorted(all_models):
+        print(f"\n  --- {model.upper()} ---")
+        print(f"  {'Market':<40} {'Cat':<12} {'Mkt':>5} {'Est':>5} {'Edge':>6} {'Out':>4} {'P&L':>7} {'Result':>6}")
+        print(f"  {'-'*40} {'-'*12} {'-'*5} {'-'*5} {'-'*6} {'-'*4} {'-'*7} {'-'*6}")
 
-    print(f"\n  ENSEMBLE ACCURACY:")
-    print(f"    Brier Score (ours): {brier:.4f}")
-    print(f"    Brier Score (mkt):  {market_brier:.4f}")
-    print(f"    Brier Edge:         {market_brier - brier:+.4f} {'(BETTER than market)' if brier < market_brier else '(WORSE than market)'}")
-    print(f"    Edge Hit Rate:      {edge_hit_rate:.1%}")
-    print(f"    ROI:                {roi:+.1%}")
-    print(f"    Profit:             ${profit:+.2f} (on ${wagered:.2f} wagered)")
+        model_pnl = 0.0
+        model_trades = 0
+        model_wins = 0
+        cat_pnl = {}  # category -> total P&L for this model
 
-    # === PER-MODEL BREAKDOWN ===
-    model_data = {}
-    for r in resolved:
-        outcome = r["outcome"]
-        mp = r["market_price"]
-        for name, info in r.get("sub_model_estimates", {}).items():
+        for r in resolved:
+            info = r.get("sub_model_estimates", {}).get(model)
+            if info is None:
+                continue
+
             est = info.get("estimate") if isinstance(info, dict) else info
-            if est is not None:
-                if name not in model_data:
-                    model_data[name] = {"est": [], "out": [], "mp": []}
-                model_data[name]["est"].append(est)
-                model_data[name]["out"].append(outcome)
-                model_data[name]["mp"].append(mp)
+            if est is None:
+                continue
 
-    if model_data:
-        print(f"\n  PER-MODEL ACCURACY:")
-        print(f"  {'Model':<20} {'N':>4} {'Brier':>7} {'EdgeHit':>8} {'ROI':>7}")
-        print(f"  {'-'*20} {'-'*4} {'-'*7} {'-'*8} {'-'*7}")
+            mp = r["market_price"]
+            outcome = r["outcome"]
+            cat = r.get("category", classify_market(r.get("question", "")))
+            q = r.get("question", "")[:40]
 
-        for name in sorted(model_data.keys()):
-            d = model_data[name]
-            ests = np.array(d["est"])
+            edge = est - mp
+            # Simulate $1 trade if model had edge > 1%
+            if abs(edge) >= 0.01:
+                model_trades += 1
+                if edge > 0:  # model says BUY YES
+                    pnl = (1 - mp) if outcome == 1 else -mp
+                else:  # model says BUY NO
+                    pnl = mp if outcome == 0 else -(1 - mp)
+                result = "WIN" if pnl > 0 else "LOSS"
+                if pnl > 0:
+                    model_wins += 1
+            else:
+                pnl = 0.0
+                result = "SKIP"
+
+            model_pnl += pnl
+            cat_pnl[cat] = cat_pnl.get(cat, 0) + pnl
+
+            out_str = "YES" if outcome == 1 else "NO"
+            print(f"  {q:<40} {cat:<12} {mp:>5.3f} {est:>5.3f} {edge:>+6.3f} {out_str:>4} ${pnl:>+6.2f} {result:>6}")
+
+        # Model summary
+        win_rate = model_wins / model_trades if model_trades > 0 else 0
+        print(f"  {'':40} {'':12} {'':5} {'':5} {'':6} {'':4} {'-------':>7}")
+        print(f"  {'TOTAL':40} {'':12} {'':5} {'':5} {'':6} {'':4} ${model_pnl:>+6.2f}  "
+              f"{model_trades} trades, {win_rate:.0%} win")
+
+        # Per-category subtotals for this model
+        if cat_pnl:
+            print(f"\n  By category:")
+            for cat in sorted(cat_pnl.keys()):
+                tag = "+" if cat_pnl[cat] > 0 else ""
+                print(f"    {cat:<15} ${cat_pnl[cat]:>+.2f}")
+
+    # ================================================================
+    # PER-MODEL SUMMARY TABLE
+    # ================================================================
+    print(f"\n{'='*70}")
+    print(f"  MODEL SUMMARY")
+    print(f"{'='*70}")
+    print(f"  {'Model':<20} {'N':>4} {'Brier':>7} {'MktBrier':>8} {'Beat?':>6} {'Trades':>6} {'WinR':>5} {'P&L':>8}")
+    print(f"  {'-'*20} {'-'*4} {'-'*7} {'-'*8} {'-'*6} {'-'*6} {'-'*5} {'-'*8}")
+
+    for model in sorted(all_models):
+        ests, outs, mps = [], [], []
+        for r in resolved:
+            info = r.get("sub_model_estimates", {}).get(model)
+            if info is None:
+                continue
+            est = info.get("estimate") if isinstance(info, dict) else info
+            if est is None:
+                continue
+            ests.append(est)
+            outs.append(r["outcome"])
+            mps.append(r["market_price"])
+
+        if not ests:
+            continue
+
+        ests_a = np.array(ests)
+        outs_a = np.array(outs)
+        mps_a = np.array(mps)
+
+        m_brier = float(np.mean((ests_a - outs_a) ** 2))
+        mkt_brier = float(np.mean((mps_a - outs_a) ** 2))
+        beat = "YES" if m_brier < mkt_brier - 0.001 else "no"
+
+        edges = ests_a - mps_a
+        trades, wins, pnl = 0, 0, 0.0
+        for e, o, mp in zip(edges, outs_a, mps_a):
+            if abs(e) < 0.01:
+                continue
+            trades += 1
+            if e > 0:
+                p = (1 - mp) if o == 1 else -mp
+            else:
+                p = mp if o == 0 else -(1 - mp)
+            pnl += p
+            if p > 0:
+                wins += 1
+        wr = f"{wins/trades:.0%}" if trades > 0 else "---"
+
+        print(f"  {model:<20} {len(ests):>4} {m_brier:>7.4f} {mkt_brier:>8.4f} {beat:>6} {trades:>6} {wr:>5} ${pnl:>+7.2f}")
+
+    # ================================================================
+    # PER-CATEGORY SUMMARY
+    # ================================================================
+    from collections import defaultdict
+    cat_results = defaultdict(lambda: {"ens": [], "out": [], "mp": []})
+    for r in resolved:
+        cat = r.get("category", classify_market(r.get("question", "")))
+        cat_results[cat]["ens"].append(r["predicted_prob"])
+        cat_results[cat]["out"].append(r["outcome"])
+        cat_results[cat]["mp"].append(r["market_price"])
+
+    if cat_results:
+        print(f"\n  PER-CATEGORY:")
+        print(f"  {'Category':<15} {'N':>4} {'Our Brier':>10} {'Mkt Brier':>10} {'Beat?':>6}")
+        print(f"  {'-'*15} {'-'*4} {'-'*10} {'-'*10} {'-'*6}")
+        for cat in sorted(cat_results.keys()):
+            d = cat_results[cat]
+            ens = np.array(d["ens"])
             outs = np.array(d["out"])
             mps = np.array(d["mp"])
+            our_b = float(np.mean((ens - outs) ** 2))
+            mkt_b = float(np.mean((mps - outs) ** 2))
+            beat = "YES" if our_b < mkt_b - 0.001 else "no"
+            print(f"  {cat:<15} {len(d['ens']):>4} {our_b:>10.4f} {mkt_b:>10.4f} {beat:>6}")
 
-            m_brier = float(np.mean((ests - outs) ** 2))
-
-            m_edges = ests - mps
-            m_mask = np.abs(m_edges) > 0.01
-            if m_mask.sum() > 0:
-                m_correct = ((m_edges[m_mask] > 0) & (outs[m_mask] == 1)) | \
-                            ((m_edges[m_mask] < 0) & (outs[m_mask] == 0))
-                m_ehr = float(m_correct.mean())
-            else:
-                m_ehr = 0
-
-            m_profit = 0.0
-            m_wagered = 0.0
-            for e, o, mp in zip(m_edges, outs, mps):
-                if abs(e) > 0.01:
-                    if e > 0:
-                        m_wagered += mp
-                        m_profit += (1 - mp) if o == 1 else -mp
-                    else:
-                        m_wagered += (1 - mp)
-                        m_profit += mp if o == 0 else -(1 - mp)
-            m_roi = m_profit / max(m_wagered, 0.01)
-
-            print(f"  {name:<20} {len(d['est']):>4} {m_brier:>7.4f} {m_ehr:>7.1%} {m_roi:>+6.1%}")
-
-    # Show recent resolved
-    print(f"\n  RECENT RESOLUTIONS:")
-    for r in resolved[-10:]:
-        q = r.get("question", "")[:45]
-        e = r.get("edge", 0)
-        o = r["outcome"]
-        correct = (e > 0 and o == 1) or (e < 0 and o == 0)
-        tag = "OK" if correct else "XX"
-        print(f"    [{tag}] {q} Edge={e:+.3f} -> {'YES' if o==1 else 'NO'}")
+    # Show pending
+    if unresolved:
+        print(f"\n  PENDING ({len(unresolved)} markets waiting to resolve):")
+        for r in unresolved[:10]:
+            q = r.get("question", "")[:45]
+            cat = r.get("category", classify_market(r.get("question", "")))
+            models = ",".join(r.get("model_names", []))
+            print(f"    [{cat:<12}] {q}  Models={models}")
 
 
 # =========================================================
