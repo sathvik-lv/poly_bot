@@ -389,7 +389,7 @@ def resolve_positions(state: dict):
             q = pos.get("question", "")[:50]
             tag = "WIN" if pnl > 0 else "LOSS"
             print(f"  [{tag}] {q}")
-            print(f"       {action} ${amount:.2f} → Outcome={'YES' if outcome==1 else 'NO'} "
+            print(f"       {action} ${amount:.2f} -> Outcome={'YES' if outcome==1 else 'NO'} "
                   f"P&L=${pnl:+.2f}")
 
         except Exception:
@@ -631,7 +631,7 @@ def report(state: dict):
             q = p.get("question", "")[:40]
             tag = "WIN" if p["pnl"] > 0 else "LOSS"
             cat = p.get("category", "?")[:8]
-            print(f"    [{tag:>4}] [{cat:<8}] {q} | {p['action']} ${p['amount']:.2f} → ${p['pnl']:+.2f}")
+            print(f"    [{tag:>4}] [{cat:<8}] {q} | {p['action']} ${p['amount']:.2f} -> ${p['pnl']:+.2f}")
 
     else:
         print("\n  No closed trades yet — analytics need resolved trades.")
