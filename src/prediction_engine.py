@@ -141,13 +141,18 @@ class MicrostructureModel:
                 signals["wide_spread_dampen"] = float(wide_dampen)
                 directional_signals.append(wide_dampen)
 
-        # Build estimate
+        # Build estimate — cap adjustment at ±2% (backtest on 5000 markets showed
+        # larger adjustments systematically lose money. Microstructure can detect
+        # small inefficiencies but NOT large mispricings.)
         total_adjustment = sum(directional_signals) if directional_signals else 0
+        total_adjustment = max(-0.02, min(0.02, total_adjustment))
         estimate = float(np.clip(base + total_adjustment, 0.01, 0.99))
 
-        # Variance: lower when tight spread and high volume (confident)
+        # Variance: set HIGH relative to other models. Backtest proved microstructure
+        # alone cannot beat market price (Brier 0.1781 vs market 0.1665).
+        # High variance = low weight in ensemble = defers to better models.
         efficiency = signals.get("market_efficiency", 0.5)
-        variance = 0.04 * (1.3 - efficiency * 0.5)
+        variance = 0.08 * (1.3 - efficiency * 0.3)
 
         return {
             "estimate": float(estimate),
