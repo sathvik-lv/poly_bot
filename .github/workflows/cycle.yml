@@ -67,11 +67,6 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
 
-      - name: Run rolling backtest (incremental accuracy)
-        run: python scripts/rolling_backtest.py --batch 150
-        timeout-minutes: 10
-        continue-on-error: true
-
       - name: Run finance scanner
         run: python scripts/finance_scanner.py
         timeout-minutes: 5
