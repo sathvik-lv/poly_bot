@@ -1,8 +1,8 @@
-name: Poly Bot (Hourly)
+name: Poly Bot (Every 30 min)
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -41,8 +41,8 @@ jobs:
           echo "ALPHA_VANTAGE_KEY=${{ secrets.ALPHA_VANTAGE_KEY }}" >> .env
           echo "ODDS_API_KEY=${{ secrets.ODDS_API_KEY }}" >> .env
 
-      - name: Scan + paper trade
-        run: python scripts/paper_trader.py --scan -n 30
+      - name: Scan + paper trade (50 markets)
+        run: python scripts/paper_trader.py --scan -n 50
         timeout-minutes: 15
         continue-on-error: true
 
@@ -54,6 +54,11 @@ jobs:
       - name: Paper trade report
         run: python scripts/paper_trader.py --report
         timeout-minutes: 1
+        continue-on-error: true
+
+      - name: Live tracker scan (record predictions for accuracy data)
+        run: python scripts/live_tracker.py --scan -n 50
+        timeout-minutes: 15
         continue-on-error: true
 
       - name: Resolve live predictions
