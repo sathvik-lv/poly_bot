@@ -1,9 +1,38 @@
 {
-  "timestamp": "2026-04-09T20:17:25.569863+00:00",
+  "timestamp": "2026-04-09T21:12:26.404199+00:00",
   "n_markets": 1000,
-  "n_constraints": 44,
-  "n_violations": 7,
-  "time_hierarchy_violations": [],
+  "n_constraints": 45,
+  "n_violations": 8,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Military action against Iran ends by April 9, 2026 <= Military action against Iran ends by April 15, 202",
+      "prices": "A=0.952 > B=0.921",
+      "gap": 0.0305,
+      "profit_pct": 1.1,
+      "trade": "BUY 'Military action against Iran ends by Apr' YES + BUY 'Military action against Iran ends by Apr' NO",
+      "reason": "P(by by april 9, 2026) <= P(by by april 15, 2026)",
+      "group": "time_hierarchy:military action against iran ends ___DAT",
+      "market_a": {
+        "id": "1706350",
+        "question": "Military action against Iran ends by April 9, 2026?",
+        "slug": "military-action-against-iran-ends-by-april-9-2026",
+        "yes_price": 0.952,
+        "no_price": 0.048,
+        "volume": 49336.913971999995,
+        "end_date": "2026-04-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1718663",
+        "question": "Military action against Iran ends by April 15, 2026?",
+        "slug": "military-action-against-iran-ends-by-april-15-2026-937",
+        "yes_price": 0.9215,
+        "no_price": 0.0785,
+        "volume": 94092.54865499989,
+        "end_date": "2026-03-31T00:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
@@ -15,43 +44,43 @@
     },
     {
       "group": "France_Pres_2027",
-      "prices": "sum=0.1320 (off by -0.8680)",
-      "profit_pct": 642.42,
-      "trade": "BUY_ALL across 8 outcomes",
-      "n_markets": 8
-    },
-    {
-      "group": "NHL_Cup_2026",
-      "prices": "sum=0.2390 (off by -0.7610)",
-      "profit_pct": 310.04,
+      "prices": "sum=0.1210 (off by -0.8790)",
+      "profit_pct": 709.92,
       "trade": "BUY_ALL across 6 outcomes",
       "n_markets": 6
     },
     {
-      "group": "US_Pres_2028",
-      "prices": "sum=0.7765 (off by -0.2235)",
-      "profit_pct": 26.21,
-      "trade": "BUY_ALL across 31 outcomes",
-      "n_markets": 31
+      "group": "NHL_Cup_2026",
+      "prices": "sum=0.3185 (off by -0.6815)",
+      "profit_pct": 207.69,
+      "trade": "BUY_ALL across 7 outcomes",
+      "n_markets": 7
     },
     {
       "group": "GOP_Nom_2028",
-      "prices": "sum=0.8265 (off by -0.1735)",
-      "profit_pct": 18.57,
+      "prices": "sum=0.8315 (off by -0.1685)",
+      "profit_pct": 17.86,
       "trade": "BUY_ALL across 23 outcomes",
       "n_markets": 23
     },
     {
+      "group": "US_Pres_2028",
+      "prices": "sum=0.8360 (off by -0.1640)",
+      "profit_pct": 17.22,
+      "trade": "BUY_ALL across 32 outcomes",
+      "n_markets": 32
+    },
+    {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.8670 (off by -0.1330)",
-      "profit_pct": 13.03,
-      "trade": "BUY_ALL across 38 outcomes",
-      "n_markets": 38
+      "prices": "sum=0.8725 (off by -0.1275)",
+      "profit_pct": 12.32,
+      "trade": "BUY_ALL across 39 outcomes",
+      "n_markets": 39
     },
     {
       "group": "Fed_June_2026",
-      "prices": "sum=0.9165 (off by -0.0835)",
-      "profit_pct": 6.93,
+      "prices": "sum=0.9115 (off by -0.0885)",
+      "profit_pct": 7.52,
       "trade": "BUY_ALL across 4 outcomes",
       "n_markets": 4
     }
