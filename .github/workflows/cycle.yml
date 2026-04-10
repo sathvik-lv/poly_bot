@@ -131,6 +131,19 @@ jobs:
             echo "Nothing to commit"
           else
             git commit -m "auto: cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
-            git pull --rebase
-            git push
+            # On overlapping cycles, prefer THIS run's data on conflict
+            # ('theirs' in rebase = the commit being applied = our local commit).
+            # The next 30-min cycle will refresh anything we drop.
+            # Retry once in case another push lands during the rebase.
+            for attempt in 1 2 3; do
+              if git pull --rebase -X theirs && git push; then
+                echo "Push succeeded on attempt $attempt"
+                exit 0
+              fi
+              echo "Push attempt $attempt failed, retrying..."
+              git rebase --abort 2>/dev/null || true
+              sleep $((attempt * 5))
+            done
+            echo "Push failed after 3 attempts" >&2
+            exit 1
           fi
