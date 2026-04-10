@@ -656,18 +656,28 @@ class AISemanticModel:
         "liquid/lfm-2.5-1.2b-thinking:free",
     ]
 
+    # Circuit breaker — after this many consecutive total-failures across markets,
+    # AI is disabled for the rest of this engine's lifetime (one scan).
+    STORM_THRESHOLD = 3
+
     def __init__(self, api_key: Optional[str] = None, model: str = "nvidia/nemotron-3-super-120b-a12b:free"):
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
         self.model = model
         self.enabled = bool(self.api_key)
         self.rag = NewsRAGEngine()
         self._model_index = 0  # rotate through models
+        self._blocked_models: set = set()   # models that 429'd this scan — skip them
+        self._consecutive_total_failures = 0
+        self._storm_disabled = False        # tripped after STORM_THRESHOLD failures
 
-    def _next_model(self) -> str:
-        """Get next model in rotation."""
-        model = self.FREE_MODELS[self._model_index % len(self.FREE_MODELS)]
-        self._model_index += 1
-        return model
+    def _next_model(self) -> Optional[str]:
+        """Get next non-blocked model in rotation, or None if all are blocked."""
+        for _ in range(len(self.FREE_MODELS)):
+            model = self.FREE_MODELS[self._model_index % len(self.FREE_MODELS)]
+            self._model_index += 1
+            if model not in self._blocked_models:
+                return model
+        return None
 
     def _call_model(self, prompt: str, model: str) -> Optional[dict]:
         """Call a single model. Returns parsed response or None on failure."""
@@ -684,10 +694,12 @@ class AISemanticModel:
                     "temperature": 0.2,
                     "max_tokens": 600,
                 },
-                timeout=30,
+                timeout=12,
             )
             if resp.status_code == 429:
-                return None  # rate limited, try next
+                # Blacklist this model for the rest of the scan
+                self._blocked_models.add(model)
+                return None
             resp.raise_for_status()
             msg = resp.json()["choices"][0]["message"]
             content = msg.get("content") or ""
@@ -711,12 +723,21 @@ class AISemanticModel:
         """Ask LLMs to estimate probability — rotates through all free models.
 
         Tries up to 5 models if rate-limited, uses first successful response.
+        Trips a circuit-breaker after STORM_THRESHOLD consecutive total-failures
+        so a rate-limit storm can't burn the entire scan budget.
         """
         if not self.enabled:
             return {
                 "estimate": None,
                 "variance": None,
                 "signals": {"ai_disabled": True},
+                "model": "ai_semantic",
+            }
+        if self._storm_disabled:
+            return {
+                "estimate": None,
+                "variance": None,
+                "signals": {"ai_disabled": "rate_limit_storm"},
                 "model": "ai_semantic",
             }
 
@@ -757,23 +778,31 @@ Respond with ONLY a JSON object (no other text):
     "edge_vs_market": <your probability minus market price>
 }}"""
 
-        # Try up to 8 models with rotation
+        # Try up to 8 models with rotation, skipping any already-blocked
         parsed = None
         models_tried = []
         for _ in range(8):
             model = self._next_model()
+            if model is None:
+                break  # every model is blocked — no point looping
             models_tried.append(model.split("/")[-1].split(":")[0])
             parsed = self._call_model(prompt, model)
             if parsed is not None:
                 break
 
         if parsed is None:
+            self._consecutive_total_failures += 1
+            if self._consecutive_total_failures >= self.STORM_THRESHOLD:
+                self._storm_disabled = True
             return {
                 "estimate": None,
                 "variance": None,
                 "signals": {"ai_error": f"All models failed: {','.join(models_tried)}"},
                 "model": "ai_semantic",
             }
+
+        # Success — reset the storm counter
+        self._consecutive_total_failures = 0
 
         try:
             estimate = float(parsed["probability"])

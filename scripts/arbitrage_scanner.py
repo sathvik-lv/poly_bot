@@ -146,7 +146,17 @@ def find_related_groups(markets: list[dict]) -> dict[str, list[dict]]:
 def analyze_group(name: str, markets: list[dict]) -> dict:
     """Analyze a group of related markets for arbitrage."""
     if len(markets) < 2:
-        return {"group": name, "n_markets": len(markets), "arbitrage": False}
+        return {
+            "group": name,
+            "n_markets": len(markets),
+            "total_yes_price": round(sum(m["yes_price"] for m in markets), 4),
+            "overpriced_by": 0.0,
+            "total_volume": sum(m["volume"] for m in markets),
+            "markets": markets,
+            "arbitrage": False,
+            "strategy": "NONE",
+            "expected_profit_pct": 0,
+        }
 
     total_yes = sum(m["yes_price"] for m in markets)
     total_volume = sum(m["volume"] for m in markets)
