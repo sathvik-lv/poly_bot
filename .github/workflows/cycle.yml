@@ -14,7 +14,7 @@ env:
 jobs:
   cycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repo
@@ -68,6 +68,27 @@ jobs:
 
       - name: Live tracker report
         run: python scripts/live_tracker.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+
+      # ============================================================
+      # TEST 1 — Parallel shadow ledger (Kelly fraction stress test)
+      # Same Kelly determination as Test 0, only the allocation
+      # multiplier varies in the report (1/8x, 1/5x, 1/4x, 1/3x, 1/2x, 1x).
+      # Writes only to data/test1_ledger.jsonl — does not touch Test 0.
+      # ============================================================
+      - name: Test 1 collector (200 markets, re-predict 6h)
+        run: python scripts/test1_collector.py -n 200
+        timeout-minutes: 20
+        continue-on-error: true
+
+      - name: Test 1 resolver
+        run: python scripts/test1_resolver.py
+        timeout-minutes: 5
+        continue-on-error: true
+
+      - name: Test 1 compounded report
+        run: python scripts/test1_report.py
         timeout-minutes: 1
         continue-on-error: true
 
