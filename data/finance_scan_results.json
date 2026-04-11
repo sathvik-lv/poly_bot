@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-11T16:51:58.182054+00:00",
+  "timestamp": "2026-04-11T17:38:54.367205+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,10 +26,10 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 73181,
-      "change_24h": 0.35168,
-      "change_7d": 8.64372,
-      "change_30d": 4.02253,
+      "price": 73160,
+      "change_24h": 0.37011,
+      "change_7d": 8.49253,
+      "change_30d": 3.9192,
       "ath": 126080,
       "high_24h": 73370,
       "low_24h": 72626,
@@ -40,8 +40,8 @@
       "classification": "Extreme Fear"
     }
   },
-  "n_markets": 4,
-  "n_with_edge": 4,
+  "n_markets": 5,
+  "n_with_edge": 5,
   "results": [
     {
       "question": "Will Kevin Warsh be confirmed as Fed Chair?",
@@ -57,7 +57,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 3895163.503046998,
+      "volume": 3903536.563046998,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -69,19 +69,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $150 in April?",
-      "market_price": 0.042,
+      "market_price": 0.0395,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.032,
-      "real_edge": -0.032,
+      "edge": -0.0295,
+      "real_edge": -0.0295,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1894037.6097779935,
+      "volume": 1907099.552100993,
       "signals": {
         "current_price": 70,
         "target": 150.0,
@@ -108,9 +108,36 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1001342.8472640025,
+      "volume": 1013697.9558990024,
       "signals": {
         "error": "no_target_found"
+      }
+    },
+    {
+      "question": "Will WTI Crude Oil (WTI) hit (LOW) $90 in April?",
+      "market_price": 0.825,
+      "our_estimate": 0.0105,
+      "quant_estimate": 0.0105,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.8145,
+      "real_edge": -0.8145,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 939204.071791997,
+      "signals": {
+        "current_price": 70,
+        "target": 90.0,
+        "direction": "HIGH",
+        "days_left": 19,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 2.31,
+        "recent_closes": [],
+        "vix": 20
       }
     },
     {
@@ -127,13 +154,13 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 761787.4705800029,
+      "volume": 762188.0428570028,
       "signals": {
-        "current_price": 73181,
+        "current_price": 73160,
         "target": 75000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.35,
-        "change_7d": 8.64,
+        "change_24h": 0.37,
+        "change_7d": 8.49,
         "daily_vol": 0.035,
         "days_left": 19,
         "high_24h": 73370,
