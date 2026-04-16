@@ -1,64 +1,79 @@
 {
-  "timestamp": "2026-04-16T18:15:44.560005+00:00",
+  "timestamp": "2026-04-16T19:54:05.885592+00:00",
   "n_markets": 1000,
-  "n_constraints": 61,
-  "n_violations": 8,
-  "time_hierarchy_violations": [],
+  "n_constraints": 63,
+  "n_violations": 7,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Iran agrees to surrender enriched uranium stockpil <= Iran agrees to surrender enriched uranium stockpil",
+      "prices": "A=0.715 > B=0.685",
+      "gap": 0.03,
+      "profit_pct": 1.4,
+      "trade": "BUY 'Iran agrees to surrender enriched uraniu' YES + BUY 'Iran agrees to surrender enriched uraniu' NO",
+      "reason": "P(by by june 30, 2026) <= P(by by december 31, 2026)",
+      "group": "time_hierarchy:iran agrees to surrender enriched uraniu",
+      "market_a": {
+        "id": "1731345",
+        "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
+        "slug": "iran-agrees-to-surrender-enriched-uranium-stockpile-by-june-30-2026",
+        "yes_price": 0.715,
+        "no_price": 0.285,
+        "volume": 211700.2430659997,
+        "end_date": "2026-06-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1731346",
+        "question": "Iran agrees to surrender enriched uranium stockpile by December 31, 2026?",
+        "slug": "iran-agrees-to-surrender-enriched-uranium-stockpile-by-december-31-2026",
+        "yes_price": 0.685,
+        "no_price": 0.315,
+        "volume": 158911.68534799994,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
-      "group": "Colombia_Pres_2026",
-      "prices": "sum=0.1865 (off by -0.8135)",
-      "profit_pct": 425.47,
-      "trade": "BUY_ALL across 2 outcomes",
-      "n_markets": 2
-    },
-    {
       "group": "France_Pres_2027",
-      "prices": "sum=0.2915 (off by -0.7085)",
-      "profit_pct": 236.19,
-      "trade": "BUY_ALL across 24 outcomes",
-      "n_markets": 24
+      "prices": "sum=0.2535 (off by -0.7465)",
+      "profit_pct": 286.59,
+      "trade": "BUY_ALL across 23 outcomes",
+      "n_markets": 23
     },
     {
       "group": "NHL_Cup_2026",
-      "prices": "sum=0.5940 (off by -0.4060)",
-      "profit_pct": 64.98,
-      "trade": "BUY_ALL across 7 outcomes",
-      "n_markets": 7
-    },
-    {
-      "group": "Fed_April_2026",
-      "prices": "sum=1.9645 (off by +0.9645)",
-      "profit_pct": 48.08,
-      "trade": "SELL_ALL across 5 outcomes",
-      "n_markets": 5
-    },
-    {
-      "group": "US_Pres_2028",
-      "prices": "sum=0.8385 (off by -0.1615)",
-      "profit_pct": 16.88,
-      "trade": "BUY_ALL across 32 outcomes",
-      "n_markets": 32
+      "prices": "sum=0.4520 (off by -0.5480)",
+      "profit_pct": 116.81,
+      "trade": "BUY_ALL across 6 outcomes",
+      "n_markets": 6
     },
     {
       "group": "FIFA_WC_2026",
-      "prices": "sum=1.2265 (off by +0.2265)",
-      "profit_pct": 16.84,
+      "prices": "sum=1.2295 (off by +0.2295)",
+      "profit_pct": 17.04,
       "trade": "SELL_ALL across 49 outcomes",
       "n_markets": 49
     },
     {
       "group": "GOP_Nom_2028",
-      "prices": "sum=0.8885 (off by -0.1115)",
-      "profit_pct": 10.3,
-      "trade": "BUY_ALL across 29 outcomes",
-      "n_markets": 29
+      "prices": "sum=0.8610 (off by -0.1390)",
+      "profit_pct": 13.82,
+      "trade": "BUY_ALL across 28 outcomes",
+      "n_markets": 28
+    },
+    {
+      "group": "US_Pres_2028",
+      "prices": "sum=0.8635 (off by -0.1365)",
+      "profit_pct": 13.49,
+      "trade": "BUY_ALL across 33 outcomes",
+      "n_markets": 33
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.9020 (off by -0.0980)",
-      "profit_pct": 8.65,
+      "prices": "sum=0.9125 (off by -0.0875)",
+      "profit_pct": 7.4,
       "trade": "BUY_ALL across 42 outcomes",
       "n_markets": 42
     }
