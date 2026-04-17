@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-16T23:48:51.277038+00:00",
+  "timestamp": "2026-04-17T02:39:11.289203+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,17 +26,17 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 75112,
-      "change_24h": 0.50053,
-      "change_7d": 3.93702,
-      "change_30d": 0.56379,
+      "price": 74658,
+      "change_24h": -0.51642,
+      "change_7d": 3.83381,
+      "change_30d": 1.08781,
       "ath": 126080,
       "high_24h": 75404,
       "low_24h": 73501,
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 23,
+      "value": 21,
       "classification": "Extreme Fear"
     }
   },
@@ -45,51 +45,51 @@
   "results": [
     {
       "question": "Will Kevin Warsh be confirmed as Fed Chair?",
-      "market_price": 0.941,
-      "our_estimate": 0.5,
+      "market_price": 0.9395,
+      "our_estimate": 0.5571,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.441,
-      "real_edge": -0.441,
+      "ai_estimate": 0.6,
+      "ai_reasoning": "The current macroeconomic conditions, with moderate inflation and interest rates, suggest a relatively stable environment for a new Fed Chair. However, the lack of more specific data points related to Kevin Warsh's confirmation chances makes it difficult to provide a higher confidence estimate.",
+      "edge": -0.3824,
+      "real_edge": -0.3824,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 5991281.6094259955,
+      "models": "quant(43%)+AI(57%)",
+      "n_models": 2,
+      "volume": 6036698.104954995,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 23,
+        "fear_greed": 21,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "unclassified_fed"
       }
     },
     {
       "question": "Will Bitcoin reach $80,000 in April?",
-      "market_price": 0.355,
-      "our_estimate": 0.5,
+      "market_price": 0.305,
+      "our_estimate": 0.574,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.145,
-      "real_edge": 0.145,
+      "ai_estimate": 0.62,
+      "ai_reasoning": "Bitcoin is trading at $74,658 with 13 days left in April\u2014requiring a ~7.1% gain, well within its recent 7-day volatility (3.83% up) and 3.5% daily standard deviation. Despite extreme fear sentiment (F&G=21), the positive 7-day momentum and typical April seasonality (historically strong for BTC) support upside potential, though macro uncertainty (rising Treasury yields, oil volatility) caps near-term upside. Model output aligns with a moderate-to-high probability, but not certainty.",
+      "edge": 0.269,
+      "real_edge": 0.269,
       "categories": [
         "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 2761756.572706929,
+      "models": "quant(38%)+AI(62%)",
+      "n_models": 2,
+      "volume": 2776561.433440928,
       "signals": {
-        "current_price": 75112,
+        "current_price": 74658,
         "target": 80000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.5,
-        "change_7d": 3.94,
+        "change_24h": -0.52,
+        "change_7d": 3.83,
         "daily_vol": 0.035,
-        "days_left": 14,
+        "days_left": 13,
         "high_24h": 75404,
         "low_24h": 73501
       }
@@ -108,42 +108,42 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2632663.3195829922,
+      "volume": 2634947.647646994,
       "signals": {
         "current_price": 70,
         "target": 130.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 6.62,
+        "z_score": 6.87,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in April?",
-      "market_price": 0.0495,
+      "market_price": 0.0435,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.0395,
-      "real_edge": -0.0395,
+      "edge": -0.0335,
+      "real_edge": -0.0335,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2465821.9883259954,
+      "volume": 2469687.155713995,
       "signals": {
         "current_price": 70,
         "target": 140.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 7.41,
+        "z_score": 7.69,
         "recent_closes": [],
         "vix": 20
       }
@@ -151,26 +151,26 @@
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $80 in April?",
       "market_price": 0.305,
-      "our_estimate": 0.0767,
-      "quant_estimate": 0.0767,
+      "our_estimate": 0.0693,
+      "quant_estimate": 0.0693,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.2283,
-      "real_edge": -0.2283,
+      "edge": -0.2357,
+      "real_edge": -0.2357,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2313139.4971849984,
+      "volume": 2318510.9165749988,
       "signals": {
         "current_price": 70,
         "target": 80.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 1.43,
+        "z_score": 1.48,
         "recent_closes": [],
         "vix": 20
       }
@@ -178,199 +178,201 @@
     {
       "question": "Will Bitcoin dip to $65,000 in April?",
       "market_price": 0.145,
-      "our_estimate": 0.2695,
-      "quant_estimate": 0.2695,
+      "our_estimate": 0.2723,
+      "quant_estimate": 0.2723,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.1245,
-      "real_edge": 0.1245,
+      "edge": 0.1273,
+      "real_edge": 0.1273,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1899389.0767230038,
+      "volume": 1904727.4006550037,
       "signals": {
-        "current_price": 75112,
+        "current_price": 74658,
         "target": 65000.0,
         "direction": "DIP",
-        "change_24h": 0.5,
-        "change_7d": 3.94,
+        "change_24h": -0.52,
+        "change_7d": 3.83,
         "daily_vol": 0.035,
-        "days_left": 14,
+        "days_left": 13,
         "high_24h": 75404,
         "low_24h": 73501
       }
     },
     {
       "question": "Will Bitcoin reach $85,000 in April?",
-      "market_price": 0.0675,
+      "market_price": 0.0645,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4325,
-      "real_edge": 0.4325,
+      "edge": 0.4355,
+      "real_edge": 0.4355,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1574912.0463609966,
+      "volume": 1581582.9243029966,
       "signals": {
-        "current_price": 75112,
+        "current_price": 74658,
         "target": 85000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.5,
-        "change_7d": 3.94,
+        "change_24h": -0.52,
+        "change_7d": 3.83,
         "daily_vol": 0.035,
-        "days_left": 14,
+        "days_left": 13,
         "high_24h": 75404,
         "low_24h": 73501
       }
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (LOW) $70 in April?",
-      "market_price": 0.075,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.425,
-      "real_edge": 0.425,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 1353357.3527320006,
-      "signals": {
-        "current_price": 70,
-        "target": 70.0,
-        "direction": "HIGH",
-        "days_left": 14,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 0.0,
-        "recent_closes": [],
-        "vix": 20
-      }
-    },
-    {
       "question": "Iran agrees to surrender enriched uranium stockpile by April 30, 2026?",
-      "market_price": 0.4035,
+      "market_price": 0.396,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0965,
-      "real_edge": 0.0965,
+      "edge": 0.104,
+      "real_edge": 0.104,
       "categories": [
         "stocks"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 647107.6506749997,
+      "volume": 653913.0908549995,
       "signals": {}
     },
     {
       "question": "Will MegaETH launch a token by April 30, 2026?",
-      "market_price": 0.32,
+      "market_price": 0.22,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.18,
-      "real_edge": 0.18,
+      "edge": 0.28,
+      "real_edge": 0.28,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 449976.0882230004,
+      "volume": 480877.9164060005,
       "signals": {
-        "current_price": 75112,
+        "current_price": 74658,
         "target": 2026.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.5,
-        "change_7d": 3.94,
+        "change_24h": -0.52,
+        "change_7d": 3.83,
         "daily_vol": 0.035,
-        "days_left": 14,
+        "days_left": 13,
         "high_24h": 75404,
         "low_24h": 73501
       }
     },
     {
-      "question": "Canucks vs. Oilers",
-      "market_price": 0.265,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.235,
-      "real_edge": 0.235,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 336989.6181119999,
-      "signals": {
-        "error": "no_target_found"
-      }
-    },
-    {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $100 in April?",
-      "market_price": 0.425,
+      "market_price": 0.485,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.415,
-      "real_edge": -0.415,
+      "edge": -0.475,
+      "real_edge": -0.475,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 194339.75864400013,
+      "volume": 206733.77376800013,
       "signals": {
         "current_price": 70,
         "target": 100.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 3.81,
+        "z_score": 3.96,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will the price of Bitcoin be above $76,000 on April 17?",
-      "market_price": 0.255,
-      "our_estimate": 0.4642,
-      "quant_estimate": 0.4642,
+      "market_price": 0.115,
+      "our_estimate": 0.4439,
+      "quant_estimate": 0.4439,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.2092,
-      "real_edge": 0.2092,
+      "edge": 0.3289,
+      "real_edge": 0.3289,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 138886.58298800004,
+      "volume": 160856.89639499996,
       "signals": {
-        "current_price": 75112,
+        "current_price": 74658,
         "target": 76000.0,
         "direction": "ABOVE",
-        "change_24h": 0.5,
-        "change_7d": 3.94,
+        "change_24h": -0.52,
+        "change_7d": 3.83,
         "daily_vol": 0.035,
-        "days_left": 14,
+        "days_left": 13,
         "high_24h": 75404,
         "low_24h": 73501
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $74,000 on April 17?",
+      "market_price": 0.715,
+      "our_estimate": 0.95,
+      "quant_estimate": 0.95,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.235,
+      "real_edge": 0.235,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 126913.7897929998,
+      "signals": {
+        "current_price": 74658,
+        "target": 74000.0,
+        "direction": "ABOVE",
+        "change_24h": -0.52,
+        "change_7d": 3.83,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 75404,
+        "low_24h": 73501
+      }
+    },
+    {
+      "question": "Bitcoin Up or Down on April 17?",
+      "market_price": 0.475,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.025,
+      "real_edge": 0.025,
+      "categories": [
+        "crypto",
+        "stocks"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 94664.29014299948,
+      "signals": {
+        "type": "direction",
+        "change_24h": -0.51642
       }
     }
   ]
