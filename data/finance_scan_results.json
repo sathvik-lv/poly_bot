@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-19T16:47:36.379581+00:00",
+  "timestamp": "2026-04-19T17:43:32.946961+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,10 +26,10 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 75623,
-      "change_24h": -0.47644,
-      "change_7d": 6.84312,
-      "change_30d": 8.43677,
+      "price": 75180,
+      "change_24h": -0.9443,
+      "change_7d": 6.02933,
+      "change_30d": 7.67005,
       "ath": 126080,
       "high_24h": 76165,
       "low_24h": 74988,
@@ -40,24 +40,24 @@
       "classification": "Fear"
     }
   },
-  "n_markets": 7,
-  "n_with_edge": 7,
+  "n_markets": 9,
+  "n_with_edge": 9,
   "results": [
     {
       "question": "Will Kevin Warsh be confirmed as Fed Chair?",
-      "market_price": 0.943,
+      "market_price": 0.945,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.443,
-      "real_edge": -0.443,
+      "edge": -0.445,
+      "real_edge": -0.445,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 7021809.95020389,
+      "volume": 7033854.34488689,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -69,19 +69,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in April?",
-      "market_price": 0.0725,
+      "market_price": 0.0755,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.0625,
-      "real_edge": -0.0625,
+      "edge": -0.0655,
+      "real_edge": -0.0655,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 4161644.6311529963,
+      "volume": 4164954.324670997,
       "signals": {
         "current_price": 70,
         "target": 120.0,
@@ -96,25 +96,25 @@
     },
     {
       "question": "Will Bitcoin reach $80,000 in April?",
-      "market_price": 0.385,
+      "market_price": 0.345,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.115,
-      "real_edge": 0.115,
+      "edge": 0.155,
+      "real_edge": 0.155,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 3700683.1572129065,
+      "volume": 3703928.240905907,
       "signals": {
-        "current_price": 75623,
+        "current_price": 75180,
         "target": 80000.0,
         "direction": "UNKNOWN",
-        "change_24h": -0.48,
-        "change_7d": 6.84,
+        "change_24h": -0.94,
+        "change_7d": 6.03,
         "daily_vol": 0.035,
         "days_left": 11,
         "high_24h": 76165,
@@ -122,26 +122,80 @@
       }
     },
     {
-      "question": "Will Bitcoin dip to $65,000 in April?",
-      "market_price": 0.105,
-      "our_estimate": 0.1922,
-      "quant_estimate": 0.1922,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in April?",
+      "market_price": 0.034,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0872,
-      "real_edge": 0.0872,
+      "edge": -0.024,
+      "real_edge": -0.024,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 2911179.638467992,
+      "signals": {
+        "current_price": 70,
+        "target": 140.0,
+        "direction": "HIGH",
+        "days_left": 11,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 8.36,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
+      "question": "Will Bitcoin dip to $65,000 in April?",
+      "market_price": 0.115,
+      "our_estimate": 0.2101,
+      "quant_estimate": 0.2101,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.0951,
+      "real_edge": 0.0951,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2450134.585307004,
+      "volume": 2460301.251713003,
       "signals": {
-        "current_price": 75623,
+        "current_price": 75180,
         "target": 65000.0,
         "direction": "DIP",
-        "change_24h": -0.48,
-        "change_7d": 6.84,
+        "change_24h": -0.94,
+        "change_7d": 6.03,
+        "daily_vol": 0.035,
+        "days_left": 11,
+        "high_24h": 76165,
+        "low_24h": 74988
+      }
+    },
+    {
+      "question": "Will Bitcoin reach $85,000 in April?",
+      "market_price": 0.0705,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.4295,
+      "real_edge": 0.4295,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 2030851.4340619962,
+      "signals": {
+        "current_price": 75180,
+        "target": 85000.0,
+        "direction": "UNKNOWN",
+        "change_24h": -0.94,
+        "change_7d": 6.03,
         "daily_vol": 0.035,
         "days_left": 11,
         "high_24h": 76165,
@@ -150,30 +204,30 @@
     },
     {
       "question": "Iran agrees to surrender enriched uranium stockpile by April 30, 2026?",
-      "market_price": 0.423,
+      "market_price": 0.384,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.077,
-      "real_edge": 0.077,
+      "edge": 0.116,
+      "real_edge": 0.116,
       "categories": [
         "stocks"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1175061.9298089992,
+      "volume": 1187293.556014999,
       "signals": {}
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $60 in April?",
-      "market_price": 0.0375,
+      "market_price": 0.039,
       "our_estimate": 0.9685,
       "quant_estimate": 0.9685,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.931,
-      "real_edge": 0.931,
+      "edge": 0.9295,
+      "real_edge": 0.9295,
       "categories": [
         "oil"
       ],
@@ -194,19 +248,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $75 in April?",
-      "market_price": 0.295,
+      "market_price": 0.275,
       "our_estimate": 0.2027,
       "quant_estimate": 0.2027,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.0923,
-      "real_edge": -0.0923,
+      "edge": -0.0723,
+      "real_edge": -0.0723,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 651201.9742839998,
+      "volume": 664556.1558419998,
       "signals": {
         "current_price": 70,
         "target": 75.0,
