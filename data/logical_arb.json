@@ -1,64 +1,93 @@
 {
-  "timestamp": "2026-04-20T18:16:56.216347+00:00",
+  "timestamp": "2026-04-20T19:52:05.773687+00:00",
   "n_markets": 1000,
-  "n_constraints": 47,
-  "n_violations": 8,
-  "time_hierarchy_violations": [],
+  "n_constraints": 44,
+  "n_violations": 9,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Will MegaETH launch a token by May 31, 2026? <= Will MegaETH launch a token by June 30, 2026?",
+      "prices": "A=0.925 > B=0.900",
+      "gap": 0.025,
+      "profit_pct": 0.54,
+      "trade": "BUY 'Will MegaETH launch a token by June 30, ' YES + BUY 'Will MegaETH launch a token by May 31, 2' NO",
+      "reason": "P(by by may 31, 2026) <= P(by by june 30, 2026)",
+      "group": "time_hierarchy:will megaeth launch a token ___DATE___?",
+      "market_a": {
+        "id": "1895335",
+        "question": "Will MegaETH launch a token by May 31, 2026?",
+        "slug": "will-megaeth-launch-a-token-by-may-31-2026",
+        "yes_price": 0.925,
+        "no_price": 0.075,
+        "volume": 64737.34657099993,
+        "end_date": "2027-01-01T05:00:00Z"
+      },
+      "market_b": {
+        "id": "1383662",
+        "question": "Will MegaETH launch a token by June 30, 2026?",
+        "slug": "will-megaeth-launch-a-token-by-june-30-2026-676-993-477",
+        "yes_price": 0.9,
+        "no_price": 0.1,
+        "volume": 355068.1935869997,
+        "end_date": "2027-01-01T05:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
       "group": "Brazil_Pres_2026",
-      "prices": "sum=0.2135 (off by -0.7865)",
-      "profit_pct": 359.02,
+      "prices": "sum=0.2120 (off by -0.7880)",
+      "profit_pct": 362.26,
       "trade": "BUY_ALL across 13 outcomes",
       "n_markets": 13
     },
     {
       "group": "France_Pres_2027",
-      "prices": "sum=0.4345 (off by -0.5655)",
-      "profit_pct": 125.55,
+      "prices": "sum=0.4540 (off by -0.5460)",
+      "profit_pct": 115.86,
       "trade": "BUY_ALL across 23 outcomes",
       "n_markets": 23
     },
     {
       "group": "Fed_April_2026",
-      "prices": "sum=1.9925 (off by +0.9925)",
-      "profit_pct": 48.81,
+      "prices": "sum=1.9920 (off by +0.9920)",
+      "profit_pct": 48.8,
       "trade": "SELL_ALL across 7 outcomes",
       "n_markets": 7
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.7930 (off by -0.2070)",
-      "profit_pct": 23.58,
-      "trade": "BUY_ALL across 41 outcomes",
-      "n_markets": 41
+      "prices": "sum=0.8280 (off by -0.1720)",
+      "profit_pct": 18.36,
+      "trade": "BUY_ALL across 42 outcomes",
+      "n_markets": 42
     },
     {
       "group": "NHL_Cup_2026",
-      "prices": "sum=0.8300 (off by -0.1700)",
-      "profit_pct": 18.07,
+      "prices": "sum=0.8350 (off by -0.1650)",
+      "profit_pct": 17.37,
       "trade": "BUY_ALL across 14 outcomes",
       "n_markets": 14
     },
     {
       "group": "FIFA_WC_2026",
-      "prices": "sum=1.2120 (off by +0.2120)",
-      "profit_pct": 15.84,
+      "prices": "sum=1.2150 (off by +0.2150)",
+      "profit_pct": 16.05,
       "trade": "SELL_ALL across 49 outcomes",
       "n_markets": 49
     },
     {
       "group": "US_Pres_2028",
-      "prices": "sum=0.8650 (off by -0.1350)",
-      "profit_pct": 13.29,
+      "prices": "sum=0.8710 (off by -0.1290)",
+      "profit_pct": 12.51,
       "trade": "BUY_ALL across 33 outcomes",
       "n_markets": 33
     },
     {
       "group": "GOP_Nom_2028",
-      "prices": "sum=0.9270 (off by -0.0730)",
-      "profit_pct": 5.72,
+      "prices": "sum=0.9240 (off by -0.0760)",
+      "profit_pct": 6.06,
       "trade": "BUY_ALL across 32 outcomes",
       "n_markets": 32
     }
