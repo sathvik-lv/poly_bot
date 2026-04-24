@@ -10,7 +10,7 @@ Kelly fractions, so storing outcomes is enough.
 import json
 import os
 import sys
-import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,10 +19,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import requests
+from requests.adapters import HTTPAdapter
 
 DATA_DIR = "data"
 LEDGER_FILE = os.path.join(DATA_DIR, "test1_ledger.jsonl")
 GAMMA_API = "https://gamma-api.polymarket.com"
+POOL_SIZE = 16
+REQUEST_TIMEOUT = 6
 
 
 def load_all() -> list:
@@ -54,7 +57,7 @@ def save_all(records: list):
 def get_outcome(session: requests.Session, market_id: str):
     """Return 1.0 / 0.0 / None if not resolved."""
     try:
-        r = session.get(f"{GAMMA_API}/markets/{market_id}", timeout=10)
+        r = session.get(f"{GAMMA_API}/markets/{market_id}", timeout=REQUEST_TIMEOUT)
         if r.status_code != 200:
             return None
         m = r.json()
@@ -138,20 +141,24 @@ def resolve():
 
     session = requests.Session()
     session.headers.update({"Accept": "application/json"})
+    adapter = HTTPAdapter(pool_connections=POOL_SIZE, pool_maxsize=POOL_SIZE)
+    session.mount("https://", adapter)
 
     n_resolved = 0
-    for mid in due_markets:
-        outcome = get_outcome(session, mid)
-        if outcome is None:
-            continue
-        for idx in by_market[mid]:
-            r = records[idx]
-            r["resolved"] = True
-            r["outcome"] = outcome
-            r["resolved_at"] = datetime.now(timezone.utc).isoformat()
-            n_resolved += 1
-
-        time.sleep(0.05)  # be polite to API
+    resolved_at = datetime.now(timezone.utc).isoformat()
+    with ThreadPoolExecutor(max_workers=POOL_SIZE) as pool:
+        futures = {pool.submit(get_outcome, session, mid): mid for mid in due_markets}
+        for fut in as_completed(futures):
+            outcome = fut.result()
+            if outcome is None:
+                continue
+            mid = futures[fut]
+            for idx in by_market[mid]:
+                r = records[idx]
+                r["resolved"] = True
+                r["outcome"] = outcome
+                r["resolved_at"] = resolved_at
+                n_resolved += 1
 
     if n_resolved > 0:
         save_all(records)
