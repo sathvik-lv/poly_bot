@@ -68,7 +68,17 @@ RELAYER_API_KEY_ADDRESS=...
 ```
 
 ## Current Status
-- Backtest Brier score: 0.063 (good)
+- Backtest Brier (honest, n=5211 resolved markets, `data/rolling_accuracy.json`):
+  - Ensemble: **0.1672**
+  - Market baseline: **0.1670**
+  - Edge vs market: **−0.0002** (ensemble matches market, no measurable alpha)
+  - Previous "0.063" claim was wrong — did not reflect the real rolling backtest
+- Backtest coverage per model:
+  - `microstructure` — backtested on 5,211 markets (Brier 0.1677)
+  - `external_data` — backtested on 5,211 markets (Brier 0.1670)
+  - `orderbook` — effectively untested (only 3 markets; no free historical bid/ask depth source)
+  - `time_series` — **not backtested** (needs historical price bars; `/prices-history` backfill not yet wired)
+  - `ai_semantic` — **not backtested** (LLM training-cutoff leakage makes honest backtest impossible; forward-test only)
 - 2 open paper trades (geopolitics: Iran, Taiwan)
 - Waiting for market resolutions to build weight analytics
 - Metaculus returns questions but community predictions are restricted (need Bot Benchmarking Access Tier)
