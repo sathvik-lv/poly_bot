@@ -79,6 +79,21 @@ def get_outcome(session: requests.Session, market_id: str):
         return None
 
 
+MAX_API_CALLS = 500
+GRACE_SECONDS = 3600  # only check markets whose end_date is at least this far in the past
+
+
+def _end_date_passed(end_date_str, now_ts: float) -> bool:
+    """True if end_date is missing, unparseable, or already past (minus grace)."""
+    if not end_date_str:
+        return True  # unknown end date — fall through to API check
+    try:
+        dt = datetime.fromisoformat(end_date_str.replace("Z", "+00:00"))
+        return dt.timestamp() <= now_ts - GRACE_SECONDS
+    except (ValueError, TypeError):
+        return True
+
+
 def resolve():
     records = load_all()
     if not records:
@@ -92,24 +107,44 @@ def resolve():
         print("  Nothing to resolve.")
         return
 
-    # Group by market_id (one market may have many prediction rounds)
-    by_market = {}
+    # Group by market_id, keeping the earliest plausible end_date per market
+    now_ts = datetime.now(timezone.utc).timestamp()
+    by_market: dict[str, list[int]] = {}
+    market_due: dict[str, bool] = {}
     for idx, r in enumerate(records):
         if r.get("resolved"):
             continue
         mid = r.get("market_id")
-        if mid:
-            by_market.setdefault(mid, []).append(idx)
+        if not mid:
+            continue
+        by_market.setdefault(mid, []).append(idx)
+        # If any record for this market indicates end_date has passed, mark due
+        if _end_date_passed(r.get("end_date"), now_ts):
+            market_due[mid] = True
+        else:
+            market_due.setdefault(mid, False)
+
+    due_markets = [mid for mid, due in market_due.items() if due]
+    skipped = len(by_market) - len(due_markets)
+    print(f"  {len(due_markets)} markets due / {skipped} skipped (end_date in future)")
+
+    # Cap API calls for bounded CI runtime
+    if len(due_markets) > MAX_API_CALLS:
+        print(f"  Capping to {MAX_API_CALLS} oldest markets this run")
+        due_markets = sorted(
+            due_markets,
+            key=lambda mid: records[by_market[mid][0]].get("end_date") or "",
+        )[:MAX_API_CALLS]
 
     session = requests.Session()
     session.headers.update({"Accept": "application/json"})
 
     n_resolved = 0
-    for mid, idx_list in by_market.items():
+    for mid in due_markets:
         outcome = get_outcome(session, mid)
         if outcome is None:
             continue
-        for idx in idx_list:
+        for idx in by_market[mid]:
             r = records[idx]
             r["resolved"] = True
             r["outcome"] = outcome
@@ -121,7 +156,7 @@ def resolve():
     if n_resolved > 0:
         save_all(records)
 
-    print(f"  Resolved {n_resolved} predictions across {len(by_market)} markets")
+    print(f"  Resolved {n_resolved} predictions across {len(due_markets)} markets checked")
 
 
 if __name__ == "__main__":
