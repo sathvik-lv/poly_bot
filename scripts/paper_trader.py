@@ -321,7 +321,7 @@ def scan_and_trade(state: dict, n_markets: int = 30):
             print(f"       {action} ${trade_amount:.2f} | Price={price:.3f} Pred={prob:.3f} "
                   f"Edge={edge:+.3f} | {models} ({elapsed:.1f}s){dl_tag}")
             if position.get("ai_reasoning"):
-                print(f"       AI: {position['ai_reasoning'][:70]}")
+                print(f"       AI: {position['ai_reasoning'][:70]}".encode("ascii", "replace").decode("ascii"))
 
         except Exception as e:
             print(f"  [{i+1:>2}] ERROR: {str(e)[:60]}")
@@ -670,7 +670,7 @@ def report(state: dict):
             print(f"    [{cat:<10}] {q}")
             print(f"      {p['action']} ${p['amount']:.2f} | Edge={p['edge']:+.3f} | {models}")
             if p.get("ai_reasoning"):
-                print(f"      AI: {p['ai_reasoning'][:65]}")
+                print(f"      AI: {p['ai_reasoning'][:65]}".encode("ascii", "replace").decode("ascii"))
 
 
 # =========================================================
