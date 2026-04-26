@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-26T17:43:33.515019+00:00",
+  "timestamp": "2026-04-26T18:33:50.808775+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,13 +26,7 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 77984,
-      "change_24h": 0.83943,
-      "change_7d": 3.2969,
-      "change_30d": 18.00621,
-      "ath": 126080,
-      "high_24h": 78178,
-      "low_24h": 77238,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
@@ -41,69 +35,69 @@
     }
   },
   "n_markets": 8,
-  "n_with_edge": 7,
+  "n_with_edge": 8,
   "results": [
     {
       "question": "MegaETH market cap (FDV) >$2B one day after launch?",
       "market_price": 0.245,
-      "our_estimate": 0.2392,
+      "our_estimate": 0.3044,
       "quant_estimate": 0.5,
       "ai_estimate": 0.12,
-      "ai_reasoning": "Bitcoin is near $78k with modest short\u2011term upside and market sentiment is fearful (FGI 33). Crypto launches typically need strong hype and liquidity to hit a $2\u202fB FDV so quickly; given the current macro backdrop of high rates and low risk appetite, the odds are low but not negligible.",
-      "edge": -0.0058,
-      "real_edge": 0.0,
+      "ai_reasoning": "With global risk aversion high (Fear index 33) and tight liquidity in crypto markets, a brand\u2011new token would need extraordinary hype or institutional backing to reach a $2\u202fB FDV in one day; absent clear macro catalysts, the odds are modest.",
+      "edge": 0.0594,
+      "real_edge": 0.0594,
       "categories": [
         "crypto"
       ],
-      "models": "quant(31%)+AI(69%)",
+      "models": "quant(49%)+AI(51%)",
       "n_models": 2,
-      "volume": 6581123.202159114,
+      "volume": 6581133.202159114,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
       "question": "Will Bitcoin reach $80,000 in April?",
-      "market_price": 0.485,
-      "our_estimate": 0.455,
+      "market_price": 0.525,
+      "our_estimate": 0.206,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.42,
-      "ai_reasoning": "Bitcoin needs a 2.59% gain in 4 days to reach $80,000, which is achievable given the 3.5% daily volatility and positive 7-day momentum (3.3%). However, the limited time window, fear sentiment (index at 33), and the fact that we're approaching month-end with no major catalysts suggest moderate probability, slightly below the quantitative model's 0.5 estimate.",
-      "edge": -0.03,
-      "real_edge": -0.03,
+      "ai_estimate": 0.01,
+      "ai_reasoning": "Bitcoin needs a 33% gain in just 4 days to reach $80,000 from $60,000. With daily volatility of 3.5%, this requires a move of approximately 9.4 standard deviations above the expected path over 4 days\u2014a near-statistical impossibility. Combined with Fear sentiment (33) and flat recent price action, the probability is extremely low.",
+      "edge": -0.319,
+      "real_edge": -0.319,
       "categories": [
         "crypto"
       ],
-      "models": "quant(44%)+AI(56%)",
+      "models": "quant(40%)+AI(60%)",
       "n_models": 2,
-      "volume": 6362742.889918954,
+      "volume": 6374651.143762956,
       "signals": {
-        "current_price": 77984,
+        "current_price": 60000,
         "target": 80000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.84,
-        "change_7d": 3.3,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 4,
-        "high_24h": 78178,
-        "low_24h": 77238
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in April?",
       "market_price": 0.0765,
-      "our_estimate": 0.0068,
+      "our_estimate": 0.0333,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.005,
-      "ai_reasoning": "Reaching $120 from $70 in four days requires a 50% jump, far beyond the 2.5% daily volatility and the current bearish macro backdrop; such a move is extremely unlikely.",
-      "edge": -0.0697,
-      "real_edge": -0.0697,
+      "ai_estimate": 0.07,
+      "ai_reasoning": "WTI is currently $70 with a 4\u2011day window to reach $120, requiring a 71% jump in a single week, far beyond the 2.5% daily volatility and the 10.78\u2011sigma z\u2011score. Macro fundamentals (steady 10Y yields, low VIX, weak demand signals) and structural constraints (OPEC+ supply discipline) make a $120 spike highly unlikely in the short term.",
+      "edge": -0.0432,
+      "real_edge": -0.0432,
       "categories": [
         "oil"
       ],
-      "models": "quant(36%)+AI(64%)",
+      "models": "quant(61%)+AI(39%)",
       "n_models": 2,
-      "volume": 5301863.226126981,
+      "volume": 5302038.683657981,
       "signals": {
         "current_price": 70,
         "target": 120.0,
@@ -130,53 +124,53 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 4261596.930275981,
+      "volume": 4261670.990275981,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
       "question": "Will Bitcoin reach $85,000 in April?",
-      "market_price": 0.048,
-      "our_estimate": 0.3753,
+      "market_price": 0.053,
+      "our_estimate": 0.2,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.27,
-      "ai_reasoning": "Bitcoin would need roughly a 9% gain in four days, which exceeds the typical 4\u2011day move implied by its 3.5% daily volatility. Combined with a low Fear & Greed index and a modest uptrend, the odds of hitting $85,000 are limited but not negligible.",
-      "edge": 0.3273,
-      "real_edge": 0.3273,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "Bitcoin would need a ~42% rise in four days, far exceeding the current 3.5% daily volatility and occurring in a low\u2011volatility, fear\u2011driven market. Without a major macro shock or catalyst, such a move is highly improbable.",
+      "edge": 0.147,
+      "real_edge": 0.147,
       "categories": [
         "crypto"
       ],
-      "models": "quant(46%)+AI(54%)",
+      "models": "quant(38%)+AI(62%)",
       "n_models": 2,
-      "volume": 3157403.803785993,
+      "volume": 3157587.1216289927,
       "signals": {
-        "current_price": 77984,
+        "current_price": 60000,
         "target": 85000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.84,
-        "change_7d": 3.3,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 4,
-        "high_24h": 78178,
-        "low_24h": 77238
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will there be no change in Fed interest rates after the June 2026 meeting?",
       "market_price": 0.935,
-      "our_estimate": 0.8282,
+      "our_estimate": 0.8315,
       "quant_estimate": 0.85,
       "ai_estimate": 0.82,
-      "ai_reasoning": "The quantitative model strongly supports no change (0.85 estimate), with the nearly flat yield curve (0.3% spread) and moderate VIX (20) indicating market stability. The Fear & Greed index at 33 suggests cautious sentiment but no systemic stress that would force a rate move, supporting the base case of rates remaining unchanged at the June 2026 meeting.",
-      "edge": -0.1068,
-      "real_edge": -0.1068,
+      "ai_reasoning": "The quantitative model strongly signals no change (0.85), supported by a flat yield curve (0.3% spread), moderate VIX at 20 indicating stable markets, and the Fed likely maintaining caution given current fear sentiment (33). The 4.0% T-bill rate suggests rates are at a plateau, making a hold decision most probable at the June meeting.",
+      "edge": -0.1035,
+      "real_edge": -0.1035,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(27%)+AI(73%)",
+      "models": "quant(38%)+AI(62%)",
       "n_models": 2,
-      "volume": 1983578.2587810082,
+      "volume": 1985855.730207008,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -189,18 +183,18 @@
     {
       "question": "MegaETH market cap (FDV) >$800M one day after launch?",
       "market_price": 0.945,
-      "our_estimate": 0.2592,
+      "our_estimate": 0.2577,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.07,
-      "ai_reasoning": "Given the current macro environment, high volatility, and the lack of a clear launch catalyst, the chance of MegaETH surpassing $800M FDV in a single day is modest. The model\u2019s 0.5 estimate is likely inflated, and structural factors such as regulatory scrutiny and competition reduce the likelihood.",
-      "edge": -0.6858,
-      "real_edge": -0.6858,
+      "ai_estimate": 0.05,
+      "ai_reasoning": "The absence of any concrete price data, coupled with a low quantitative model estimate and a fear\u2011dominated market environment, makes a rapid $800M FDV for a new token highly unlikely. Structural factors such as limited liquidity, regulatory uncertainty, and the need for significant network effects further reduce the odds.",
+      "edge": -0.6873,
+      "real_edge": -0.6873,
       "categories": [
         "crypto"
       ],
-      "models": "quant(44%)+AI(56%)",
+      "models": "quant(46%)+AI(54%)",
       "n_models": 2,
-      "volume": 758981.8512120005,
+      "volume": 759250.0312120005,
       "signals": {
         "error": "no_target_found"
       }
@@ -219,7 +213,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 180018.44785800006,
+      "volume": 203550.89942900007,
       "signals": {
         "error": "no_target_found"
       }
