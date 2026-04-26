@@ -1,9 +1,17 @@
-name: Poly Bot (Every 30 min)
+name: Poly Bot (Hourly)
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Hourly — adding v2 collector pushed total wall time past 30 min so
+    # consecutive cycles were overlapping and getting cancelled.
+    - cron: '0 * * * *'
   workflow_dispatch:
+
+# Cancel any previous in-progress cycle when a new one starts. Prevents
+# the overlap that was causing repeated cancellations.
+concurrency:
+  group: cycle
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -97,9 +105,9 @@ jobs:
       # Writes ONLY to data/v2_ledger.jsonl. Test 0 / Test 1 untouched.
       # Compare via scripts/compare_v1_v2.py once both have data.
       # ============================================================
-      - name: V2 collector (200 markets, adaptive)
-        run: python scripts/v2_collector.py -n 200
-        timeout-minutes: 20
+      - name: V2 collector (100 markets, adaptive)
+        run: python scripts/v2_collector.py -n 100
+        timeout-minutes: 12
         continue-on-error: true
 
       - name: V2 resolver
