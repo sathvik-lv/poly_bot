@@ -102,30 +102,36 @@ jobs:
 
       # ============================================================
       # V2 — parallel pipeline (adaptive ensemble + category gate)
-      # Writes ONLY to data/v2_ledger.jsonl. Test 0 / Test 1 untouched.
-      # Compare via scripts/compare_v1_v2.py once both have data.
+      # PAUSED: holding v2 until v1 finishes its current data
+      # accumulation. Re-enable by removing `if: false` from each step.
+      # All v2 modules + scripts remain in the repo and unit-tested.
       # ============================================================
       - name: V2 collector (100 markets, adaptive)
+        if: false
         run: python scripts/v2_collector.py -n 100
         timeout-minutes: 12
         continue-on-error: true
 
       - name: V2 resolver
+        if: false
         run: python scripts/v2_resolver.py
         timeout-minutes: 5
         continue-on-error: true
 
       - name: V2 weight trainer (refresh model_weights.json)
+        if: false
         run: python scripts/v2_train_weights.py
         timeout-minutes: 2
         continue-on-error: true
 
       - name: V2 report
+        if: false
         run: python scripts/v2_report.py
         timeout-minutes: 1
         continue-on-error: true
 
       - name: V1 vs V2 comparison
+        if: false
         run: python scripts/compare_v1_v2.py
         timeout-minutes: 1
         continue-on-error: true
