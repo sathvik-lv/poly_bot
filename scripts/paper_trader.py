@@ -263,6 +263,14 @@ def scan_and_trade(state: dict, n_markets: int = 30):
             price = prediction["market"]["current_price"]
             models = ",".join(prediction["ensemble"]["model_names"])
 
+            # Drop sports — Test 1 shows 52% WR over 69 trades, weakest
+            # category. Skip entries; keep observing via test1_collector.
+            cat = classify_market(market.get("question", ""))
+            if cat == "sports":
+                q = market.get("question", "")[:50]
+                print(f"  [{i+1:>2}] SKIP-SPORTS {q}  Edge={edge:+.3f}")
+                continue
+
             if not strat["should_enter"]:
                 if abs(edge) >= 0.03:
                     q = market.get("question", "")[:50]
