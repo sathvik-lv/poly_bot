@@ -1,45 +1,389 @@
 {
-  "timestamp": "2026-04-28T09:57:09.252397+00:00",
+  "timestamp": "2026-04-28T12:25:33.901146+00:00",
   "n_markets": 1000,
-  "n_constraints": 50,
-  "n_violations": 5,
-  "time_hierarchy_violations": [],
+  "n_constraints": 49,
+  "n_violations": 21,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Will China invade Taiwan by June 30, 2026? <= Will China invade Taiwan by end of 2026?",
+      "prices": "A=0.501 > B=0.074",
+      "gap": 0.4265,
+      "profit_pct": 81.14,
+      "trade": "BUY 'Will China invade Taiwan by end of 2026?' YES + BUY 'Will China invade Taiwan by June 30, 202' NO",
+      "reason": "P(by by june 30, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:will china invade taiwan ___DATE___?",
+      "market_a": {
+        "id": "956590",
+        "question": "Will China invade Taiwan by June 30, 2026?",
+        "slug": "will-china-invade-taiwan-by-june-30-2026",
+        "yes_price": 0.501,
+        "no_price": 0.499,
+        "volume": 6746839.850679006,
+        "end_date": "2026-06-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567621",
+        "question": "Will China invade Taiwan by end of 2026?",
+        "slug": "will-china-invade-taiwan-before-2027",
+        "yes_price": 0.0745,
+        "no_price": 0.9255,
+        "volume": 23356220.824864004,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "US x Iran diplomatic meeting by April 28, 2026? <= US x Iran diplomatic meeting by May 5, 2026?",
+      "prices": "A=0.503 > B=0.165",
+      "gap": 0.3385,
+      "profit_pct": 63.26,
+      "trade": "BUY 'US x Iran diplomatic meeting by May 5, 2' YES + BUY 'US x Iran diplomatic meeting by April 28' NO",
+      "reason": "P(by by april 28, 2026) <= P(by by may 5, 2026)",
+      "group": "time_hierarchy:us x iran diplomatic meeting ___DATE___?",
+      "market_a": {
+        "id": "2047411",
+        "question": "US x Iran diplomatic meeting by April 28, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-april-28-2026",
+        "yes_price": 0.5035,
+        "no_price": 0.4965,
+        "volume": 1587325.6739809988,
+        "end_date": "2026-04-28T00:00:00Z"
+      },
+      "market_b": {
+        "id": "2047423",
+        "question": "US x Iran diplomatic meeting by May 5, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-may-5-2026",
+        "yes_price": 0.165,
+        "no_price": 0.835,
+        "volume": 657302.6311839998,
+        "end_date": "2026-05-05T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "US x Iran diplomatic meeting by April 29, 2026? <= US x Iran diplomatic meeting by May 5, 2026?",
+      "prices": "A=0.502 > B=0.165",
+      "gap": 0.337,
+      "profit_pct": 63.15,
+      "trade": "BUY 'US x Iran diplomatic meeting by May 5, 2' YES + BUY 'US x Iran diplomatic meeting by April 29' NO",
+      "reason": "P(by by april 29, 2026) <= P(by by may 5, 2026)",
+      "group": "time_hierarchy:us x iran diplomatic meeting ___DATE___?",
+      "market_a": {
+        "id": "2047412",
+        "question": "US x Iran diplomatic meeting by April 29, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-april-29-2026",
+        "yes_price": 0.502,
+        "no_price": 0.498,
+        "volume": 1076272.277470003,
+        "end_date": "2026-04-29T00:00:00Z"
+      },
+      "market_b": {
+        "id": "2047423",
+        "question": "US x Iran diplomatic meeting by May 5, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-may-5-2026",
+        "yes_price": 0.165,
+        "no_price": 0.835,
+        "volume": 657302.6311839998,
+        "end_date": "2026-05-05T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "US x Iran diplomatic meeting by April 30, 2026? <= US x Iran diplomatic meeting by May 5, 2026?",
+      "prices": "A=0.500 > B=0.165",
+      "gap": 0.335,
+      "profit_pct": 63.0,
+      "trade": "BUY 'US x Iran diplomatic meeting by May 5, 2' YES + BUY 'US x Iran diplomatic meeting by April 30' NO",
+      "reason": "P(by by april 30, 2026) <= P(by by may 5, 2026)",
+      "group": "time_hierarchy:us x iran diplomatic meeting ___DATE___?",
+      "market_a": {
+        "id": "1959320",
+        "question": "US x Iran diplomatic meeting by April 30, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-april-30-2026-299-459-263-225",
+        "yes_price": 0.5,
+        "no_price": 0.5,
+        "volume": 4807728.569439933,
+        "end_date": "2026-04-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "2047423",
+        "question": "US x Iran diplomatic meeting by May 5, 2026?",
+        "slug": "us-x-iran-diplomatic-meeting-by-may-5-2026",
+        "yes_price": 0.165,
+        "no_price": 0.835,
+        "volume": 657302.6311839998,
+        "end_date": "2026-05-05T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by May 31, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=0.503 > B=0.255",
+      "gap": 0.248,
+      "profit_pct": 45.33,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by May 31, 20' NO",
+      "reason": "P(by by may 31, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1795527",
+        "question": "Russia x Ukraine ceasefire by May 31, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-may-31-2026",
+        "yes_price": 0.503,
+        "no_price": 0.497,
+        "volume": 899103.9800040027,
+        "end_date": "2026-05-31T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by April 30, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=0.502 > B=0.255",
+      "gap": 0.247,
+      "profit_pct": 45.22,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by April 30, ' NO",
+      "reason": "P(by by april 30, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1439560",
+        "question": "Russia x Ukraine ceasefire by April 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-april-30-2026",
+        "yes_price": 0.502,
+        "no_price": 0.498,
+        "volume": 9015641.420025894,
+        "end_date": "2026-04-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by May 31, 2026? <= Russia x Ukraine ceasefire by June 30, 2026?",
+      "prices": "A=0.503 > B=0.260",
+      "gap": 0.243,
+      "profit_pct": 44.33,
+      "trade": "BUY 'Russia x Ukraine ceasefire by June 30, 2' YES + BUY 'Russia x Ukraine ceasefire by May 31, 20' NO",
+      "reason": "P(by by may 31, 2026) <= P(by by june 30, 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1795527",
+        "question": "Russia x Ukraine ceasefire by May 31, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-may-31-2026",
+        "yes_price": 0.503,
+        "no_price": 0.497,
+        "volume": 899103.9800040027,
+        "end_date": "2026-05-31T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1171663",
+        "question": "Russia x Ukraine ceasefire by June 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-june-30-2026",
+        "yes_price": 0.26,
+        "no_price": 0.74,
+        "volume": 6660130.740842031,
+        "end_date": "2026-06-30T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by April 30, 2026? <= Russia x Ukraine ceasefire by June 30, 2026?",
+      "prices": "A=0.502 > B=0.260",
+      "gap": 0.242,
+      "profit_pct": 44.22,
+      "trade": "BUY 'Russia x Ukraine ceasefire by June 30, 2' YES + BUY 'Russia x Ukraine ceasefire by April 30, ' NO",
+      "reason": "P(by by april 30, 2026) <= P(by by june 30, 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1439560",
+        "question": "Russia x Ukraine ceasefire by April 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-april-30-2026",
+        "yes_price": 0.502,
+        "no_price": 0.498,
+        "volume": 9015641.420025894,
+        "end_date": "2026-04-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1171663",
+        "question": "Russia x Ukraine ceasefire by June 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-june-30-2026",
+        "yes_price": 0.26,
+        "no_price": 0.74,
+        "volume": 6660130.740842031,
+        "end_date": "2026-06-30T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "US x Iran permanent peace deal by May 15, 2026? <= US x Iran permanent peace deal by May 31, 2026?",
+      "prices": "A=0.530 > B=0.285",
+      "gap": 0.245,
+      "profit_pct": 42.45,
+      "trade": "BUY 'US x Iran permanent peace deal by May 31' YES + BUY 'US x Iran permanent peace deal by May 15' NO",
+      "reason": "P(by by may 15, 2026) <= P(by by may 31, 2026)",
+      "group": "time_hierarchy:us x iran permanent peace deal ___DATE__",
+      "market_a": {
+        "id": "2099029",
+        "question": "US x Iran permanent peace deal by May 15, 2026?",
+        "slug": "us-x-iran-permanent-peace-deal-by-may-15-2026",
+        "yes_price": 0.53,
+        "no_price": 0.47,
+        "volume": 125203.07113499996,
+        "end_date": "2026-05-15T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1919425",
+        "question": "US x Iran permanent peace deal by May 31, 2026?",
+        "slug": "us-x-iran-permanent-peace-deal-by-may-31-2026-333-871",
+        "yes_price": 0.285,
+        "no_price": 0.715,
+        "volume": 6920989.915246075,
+        "end_date": "2026-05-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "US x Iran permanent peace deal by May 15, 2026? <= US x Iran permanent peace deal by June 30, 2026?",
+      "prices": "A=0.530 > B=0.435",
+      "gap": 0.095,
+      "profit_pct": 14.15,
+      "trade": "BUY 'US x Iran permanent peace deal by June 3' YES + BUY 'US x Iran permanent peace deal by May 15' NO",
+      "reason": "P(by by may 15, 2026) <= P(by by june 30, 2026)",
+      "group": "time_hierarchy:us x iran permanent peace deal ___DATE__",
+      "market_a": {
+        "id": "2099029",
+        "question": "US x Iran permanent peace deal by May 15, 2026?",
+        "slug": "us-x-iran-permanent-peace-deal-by-may-15-2026",
+        "yes_price": 0.53,
+        "no_price": 0.47,
+        "volume": 125203.07113499996,
+        "end_date": "2026-05-15T00:00:00Z"
+      },
+      "market_b": {
+        "id": "1962237",
+        "question": "US x Iran permanent peace deal by June 30, 2026?",
+        "slug": "us-x-iran-permanent-peace-deal-by-june-30-2026-837",
+        "yes_price": 0.435,
+        "no_price": 0.565,
+        "volume": 2380032.9673529854,
+        "end_date": "2026-05-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Starmer out by May 15, 2026? <= Starmer out by June 30, 2026?",
+      "prices": "A=0.525 > B=0.480",
+      "gap": 0.045,
+      "profit_pct": 4.76,
+      "trade": "BUY 'Starmer out by June 30, 2026?' YES + BUY 'Starmer out by May 15, 2026?' NO",
+      "reason": "P(by by may 15, 2026) <= P(by by june 30, 2026)",
+      "group": "time_hierarchy:starmer out ___DATE___?",
+      "market_a": {
+        "id": "2002685",
+        "question": "Starmer out by May 15, 2026?",
+        "slug": "starmer-out-by-may-15-2026",
+        "yes_price": 0.525,
+        "no_price": 0.475,
+        "volume": 363968.03556200117,
+        "end_date": "2026-06-30T12:00:00Z"
+      },
+      "market_b": {
+        "id": "597967",
+        "question": "Starmer out by June 30, 2026?",
+        "slug": "starmer-out-by-june-30-2026-862-594-548",
+        "yes_price": 0.48,
+        "no_price": 0.52,
+        "volume": 1874113.5295300002,
+        "end_date": "2026-06-30T12:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
-      "group": "France_Pres_2027",
-      "prices": "sum=0.4315 (off by -0.5685)",
-      "profit_pct": 127.11,
-      "trade": "BUY_ALL across 22 outcomes",
-      "n_markets": 22
-    },
-    {
-      "group": "NHL_Cup_2026",
-      "prices": "sum=0.6325 (off by -0.3675)",
-      "profit_pct": 54.94,
-      "trade": "BUY_ALL across 12 outcomes",
-      "n_markets": 12
-    },
-    {
-      "group": "GOP_Nom_2028",
-      "prices": "sum=0.7290 (off by -0.2710)",
-      "profit_pct": 34.43,
-      "trade": "BUY_ALL across 31 outcomes",
-      "n_markets": 31
-    },
-    {
-      "group": "US_Pres_2028",
-      "prices": "sum=0.7600 (off by -0.2400)",
-      "profit_pct": 28.95,
-      "trade": "BUY_ALL across 29 outcomes",
-      "n_markets": 29
+      "group": "FIFA_WC_2026",
+      "prices": "sum=18.3455 (off by +17.3455)",
+      "profit_pct": 94.44,
+      "trade": "SELL_ALL across 48 outcomes",
+      "n_markets": 48
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.8790 (off by -0.1210)",
-      "profit_pct": 11.49,
-      "trade": "BUY_ALL across 39 outcomes",
+      "prices": "sum=18.1665 (off by +17.1665)",
+      "profit_pct": 94.39,
+      "trade": "SELL_ALL across 39 outcomes",
       "n_markets": 39
+    },
+    {
+      "group": "GOP_Nom_2028",
+      "prices": "sum=14.5430 (off by +13.5430)",
+      "profit_pct": 92.99,
+      "trade": "SELL_ALL across 30 outcomes",
+      "n_markets": 30
+    },
+    {
+      "group": "US_Pres_2028",
+      "prices": "sum=13.8370 (off by +12.8370)",
+      "profit_pct": 92.63,
+      "trade": "SELL_ALL across 28 outcomes",
+      "n_markets": 28
+    },
+    {
+      "group": "France_Pres_2027",
+      "prices": "sum=11.5020 (off by +10.5020)",
+      "profit_pct": 91.13,
+      "trade": "SELL_ALL across 23 outcomes",
+      "n_markets": 23
+    },
+    {
+      "group": "NBA_Finals_2026",
+      "prices": "sum=6.9325 (off by +5.9325)",
+      "profit_pct": 85.29,
+      "trade": "SELL_ALL across 15 outcomes",
+      "n_markets": 15
+    },
+    {
+      "group": "Brazil_Pres_2026",
+      "prices": "sum=6.6895 (off by +5.6895)",
+      "profit_pct": 84.75,
+      "trade": "SELL_ALL across 15 outcomes",
+      "n_markets": 15
+    },
+    {
+      "group": "NHL_Cup_2026",
+      "prices": "sum=5.0880 (off by +4.0880)",
+      "profit_pct": 79.95,
+      "trade": "SELL_ALL across 11 outcomes",
+      "n_markets": 11
+    },
+    {
+      "group": "Colombia_Pres_2026",
+      "prices": "sum=3.7490 (off by +2.7490)",
+      "profit_pct": 72.79,
+      "trade": "SELL_ALL across 9 outcomes",
+      "n_markets": 9
+    },
+    {
+      "group": "Fed_June_2026",
+      "prices": "sum=2.4800 (off by +1.4800)",
+      "profit_pct": 58.87,
+      "trade": "SELL_ALL across 5 outcomes",
+      "n_markets": 5
     }
   ]
 }
