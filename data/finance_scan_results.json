@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-27T23:33:43.700584+00:00",
+  "timestamp": "2026-04-28T04:22:04.462181+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,92 +26,92 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 77128,
-      "change_24h": -1.52454,
-      "change_7d": 1.49369,
-      "change_30d": 15.72904,
+      "price": 76895,
+      "change_24h": -2.70745,
+      "change_7d": 1.67514,
+      "change_30d": 15.22359,
       "ath": 126080,
-      "high_24h": 79400,
+      "high_24h": 79115,
       "low_24h": 76595,
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 47,
-      "classification": "Neutral"
+      "value": 33,
+      "classification": "Fear"
     }
   },
-  "n_markets": 18,
-  "n_with_edge": 18,
+  "n_markets": 16,
+  "n_with_edge": 16,
   "results": [
     {
       "question": "Will Bitcoin reach $80,000 in April?",
-      "market_price": 0.255,
-      "our_estimate": 0.4729,
+      "market_price": 0.195,
+      "our_estimate": 0.3753,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.45,
-      "ai_reasoning": "Bitcoin needs a ~3.7% rise in three days, which is within one standard deviation of its 3\u2011day volatility (~6%). The price is near its recent high, but the neutral Fear & Greed index and modest 7\u2011day upside suggest no strong directional bias, making the odds slightly below 50%.",
-      "edge": 0.2179,
-      "real_edge": 0.2179,
+      "ai_estimate": 0.27,
+      "ai_reasoning": "Bitcoin would need a ~4% rally in two days, exceeding its recent 3.5% daily volatility and despite a modest 7\u2011day upside. With the market in fear mode, limited upside bias and no major macro catalyst, the odds of hitting $80k by month\u2011end are modest.",
+      "edge": 0.1803,
+      "real_edge": 0.1803,
       "categories": [
         "crypto"
       ],
       "models": "quant(46%)+AI(54%)",
       "n_models": 2,
-      "volume": 7019550.71639898,
+      "volume": 7035143.160880975,
       "signals": {
-        "current_price": 77128,
+        "current_price": 76895,
         "target": 80000.0,
         "direction": "UNKNOWN",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     },
     {
       "question": "MegaETH market cap (FDV) >$2B one day after launch?",
-      "market_price": 0.33,
-      "our_estimate": 0.5,
+      "market_price": 0.345,
+      "our_estimate": 0.4759,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.5,
-      "ai_reasoning": "Insufficient project-specific data on MegaETH (launch timing, tokenomics, team, use case) prevents a meaningful probability assessment; the 'no_target_found' signal confirms no identifiable framework exists, making any estimate essentially a baseline 50/50 guess with minimal confidence.",
-      "edge": 0.17,
-      "real_edge": 0.17,
+      "ai_estimate": 0.45,
+      "ai_reasoning": "Insufficient data on MegaETH specifics (launch mechanics, tokenomics, pre-launch interest) limits confidence. Current crypto market shows fear (F&G 33) and Bitcoin weakness (-2.7% daily), suggesting bearish sentiment that could suppress new token demand, though speculative launches often defy broader market conditions.",
+      "edge": 0.1309,
+      "real_edge": 0.1309,
       "categories": [
         "crypto"
       ],
-      "models": "quant(56%)+AI(44%)",
+      "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 6729633.744034108,
+      "volume": 6774836.123545108,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in April?",
-      "market_price": 0.031,
-      "our_estimate": 0.003,
+      "market_price": 0.0325,
+      "our_estimate": 0.0013,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.001,
-      "ai_reasoning": "Reaching $120 from $70 in three days would require a 50% jump, far beyond the 2.5% daily volatility and the current neutral macro backdrop. The odds are effectively zero.",
-      "edge": -0.028,
-      "real_edge": -0.028,
+      "ai_estimate": 0.0001,
+      "ai_reasoning": "With the current price at $70 and only two days remaining, reaching $120 would require a 71% jump, far beyond the 2.5% daily volatility and the historical range of WTI. The statistical likelihood is effectively zero.",
+      "edge": -0.0312,
+      "real_edge": -0.0312,
       "categories": [
         "oil"
       ],
-      "models": "quant(22%)+AI(78%)",
+      "models": "quant(13%)+AI(87%)",
       "n_models": 2,
-      "volume": 5629806.0951549765,
+      "volume": 5634406.699774967,
       "signals": {
         "current_price": 70,
         "target": 120.0,
         "direction": "HIGH",
-        "days_left": 3,
+        "days_left": 2,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 12.45,
+        "z_score": 15.25,
         "recent_closes": [],
         "vix": 20
       }
@@ -130,347 +130,296 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 4416731.087694982,
+      "volume": 4421881.225050982,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
       "question": "MegaETH market cap (FDV) >$3B one day after launch?",
-      "market_price": 0.0825,
-      "our_estimate": 0.2392,
+      "market_price": 0.07,
+      "our_estimate": 0.2213,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.12,
-      "ai_reasoning": "Bitcoin is near $77k with modest downside pressure and neutral market sentiment, while macro conditions (stable yields, no major risk events) suggest limited speculative excess. A new token achieving a $3\u202fB FDV within one day would require extreme hype and inflow, which is unlikely given the current moderate risk appetite.",
-      "edge": 0.1567,
-      "real_edge": 0.1567,
+      "ai_estimate": 0.07,
+      "ai_reasoning": "Crypto markets are in a risk\u2011off phase (Fear index 33, Bitcoin down 2.7% on the day) and capital is flowing to safe\u2011haven assets, limiting speculative inflows for new tokens. MegaETH would need massive hype and liquidity to reach a $3\u202fB FDV within a day, which is unlikely given current macro constraints.",
+      "edge": 0.1513,
+      "real_edge": 0.1513,
       "categories": [
         "crypto"
       ],
-      "models": "quant(31%)+AI(69%)",
+      "models": "quant(35%)+AI(65%)",
       "n_models": 2,
-      "volume": 2189521.275257009,
+      "volume": 2192507.460589008,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
       "question": "Will MegaETH launch a token by April 30, 2026?",
-      "market_price": 0.908,
-      "our_estimate": 0.4437,
+      "market_price": 0.9195,
+      "our_estimate": 0.5,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.35,
-      "ai_reasoning": "The provided financial data (Bitcoin price, market indices) has no direct relevance to MegaETH's token launch decision, which depends on project-specific development and team decisions. With only 3 days remaining until April 30 and no project-specific signals provided, I have low confidence; the 0.5 model estimate likely reflects no meaningful information, so I regress toward prior probability of token launches not occurring on specific arbitrary deadlines.",
-      "edge": -0.4643,
-      "real_edge": -0.4643,
+      "ai_estimate": 0.5,
+      "ai_reasoning": "The provided financial data (Bitcoin, VIX, etc.) does not contain project-specific information about MegaETH's token launch plans. The 0.5 estimate from the crypto model represents a prior when no specific signals are available. Without MegaETH-specific announcements or indicators, there is no basis to deviate from the model's estimate, resulting in high uncertainty.",
+      "edge": -0.4195,
+      "real_edge": -0.4195,
       "categories": [
         "crypto"
       ],
-      "models": "quant(62%)+AI(38%)",
+      "models": "quant(61%)+AI(39%)",
       "n_models": 2,
-      "volume": 2118429.7476120056,
+      "volume": 2135239.2813220043,
       "signals": {
-        "current_price": 77128,
+        "current_price": 76895,
         "target": 2026.0,
         "direction": "UNKNOWN",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in April?",
-      "market_price": 0.09,
-      "our_estimate": 0.025,
+      "market_price": 0.115,
+      "our_estimate": 0.0021,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.04,
-      "ai_reasoning": "WTI is currently $70 with a 3\u2011day window to reach $110, requiring a 57% jump in a single week, far beyond the 2.5% daily volatility and the 10\u2011year Treasury yield and VIX levels that suggest a stable macro backdrop. The high z\u2011score and lack of a strong bullish trend make a $110 target highly unlikely in the short term.",
-      "edge": -0.065,
-      "real_edge": -0.065,
+      "ai_estimate": 0.001,
+      "ai_reasoning": "Reaching $110 from $70 in two days would require a ~28% daily gain, far beyond the 2.5% daily volatility and the current trend. Macro and market conditions show no catalyst for such a spike, making the event highly unlikely.",
+      "edge": -0.1129,
+      "real_edge": -0.1129,
       "categories": [
         "oil"
       ],
-      "models": "quant(50%)+AI(50%)",
+      "models": "quant(13%)+AI(87%)",
       "n_models": 2,
-      "volume": 1814244.345185002,
+      "volume": 1843840.1931690034,
       "signals": {
         "current_price": 70,
         "target": 110.0,
         "direction": "HIGH",
-        "days_left": 3,
+        "days_left": 2,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 10.44,
+        "z_score": 12.78,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will the Fed decrease interest rates by 25 bps after the June 2026 meeting?",
-      "market_price": 0.0375,
-      "our_estimate": 0.0635,
-      "quant_estimate": 0.0635,
+      "question": "Golden Knights vs. Utah",
+      "market_price": 0.535,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.026,
-      "real_edge": 0.026,
+      "edge": -0.035,
+      "real_edge": -0.035,
       "categories": [
-        "fed_rate"
+        "gold"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1612017.787169998,
-      "signals": {
-        "vix": 20,
-        "tbill_rate": 4.0,
-        "yield_10y": 4.3,
-        "fear_greed": 47,
-        "yield_curve_spread": 0.2999999999999998,
-        "logic": "small_cut_data_dependent"
-      }
+      "volume": 1595089.849928974,
+      "signals": {}
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $100 in April?",
-      "market_price": 0.525,
+      "market_price": 0.715,
       "our_estimate": 0.0148,
       "quant_estimate": 0.01,
       "ai_estimate": 0.02,
-      "ai_reasoning": "WTI would need a >40% jump from $70 to $100 in just three trading days, far beyond the 2.5% daily volatility implied by the model and inconsistent with current macro supply\u2011demand fundamentals, making the event highly unlikely.",
-      "edge": -0.5102,
-      "real_edge": -0.5102,
+      "ai_reasoning": "WTI is at $70 with only two trading days left; a $30 move would require a >40% jump, far beyond the observed 2.5% daily volatility and a Z\u2011score of 10. Such a spike is extremely improbable absent a catastrophic supply shock, which is not evident in the current macro backdrop.",
+      "edge": -0.7002,
+      "real_edge": -0.7002,
       "categories": [
         "oil"
       ],
       "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 1415586.6659649992,
+      "volume": 1440298.1603529982,
       "signals": {
         "current_price": 70,
         "target": 100.0,
         "direction": "HIGH",
-        "days_left": 3,
+        "days_left": 2,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 8.24,
+        "z_score": 10.09,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will the Kharg Island oil terminal be hit by April 30?",
-      "market_price": 0.0345,
-      "our_estimate": 0.4192,
+      "question": "MegaETH market cap (FDV) >$1.5B one day after launch?",
+      "market_price": 0.595,
+      "our_estimate": 0.475,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.35,
-      "ai_reasoning": "Given the model estimate of 0.5 with 'no_target_found' signal suggests insufficient intelligence for a high-confidence prediction. Kharg Island has been targeted in past Iran-Israel tensions, but with only 3 days remaining and no clear escalation signals in the limited market data, the probability remains moderate-to-low. The neutral Fear & Greed Index (47) and modest Bitcoin decline (-1.5%) don't indicate acute crisis sentiment.",
-      "edge": 0.3847,
-      "real_edge": 0.3847,
+      "ai_estimate": 0.45,
+      "ai_reasoning": "Without specific information about MegaETH's fundamentals, tokenomics, or launch details, this is highly speculative. The fearful market sentiment (33 Fear & Greed) and Bitcoin's 2.7% decline suggest headwinds for new token launches, slightly reducing the 50% model estimate.",
+      "edge": -0.12,
+      "real_edge": -0.12,
       "categories": [
-        "oil"
+        "crypto"
       ],
-      "models": "quant(46%)+AI(54%)",
+      "models": "quant(50%)+AI(50%)",
       "n_models": 2,
-      "volume": 890423.1437870025,
+      "volume": 909293.923426998,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
-      "question": "Golden Knights vs. Utah",
-      "market_price": 0.545,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.5,
-      "ai_reasoning": "With no relevant financial or sporting data to influence the outcome, the best estimate defaults to an even chance, but the lack of context yields low confidence.",
-      "edge": -0.045,
-      "real_edge": -0.045,
-      "categories": [
-        "gold"
-      ],
-      "models": "quant(53%)+AI(47%)",
-      "n_models": 2,
-      "volume": 844694.9128490005,
-      "signals": {}
-    },
-    {
       "question": "Will Bitcoin dip to $70,000 in April?",
-      "market_price": 0.0415,
-      "our_estimate": 0.1097,
-      "quant_estimate": 0.1097,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0682,
-      "real_edge": 0.0682,
+      "market_price": 0.0405,
+      "our_estimate": 0.2124,
+      "quant_estimate": 0.0577,
+      "ai_estimate": 0.35,
+      "ai_reasoning": "Bitcoin is currently 7% above the target with only 2 days remaining and a modest 3.5% daily volatility; the short\u2011term trend is slightly positive but the market is in a fear regime, increasing the chance of a pullback. Given these factors, a roughly 35% chance of dipping to $70,000 is a reasonable estimate.",
+      "edge": 0.1719,
+      "real_edge": 0.1719,
       "categories": [
         "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 503680.28902000014,
+      "models": "quant(47%)+AI(53%)",
+      "n_models": 2,
+      "volume": 526010.415866,
       "signals": {
-        "current_price": 77128,
+        "current_price": 76895,
         "target": 70000.0,
         "direction": "DIP",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     },
     {
       "question": "Will Bitcoin reach $82,500 in April?",
-      "market_price": 0.055,
-      "our_estimate": 0.3753,
+      "market_price": 0.0375,
+      "our_estimate": 0.5,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.27,
-      "ai_reasoning": "Bitcoin needs roughly a 7% rise in three days (~2.3% daily), which exceeds its recent 3.5% daily volatility and follows a 1.5% drop today, making the move challenging. Neutral market sentiment and modest macro risk appetite further lower the odds, though a short\u2011term rally remains possible.",
-      "edge": 0.3203,
-      "real_edge": 0.3203,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(46%)+AI(54%)",
-      "n_models": 2,
-      "volume": 382933.5951150004,
-      "signals": {
-        "current_price": 77128,
-        "target": 82500.0,
-        "direction": "UNKNOWN",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
-        "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
-        "low_24h": 76595
-      }
-    },
-    {
-      "question": "Will Bitcoin dip to $75,000 in April?",
-      "market_price": 0.435,
-      "our_estimate": 0.6287,
-      "quant_estimate": 0.6444,
-      "ai_estimate": 0.62,
-      "ai_reasoning": "Bitcoin needs a 2.76% decline from $77,128 to $75,000 in 3 days, which is achievable given the 3.5% daily volatility and today's already -1.52% drop. However, the positive 7-day trend (+1.49%) and neutral sentiment (47) suggest some resistance to further downside, making a dip likely but not certain.",
-      "edge": 0.1937,
-      "real_edge": 0.1937,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(36%)+AI(64%)",
-      "n_models": 2,
-      "volume": 339584.70013200084,
-      "signals": {
-        "current_price": 77128,
-        "target": 75000.0,
-        "direction": "DIP",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
-        "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
-        "low_24h": 76595
-      }
-    },
-    {
-      "question": "Spread: Golden Knights (-1.5)",
-      "market_price": 0.32,
-      "our_estimate": 0.3992,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.32,
-      "ai_reasoning": "With limited market data and no clear trend signals, the spread outcome is uncertain; moderate volatility and neutral sentiment suggest a roughly even chance, but the lack of decisive indicators leans slightly against the spread.",
-      "edge": 0.0792,
-      "real_edge": 0.0792,
-      "categories": [
-        "gold"
-      ],
-      "models": "quant(44%)+AI(56%)",
-      "n_models": 2,
-      "volume": 143352.47181800017,
-      "signals": {}
-    },
-    {
-      "question": "Will the price of Bitcoin be above $76,000 on April 28?",
-      "market_price": 0.845,
-      "our_estimate": 0.95,
-      "quant_estimate": 0.95,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.105,
-      "real_edge": 0.105,
+      "edge": 0.4625,
+      "real_edge": 0.4625,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 90537.75441199995,
+      "volume": 394156.7299160006,
       "signals": {
-        "current_price": 77128,
-        "target": 76000.0,
-        "direction": "ABOVE",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "current_price": 76895,
+        "target": 82500.0,
+        "direction": "UNKNOWN",
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     },
     {
-      "question": "Will Bitcoin dip to $76,000 on April 27?",
-      "market_price": 0.045,
-      "our_estimate": 0.6937,
-      "quant_estimate": 0.808,
-      "ai_estimate": 0.62,
-      "ai_reasoning": "Bitcoin is trading just above the $76k level with a 24\u2011hour low already below it, and short\u2011term volatility (~3.5%) is sufficient for a modest dip. However, the broader market is neutral and the 7\u2011day trend remains positive, tempering the likelihood of a deeper move.",
-      "edge": 0.6487,
-      "real_edge": 0.6487,
+      "question": "Will Bitcoin dip to $75,000 in April?",
+      "market_price": 0.48,
+      "our_estimate": 0.5934,
+      "quant_estimate": 0.6142,
+      "ai_estimate": 0.58,
+      "ai_reasoning": "Bitcoin is trading just above the $75k target with modest daily volatility (~3.5%) and a slight 24\u2011hour down move, while macro risk sentiment remains fearful (Fear & Greed 33). The quantitative model signals a 61% dip probability, but the recent 7\u2011day upside and limited time horizon temper confidence, yielding a ~58% chance of a dip by month\u2011end.",
+      "edge": 0.1134,
+      "real_edge": 0.1134,
       "categories": [
         "crypto"
       ],
       "models": "quant(39%)+AI(61%)",
       "n_models": 2,
-      "volume": 76611.95530899997,
+      "volume": 344025.703784001,
       "signals": {
-        "current_price": 77128,
-        "target": 76000.0,
+        "current_price": 76895,
+        "target": 75000.0,
         "direction": "DIP",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     },
     {
+      "question": "Spread: Golden Knights (-1.5)",
+      "market_price": 0.195,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.5,
+      "ai_reasoning": "The financial data provided is largely incomplete (?) and irrelevant to predicting a sports betting outcome. Without information on the Golden Knights' opponent, team form, injuries, or matchup details, I cannot meaningfully estimate the probability of covering a -1.5 spread. The 0.5 model estimate appears to represent a baseline 50/50 probability, which is reasonable given the lack of actionable data.",
+      "edge": 0.305,
+      "real_edge": 0.305,
+      "categories": [
+        "gold"
+      ],
+      "models": "quant(55%)+AI(45%)",
+      "n_models": 2,
+      "volume": 153128.49000300045,
+      "signals": {}
+    },
+    {
       "question": "Will the price of Bitcoin be above $78,000 on April 28?",
-      "market_price": 0.235,
-      "our_estimate": 0.4228,
-      "quant_estimate": 0.4264,
+      "market_price": 0.135,
+      "our_estimate": 0.4054,
+      "quant_estimate": 0.3866,
       "ai_estimate": 0.42,
-      "ai_reasoning": "Bitcoin needs a 1.13% gain from $77,128 to breach $78,000 within roughly one day. While daily volatility of 3.5% makes this achievable, the negative 24h momentum (-1.52%) and current price below target weigh against the outcome. The quantitative model estimate of 0.426 aligns with a ~42% probability.",
-      "edge": 0.1878,
-      "real_edge": 0.1878,
+      "ai_reasoning": "Bitcoin is currently below the target but has a recent 24\u2011hour high above $78k, indicating short\u2011term upside potential. However, the 2\u2011day horizon, modest 7\u2011day trend, and a fear\u2011dominated market reduce the likelihood of breaching $78k by the close of April\u202f28.",
+      "edge": 0.2704,
+      "real_edge": 0.2704,
       "categories": [
         "crypto"
       ],
       "models": "quant(44%)+AI(56%)",
       "n_models": 2,
-      "volume": 74825.73813199995,
+      "volume": 117529.4242649999,
       "signals": {
-        "current_price": 77128,
+        "current_price": 76895,
         "target": 78000.0,
         "direction": "ABOVE",
-        "change_24h": -1.52,
-        "change_7d": 1.49,
+        "change_24h": -2.71,
+        "change_7d": 1.68,
         "daily_vol": 0.035,
-        "days_left": 3,
-        "high_24h": 79400,
+        "days_left": 2,
+        "high_24h": 79115,
+        "low_24h": 76595
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $76,000 on April 28?",
+      "market_price": 0.825,
+      "our_estimate": 0.95,
+      "quant_estimate": 0.95,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.125,
+      "real_edge": 0.125,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 107979.20506999994,
+      "signals": {
+        "current_price": 76895,
+        "target": 76000.0,
+        "direction": "ABOVE",
+        "change_24h": -2.71,
+        "change_7d": 1.68,
+        "daily_vol": 0.035,
+        "days_left": 2,
+        "high_24h": 79115,
         "low_24h": 76595
       }
     }
