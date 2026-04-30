@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-30T20:54:56.492138+00:00",
+  "timestamp": "2026-04-30T22:40:47.715907+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
       "symbol": "oil"
     },
     "gold": {
-      "price": 4629.4,
+      "price": 4643.0,
       "prev_close": 4561.5,
       "closes": [
         4376.3,
@@ -38,13 +38,13 @@
         4693.7,
         4608.4,
         4561.5,
-        4629.4
+        4643.0
       ],
-      "change_1d_pct": 1.4885454346157982,
+      "change_1d_pct": 1.7866929738024773,
       "min_30d": 4376.3,
       "max_30d": 4879.6,
-      "mean_30d": 4707.566666666666,
-      "volatility": 0.2240096092253917,
+      "mean_30d": 4708.0199999999995,
+      "volatility": 0.22562567879108694,
       "symbol": "gold"
     },
     "vix": {
@@ -102,10 +102,10 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 76480,
-      "change_24h": 0.95878,
-      "change_7d": -1.6823,
-      "change_30d": 12.93294,
+      "price": 76321,
+      "change_24h": 0.51592,
+      "change_7d": -2.01713,
+      "change_30d": 12.01157,
       "ath": 126080,
       "high_24h": 76529,
       "low_24h": 75391,
@@ -116,24 +116,24 @@
       "classification": "Fear"
     }
   },
-  "n_markets": 12,
-  "n_with_edge": 12,
+  "n_markets": 13,
+  "n_with_edge": 13,
   "results": [
     {
       "question": "MegaETH market cap (FDV) >$2B one day after launch?",
-      "market_price": 0.135,
+      "market_price": 0.2,
       "our_estimate": 0.2392,
       "quant_estimate": 0.5,
       "ai_estimate": 0.12,
-      "ai_reasoning": "Bitcoin is near $76k with modest short\u2011term upside, but market sentiment is fearful (Fear & Greed 29) and equity markets are weak, limiting speculative capital for a new token. Even with crypto enthusiasm, achieving a $2\u202fB FDV within one day would require an extraordinary launch hype that current macro conditions do not support.",
-      "edge": 0.1042,
-      "real_edge": 0.1042,
+      "ai_reasoning": "Bitcoin is near $76k with modest short\u2011term upside, but market sentiment is fearful (Greed index 29) and equity markets are volatile, limiting speculative capital for a new token. Even with crypto\u2011specific momentum, achieving a $2\u202fB FDV within one day would require an extraordinary launch hype that is unlikely under current macro conditions.",
+      "edge": 0.0392,
+      "real_edge": 0.0392,
       "categories": [
         "crypto"
       ],
       "models": "quant(31%)+AI(69%)",
       "n_models": 2,
-      "volume": 9042851.193164086,
+      "volume": 9072901.525040088,
       "signals": {
         "error": "no_target_found"
       }
@@ -144,7 +144,7 @@
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": 0.01,
-      "ai_reasoning": "Oil would need to rise from $70 to $200 (186% gain) in approximately 60 days, requiring daily returns of ~1.15% versus 2.5% daily volatility\u2014this represents roughly 46 standard deviations, essentially impossible. The z-score of 41.99 confirms this is an extreme outlier, and current macro conditions (weak demand, OPEC+ supply management, dollar strength) provide no structural support for such a rally.",
+      "ai_reasoning": "The target of $200 represents a 186% increase from current $70 levels over ~61 days, with a z-score of 41.99 indicating the move is over 42 standard deviations away based on historical volatility - an essentially impossible statistical outlier. Even accounting for oil's volatility and potential supply shocks, the probability of CL hitting $200 by end of June is extremely remote.",
       "edge": -0.0385,
       "real_edge": -0.0385,
       "categories": [
@@ -152,7 +152,7 @@
       ],
       "models": "quant(13%)+AI(87%)",
       "n_models": 2,
-      "volume": 2959564.9504890055,
+      "volume": 2961734.9504890055,
       "signals": {
         "current_price": 70,
         "target": 200.0,
@@ -168,18 +168,18 @@
     {
       "question": "Will there be no change in Fed interest rates after the June 2026 meeting?",
       "market_price": 0.955,
-      "our_estimate": 0.87,
+      "our_estimate": 0.7628,
       "quant_estimate": 0.85,
-      "ai_estimate": 0.88,
-      "ai_reasoning": "The VIX is low, the yield curve is still slightly steep, and the Fed\u2019s policy stance is consistent with a pause; the quantitative model and key signals all point to a high likelihood of no change, though some upside risk remains if inflation unexpectedly accelerates.",
-      "edge": -0.085,
-      "real_edge": -0.085,
+      "ai_estimate": 0.68,
+      "ai_reasoning": "With the 10\u2011year yield near 4.3%, VIX at 20, and a fear\u2011greed index of 29, the market signals a relatively stable but still elevated inflation environment. The Fed\u2019s recent dovish stance and the model\u2019s \u201cno_change_base\u201d logic suggest a 68% chance of holding rates steady, though uncertainty remains due to potential upside inflation surprises.",
+      "edge": -0.1922,
+      "real_edge": -0.1922,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(33%)+AI(67%)",
+      "models": "quant(49%)+AI(51%)",
       "n_models": 2,
-      "volume": 2873275.9399420186,
+      "volume": 2882075.144842018,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -203,7 +203,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2391830.0950809782,
+      "volume": 2404307.313761979,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -215,19 +215,19 @@
     },
     {
       "question": "MegaETH market cap (FDV) >$1.5B one day after launch?",
-      "market_price": 0.595,
-      "our_estimate": 0.2537,
+      "market_price": 0.66,
+      "our_estimate": 0.2213,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.12,
-      "ai_reasoning": "Bitcoin is near $76k with modest upside and the crypto market is in a fear regime (Fear & Greed 29), limiting speculative launches. MegaETH would need massive inflows to reach a $1.5\u202fB FDV within a day, which is unlikely given current macro uncertainty and muted risk appetite.",
-      "edge": -0.3413,
-      "real_edge": -0.3413,
+      "ai_estimate": 0.07,
+      "ai_reasoning": "Crypto markets are in a risk\u2011off environment (Fear index 29, Bitcoin down 2% weekly) and capital is flowing to safe assets; launching a new token to a $1.5\u202fB FDV within a day would require massive speculative inflows that are unlikely under current macro stress.",
+      "edge": -0.4387,
+      "real_edge": -0.4387,
       "categories": [
         "crypto"
       ],
       "models": "quant(35%)+AI(65%)",
       "n_models": 2,
-      "volume": 2351424.0572469924,
+      "volume": 2399716.3368269904,
       "signals": {
         "error": "no_target_found"
       }
@@ -235,18 +235,18 @@
     {
       "question": "Will Crude Oil (CL) hit (HIGH) $175 by end of June?",
       "market_price": 0.075,
-      "our_estimate": 0.017,
+      "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "WTI would need to surge ~150% from $70 to $175 in ~60 days, requiring an extreme supply shock or geopolitical crisis. The z-score of 36.65 confirms this as a massive outlier, though tail risks (major war, OPEC embargo) warrant a slight adjustment above the model's 0.01 estimate.",
-      "edge": -0.058,
-      "real_edge": -0.058,
+      "ai_estimate": 0.01,
+      "ai_reasoning": "WTI crude at $70 would need to rise to $175 - a 150% increase requiring an astronomical 36.65 standard deviation move. Even with 2.5% daily volatility and roughly 60 days until end of June, this represents a black swan event requiring nearly continuous maximum-up days. The quantitative model estimate of 0.01 (1%) appropriately captures this extreme tail risk.",
+      "edge": -0.065,
+      "real_edge": -0.065,
       "categories": [
         "oil"
       ],
-      "models": "quant(30%)+AI(70%)",
+      "models": "quant(13%)+AI(87%)",
       "n_models": 2,
-      "volume": 1243950.9731429992,
+      "volume": 1246623.4731429992,
       "signals": {
         "current_price": 70,
         "target": 175.0,
@@ -261,19 +261,19 @@
     },
     {
       "question": "Will Crude Oil (CL) hit (HIGH) $115 by end of June?",
-      "market_price": 0.7005,
-      "our_estimate": 0.0013,
+      "market_price": 0.725,
+      "our_estimate": 0.0753,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.0001,
-      "ai_reasoning": "Reaching $115 from $70 in a single day would require an unprecedented 1800% jump, far beyond historical daily volatility or any plausible macro shock. The model\u2019s z\u2011score and daily vol confirm the event is essentially impossible under current conditions.",
-      "edge": -0.6992,
-      "real_edge": -0.6992,
+      "ai_estimate": 0.15,
+      "ai_reasoning": "Reaching $115 from $70 in roughly 60 days requires a sustained ~0.7% daily gain, which is within the 2.5% daily volatility but would need a strong upward trend. Current macro conditions (moderate VIX, no major supply shocks, and a bullish commodity cycle) make it plausible but not highly likely, hence a 15% chance with moderate confidence.",
+      "edge": -0.6497,
+      "real_edge": -0.6497,
       "categories": [
         "oil"
       ],
-      "models": "quant(13%)+AI(87%)",
+      "models": "quant(53%)+AI(47%)",
       "n_models": 2,
-      "volume": 606235.2688370015,
+      "volume": 606670.7588370013,
       "signals": {
         "current_price": 70,
         "target": 115.0,
@@ -300,7 +300,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 440649.7331239998,
+      "volume": 450508.05264399975,
       "signals": {
         "current_price": 70,
         "target": 150.0,
@@ -315,19 +315,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in May?",
-      "market_price": 0.495,
+      "market_price": 0.47,
       "our_estimate": 0.0223,
       "quant_estimate": 0.01,
       "ai_estimate": 0.03,
-      "ai_reasoning": "WTI is trading around $70 with a daily volatility of ~2.5%, making a $50 jump in one day require a >20\u2011sigma move, which is statistically implausible. Even with bullish macro factors, supply\u2011demand fundamentals and market liquidity cannot generate such a spike in a single day.",
-      "edge": -0.4727,
-      "real_edge": -0.4727,
+      "ai_reasoning": "WTI is trading around $70 with a 2.5% daily volatility; reaching $120 in a single day would require a >70% move, far beyond historical one\u2011day swings even in extreme markets. Macro supply\u2011demand fundamentals and current low\u2011volatility regime do not support such a jump, making the outcome highly unlikely.",
+      "edge": -0.4477,
+      "real_edge": -0.4477,
       "categories": [
         "oil"
       ],
       "models": "quant(39%)+AI(61%)",
       "n_models": 2,
-      "volume": 286128.797315,
+      "volume": 288139.88847599993,
       "signals": {
         "current_price": 70,
         "target": 120.0,
@@ -342,19 +342,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in May?",
-      "market_price": 0.815,
+      "market_price": 0.805,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": 0.01,
-      "ai_reasoning": "WTI would need to rise 57% ($40) in just 1 day to hit $110 from $70, requiring a ~23 standard deviation move given 2.5% daily volatility - this is effectively impossible in any historical context.",
-      "edge": -0.805,
-      "real_edge": -0.805,
+      "ai_reasoning": "WTI would need to rise 57% ($70 to $110) in just 1 day, which is approximately 23 standard deviations given the 2.5% daily volatility - an essentially impossible move. The z-score of 18.08 confirms this is an extreme outlier, and even during major geopolitical crises, oil has never approached such a single-day move.",
+      "edge": -0.795,
+      "real_edge": -0.795,
       "categories": [
         "oil"
       ],
       "models": "quant(13%)+AI(87%)",
       "n_models": 2,
-      "volume": 241054.59068000014,
+      "volume": 242281.47947300016,
       "signals": {
         "current_price": 70,
         "target": 110.0,
@@ -369,19 +369,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in May?",
-      "market_price": 0.1555,
-      "our_estimate": 0.0135,
+      "market_price": 0.1565,
+      "our_estimate": 0.025,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "WTI is currently $70 with a daily volatility of 2.5% and a VIX of 20, indicating a relatively calm market. A jump to $140 in one day would require a 100% move, far beyond typical daily swings and lacking any macro or supply shock signals, making it highly unlikely.",
-      "edge": -0.142,
-      "real_edge": -0.142,
+      "ai_estimate": 0.04,
+      "ai_reasoning": "WTI is currently around $70 with a daily volatility of 2.5% and a VIX of 20, indicating a relatively calm market. The 140\u2011level is roughly 70% above current price, requiring a sustained 30\u2011day rally that is unlikely given the current macro backdrop of moderate growth, stable OPEC output, and no major supply shocks.",
+      "edge": -0.1315,
+      "real_edge": -0.1315,
       "categories": [
         "oil"
       ],
-      "models": "quant(65%)+AI(35%)",
+      "models": "quant(50%)+AI(50%)",
       "n_models": 2,
-      "volume": 181145.66519900004,
+      "volume": 181182.61320500003,
       "signals": {
         "current_price": 70,
         "target": 140.0,
@@ -408,7 +408,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 165537.2459739997,
+      "volume": 166906.89523099965,
       "signals": {
         "current_price": 70,
         "target": 130.0,
@@ -419,6 +419,25 @@
         "z_score": 24.76,
         "recent_closes": [],
         "vix": 20
+      }
+    },
+    {
+      "question": "Oilers vs. Ducks",
+      "market_price": 0.545,
+      "our_estimate": 0.4899,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.48,
+      "ai_reasoning": "With markets in a low\u2011risk, fear\u2011driven environment (Fear & Greed 29) and modest volatility across commodities and equities, there is no clear macro signal favoring either team, suggesting a near\u2011even chance. The lack of a specific target in the model further reduces confidence in any directional bias.",
+      "edge": -0.0551,
+      "real_edge": -0.0551,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant(49%)+AI(51%)",
+      "n_models": 2,
+      "volume": 103368.94921199986,
+      "signals": {
+        "error": "no_target_found"
       }
     }
   ]
