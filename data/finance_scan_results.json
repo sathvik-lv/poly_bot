@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-03T17:26:26.420509+00:00",
+  "timestamp": "2026-05-03T18:33:05.263590+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,10 +26,10 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 78723,
-      "change_24h": 0.39261,
-      "change_7d": 0.86165,
-      "change_30d": 17.49773,
+      "price": 78719,
+      "change_24h": 0.36953,
+      "change_7d": 0.87685,
+      "change_30d": 17.49099,
       "ath": 126080,
       "high_24h": 79005,
       "low_24h": 78095,
@@ -40,24 +40,51 @@
       "classification": "Neutral"
     }
   },
-  "n_markets": 8,
-  "n_with_edge": 8,
+  "n_markets": 10,
+  "n_with_edge": 10,
   "results": [
     {
-      "question": "Will Crude Oil (CL) hit (HIGH) $150 by end of June?",
-      "market_price": 0.145,
-      "our_estimate": 0.0147,
+      "question": "Will Crude Oil (CL) hit (HIGH) $200 by end of June?",
+      "market_price": 0.038,
+      "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "Doubling WTI from $70 to $150 in under a month would require a >5\u2011sigma move given current 2.5% daily volatility, which is statistically implausible without a major supply shock or geopolitical crisis. Absent such an event, the odds of hitting $150 by June end remain very low.",
-      "edge": -0.1303,
-      "real_edge": -0.1303,
+      "ai_estimate": 0.01,
+      "ai_reasoning": "WTI would need to triple from $70 to $200 in less than a month, requiring an unprecedented supply shock or demand surge far beyond any plausible scenario given current inventory, OPEC policy, and global growth outlook. Even extreme geopolitical risk or a sudden embargo is unlikely to generate the required 8\u2011sigma move within 27 days.",
+      "edge": -0.028,
+      "real_edge": -0.028,
       "categories": [
         "oil"
       ],
-      "models": "quant(53%)+AI(47%)",
+      "models": "quant(70%)+AI(30%)",
       "n_models": 2,
-      "volume": 1834918.3127149956,
+      "volume": 3027343.0926920036,
+      "signals": {
+        "current_price": 70,
+        "target": 200.0,
+        "direction": "HIGH",
+        "days_left": 27,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 8.08,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
+      "question": "Will Crude Oil (CL) hit (HIGH) $150 by end of June?",
+      "market_price": 0.145,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.135,
+      "real_edge": -0.135,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1835065.3627149956,
       "signals": {
         "current_price": 70,
         "target": 150.0,
@@ -73,17 +100,17 @@
     {
       "question": "Will Crude Oil (CL) hit (HIGH) $175 by end of June?",
       "market_price": 0.075,
-      "our_estimate": 0.01,
+      "our_estimate": 0.024,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.065,
-      "real_edge": -0.065,
+      "ai_estimate": 0.04,
+      "ai_reasoning": "WTI is trading near $70 with a 27\u2011day window to $175, requiring a 150% jump against a 2.5% daily volatility and a 7\u2011sigma move. Macro conditions (steady yields, neutral fear\u2011greed, modest VIX) do not support such a breakout, making the event unlikely but not impossible.",
+      "edge": -0.051,
+      "real_edge": -0.051,
       "categories": [
         "oil"
       ],
-      "models": "quant_only",
-      "n_models": 1,
+      "models": "quant(53%)+AI(47%)",
+      "n_models": 2,
       "volume": 1285679.0407419996,
       "signals": {
         "current_price": 70,
@@ -111,7 +138,7 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 731821.8829990007,
+      "volume": 737751.2875570006,
       "signals": {
         "current_price": 70,
         "target": 150.0,
@@ -126,19 +153,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in May?",
-      "market_price": 0.615,
-      "our_estimate": 0.034,
+      "market_price": 0.635,
+      "our_estimate": 0.0148,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.06,
-      "ai_reasoning": "WTI is trading around $70 with modest daily volatility (2.5%) and a 27\u2011day horizon, requiring a >55% price jump, which is statistically unlikely (z\u2011score 3.48). Macro supply\u2011demand balance and stable demand outlook further limit upside potential.",
-      "edge": -0.581,
-      "real_edge": -0.581,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "WTI would need a ~57% rise in 27 days, roughly a 4\u20115\u03c3 move given current 2.5% daily volatility, making it highly unlikely. Only extreme supply shocks or geopolitical escalation could produce such a jump, which are not evident now.",
+      "edge": -0.6202,
+      "real_edge": -0.6202,
       "categories": [
         "oil"
       ],
       "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 477162.99277900025,
+      "volume": 480787.91435300035,
       "signals": {
         "current_price": 70,
         "target": 110.0,
@@ -152,20 +179,47 @@
       }
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $130 in May?",
-      "market_price": 0.205,
-      "our_estimate": 0.01,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in May?",
+      "market_price": 0.395,
+      "our_estimate": 0.017,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.01,
-      "ai_reasoning": "WTI would need to rise 86% from $70 to $130 in just 27 days, requiring approximately 34 standard deviation moves - an extreme statistical outlier. The z-score of 4.77 confirms this is extraordinarily unlikely, and with VIX at 20 (normal conditions), there are no current market signals suggesting such a dramatic supply shock or demand surge is imminent.",
-      "edge": -0.195,
-      "real_edge": -0.195,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "WTI at $70 would require a 71% gain to reach $120 in 27 days - a move 4.15 standard deviations from the mean, which is extremely rare in a normal volatility regime (VIX=20). Even accounting for oil's tail risks (geopolitics, supply shocks), the mathematical improbability dominates the probability estimate.",
+      "edge": -0.378,
+      "real_edge": -0.378,
       "categories": [
         "oil"
       ],
-      "models": "quant(71%)+AI(29%)",
+      "models": "quant(30%)+AI(70%)",
       "n_models": 2,
-      "volume": 413589.1597670001,
+      "volume": 465069.04949600104,
+      "signals": {
+        "current_price": 70,
+        "target": 120.0,
+        "direction": "HIGH",
+        "days_left": 27,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 4.15,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $130 in May?",
+      "market_price": 0.205,
+      "our_estimate": 0.0013,
+      "quant_estimate": 0.01,
+      "ai_estimate": 1e-05,
+      "ai_reasoning": "A 60% jump in 27 days would require a 4.6\u2011sigma move given the 2.5% daily volatility, which is essentially impossible under normal market conditions. Macro and structural factors (steady supply, no geopolitical shock) further reduce the likelihood.",
+      "edge": -0.2037,
+      "real_edge": -0.2037,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant(13%)+AI(87%)",
+      "n_models": 2,
+      "volume": 413615.1597670001,
       "signals": {
         "current_price": 70,
         "target": 130.0,
@@ -180,19 +234,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in May?",
-      "market_price": 0.111,
+      "market_price": 0.112,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.101,
-      "real_edge": -0.101,
+      "edge": -0.102,
+      "real_edge": -0.102,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 403527.2393110006,
+      "volume": 405558.6344100006,
       "signals": {
         "current_price": 70,
         "target": 140.0,
@@ -208,24 +262,24 @@
     {
       "question": "Will Bitcoin dip to $65,000 in May?",
       "market_price": 0.115,
-      "our_estimate": 0.3073,
-      "quant_estimate": 0.2922,
-      "ai_estimate": 0.32,
-      "ai_reasoning": "At $78.7k, a drop to $65k represents a ~17.5% decline, roughly one standard deviation of the 27\u2011day volatility envelope (\u224818%). The market is neutral on sentiment and shows modest upside bias, making a dip plausible but not dominant.",
-      "edge": 0.1923,
-      "real_edge": 0.1923,
+      "our_estimate": 0.2802,
+      "quant_estimate": 0.2924,
+      "ai_estimate": 0.27,
+      "ai_reasoning": "Bitcoin is trading well above $78k with modest upside bias and low 24\u2011hour volatility, while macro conditions (stable yields, neutral fear\u2011greed) support risk assets. A drop to $65k would require a sharp negative catalyst, making the dip unlikely but not impossible within the 27\u2011day window.",
+      "edge": 0.1652,
+      "real_edge": 0.1652,
       "categories": [
         "crypto"
       ],
       "models": "quant(46%)+AI(54%)",
       "n_models": 2,
-      "volume": 238996.8381540001,
+      "volume": 240862.96979900013,
       "signals": {
-        "current_price": 78723,
+        "current_price": 78719,
         "target": 65000.0,
         "direction": "DIP",
-        "change_24h": 0.39,
-        "change_7d": 0.86,
+        "change_24h": 0.37,
+        "change_7d": 0.88,
         "daily_vol": 0.035,
         "days_left": 27,
         "high_24h": 79005,
@@ -234,19 +288,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $105 in May?",
-      "market_price": 0.825,
-      "our_estimate": 0.01,
+      "market_price": 0.835,
+      "our_estimate": 0.017,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.815,
-      "real_edge": -0.815,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "WTI needs a 50% rally ($70\u2192$105) in 27 days, which represents roughly 3.9 standard deviations given the 2.5% daily volatility\u2014extremely improbable under normal market conditions. The z-score of 3.12 and model estimate of 0.01 both confirm this is a tail-risk event, though geopolitical supply shocks or unexpected OPEC cuts could theoretically materialize.",
+      "edge": -0.818,
+      "real_edge": -0.818,
       "categories": [
         "oil"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 138512.6104039997,
+      "models": "quant(30%)+AI(70%)",
+      "n_models": 2,
+      "volume": 139300.5554459997,
       "signals": {
         "current_price": 70,
         "target": 105.0,
