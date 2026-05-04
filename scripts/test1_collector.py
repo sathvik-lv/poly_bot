@@ -48,19 +48,37 @@ MAX_PRICE = 0.95            # SAME as Test 0
 DEFAULT_SCAN_SIZE = 200     # 4x Test 0 (more data)
 REPREDICT_HOURS = 6         # re-predict markets after 6h to capture edge evolution
 
+# Order matters — first match wins. niche_sports comes BEFORE sports so the
+# proven-winning patterns (tennis tournaments, esports, micro-prop bets) get
+# their own bucket instead of being lumped into "other". n=104, WR 71.2% on
+# this subset vs 54.6% on the mainstream "sports" bucket.
 CATEGORY_RULES = [
-    ("fed_rate",    ["fed ", "interest rate", "fomc", "federal reserve", "bps"]),
-    ("crypto",      ["bitcoin", "btc ", "ethereum", "eth ", "crypto", "solana"]),
-    ("oil_energy",  ["oil", "crude", "wti ", "brent", "opec", "energy"]),
-    ("macro",       ["gdp", "inflation", "cpi ", "recession", "unemployment", "tariff"]),
-    ("geopolitics", ["invade", "invasion", "war ", "military", "regime", "sanctions",
-                     "iran", "taiwan", "ukraine", "russia"]),
-    ("elections",   ["election", "president", "governor", "senate", "nominee", "primary",
-                     "democrat", "republican"]),
+    ("fed_rate",     ["fed ", "interest rate", "fomc", "federal reserve", "bps"]),
+    ("crypto",       ["bitcoin", "btc ", "ethereum", "eth ", "crypto", "solana"]),
+    ("oil_energy",   ["oil", "crude", "wti ", "brent", "opec", "energy"]),
+    ("macro",        ["gdp", "inflation", "cpi ", "recession", "unemployment", "tariff"]),
+    ("geopolitics",  ["invade", "invasion", "war ", "military", "regime", "sanctions",
+                      "iran", "taiwan", "ukraine", "russia"]),
+    ("elections",    ["election", "president", "governor", "senate", "nominee", "primary",
+                      "democrat", "republican"]),
+    ("niche_sports", [
+        # Tennis tournaments / qualifiers
+        "atp ", "wta ", "rolex monte carlo", "upper austria", "bmw open",
+        "barcelona open", "porsche tennis", "indian wells", "miami open",
+        "madrid open", "italian open", "wimbledon", "us open tennis",
+        "qualification", "qualifying", "ladies linz",
+        # Cricket leagues
+        "ipl", "indian premier league", "t20", "test match", "odi ",
+        # Esports
+        "counter-strike", "csgo", "cs:go", "cs2", "overwatch", "league of legends",
+        " dota", "valorant", "starcraft", "rocket league", "esports",
+        # Micro-prop bet structures (very profitable subset of "other")
+        "over/under", "o/u ", "total kills", "set handicap", "spread:",
+        "games total", "round robin", "handicap:",
+    ]),
     ("sports",      ["fifa", "world cup", "nba ", "nfl ", "mlb ", "f1 ", "champion",
                      "tournament", "lakers", "celtics", "warriors", "yankees", "dodgers",
-                     "match", "winner", "beat", "vs.", "points", "goals", "ufc", "nhl ",
-                     "counter-strike", "league of legends", "dota", "esports"]),
+                     "match", "winner", "beat", "vs.", "points", "goals", "ufc", "nhl "]),
     ("tech_ai",     ["openai", "chatgpt", "artificial intelligence", " ai ", "google",
                      "apple", "tesla"]),
 ]

@@ -38,16 +38,35 @@ PAPER_FILE = os.path.join(DATA_DIR, "paper_trades.json")
 ANALYTICS_FILE = os.path.join(DATA_DIR, "weight_analytics.json")
 GAMMA_API = "https://gamma-api.polymarket.com"
 
-# Market category classification keywords
+# Market category classification keywords.
+# Order matters — first match wins. niche_sports comes BEFORE sports so the
+# proven-winning patterns (tennis tournaments, esports, micro-prop bets) get
+# their own bucket instead of being lumped into the inefficient mainstream
+# "sports" category. n=104, WR 71.2% on this niche subset (was hidden in "other").
 CATEGORY_RULES = [
-    ("fed_rate",   ["fed ", "interest rate", "fomc", "federal reserve", "bps"]),
-    ("crypto",     ["bitcoin", "btc ", "ethereum", "eth ", "crypto", "solana"]),
-    ("oil_energy", ["oil", "crude", "wti ", "brent", "opec", "energy"]),
-    ("macro",      ["gdp", "inflation", "cpi ", "recession", "unemployment", "tariff"]),
-    ("geopolitics",["invade", "invasion", "war ", "military", "regime", "sanctions", "iran", "taiwan", "ukraine", "russia"]),
-    ("elections",  ["election", "president", "governor", "senate", "nominee", "primary", "democrat", "republican"]),
-    ("sports",     ["fifa", "world cup", "nba ", "nfl ", "mlb ", "f1 ", "champion", "tournament"]),
-    ("tech_ai",    ["openai", "chatgpt", "artificial intelligence", " ai ", "google", "apple", "tesla"]),
+    ("fed_rate",     ["fed ", "interest rate", "fomc", "federal reserve", "bps"]),
+    ("crypto",       ["bitcoin", "btc ", "ethereum", "eth ", "crypto", "solana"]),
+    ("oil_energy",   ["oil", "crude", "wti ", "brent", "opec", "energy"]),
+    ("macro",        ["gdp", "inflation", "cpi ", "recession", "unemployment", "tariff"]),
+    ("geopolitics",  ["invade", "invasion", "war ", "military", "regime", "sanctions", "iran", "taiwan", "ukraine", "russia"]),
+    ("elections",    ["election", "president", "governor", "senate", "nominee", "primary", "democrat", "republican"]),
+    ("niche_sports", [
+        # Tennis tournaments / qualifiers
+        "atp ", "wta ", "rolex monte carlo", "upper austria", "bmw open",
+        "barcelona open", "porsche tennis", "indian wells", "miami open",
+        "madrid open", "italian open", "wimbledon", "us open tennis",
+        "qualification", "qualifying", "ladies linz",
+        # Cricket leagues
+        "ipl", "indian premier league", "t20", "test match", "odi ",
+        # Esports
+        "counter-strike", "csgo", "cs:go", "cs2", "overwatch", "league of legends",
+        " dota", "valorant", "starcraft", "rocket league", "esports",
+        # Micro-prop bet structures (very profitable subset of "other")
+        "over/under", "o/u ", "total kills", "set handicap", "spread:",
+        "games total", "round robin", "handicap:",
+    ]),
+    ("sports",       ["fifa", "world cup", "nba ", "nfl ", "mlb ", "nhl ", "f1 ", "champion", "tournament", "ufc"]),
+    ("tech_ai",      ["openai", "chatgpt", "artificial intelligence", " ai ", "google", "apple", "tesla"]),
 ]
 
 
