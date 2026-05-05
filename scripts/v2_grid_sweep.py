@@ -39,6 +39,12 @@ DECAY_THRESHOLDS = [0.3, 0.5, 0.7, 0.9, 1.1]   # 1.1 = effectively no exit
 KELLY_FRACTIONS = [1/8, 1/5, 1/4, 1/3, 1/2, 1.0]
 SPREAD_COST = 0.02
 
+# When PROVEN_EDGE_ONLY=1, only consider markets in categories that have
+# already shown a measurable edge in walk-forward analysis. This focuses
+# the sweep on tuning K/SL/allocation for known-good signal rather than
+# trying to find edge from noise. Set via env var.
+PROVEN_EDGE_CATEGORIES = {"niche_sports", "sports", "other"}
+
 # Per-category allocation tier thresholds
 HIGH_TIER_RET_OVER_DD = 5.0     # return >= 5x maxDD -> high allocation
 MED_TIER_RET_OVER_DD = 1.5      # return >= 1.5x maxDD -> medium allocation
@@ -313,6 +319,17 @@ def evaluate_config(by_mid, entry_thr, decay_thr, kelly):
     return m
 
 
+def filter_proven_edge_categories(by_mid):
+    """Keep only markets whose entry record's category is in the proven set."""
+    out = {}
+    for mid, rs in by_mid.items():
+        # Use first record's category (entry decision)
+        cat = rs[0].get("category", "other") if rs else "other"
+        if cat in PROVEN_EDGE_CATEGORIES:
+            out[mid] = rs
+    return out
+
+
 def main():
     print("\n" + "=" * 78)
     print("  V2 GRID SWEEP — entry threshold x decay threshold x Kelly fraction")
@@ -321,6 +338,14 @@ def main():
     records = load_records()
     by_mid = group_by_market(records)
     print(f"  Loaded {len(records)} records, {len(by_mid)} unique markets")
+
+    proven_only = os.environ.get("PROVEN_EDGE_ONLY", "0") == "1"
+    if proven_only:
+        before = len(by_mid)
+        by_mid = filter_proven_edge_categories(by_mid)
+        print(f"  PROVEN_EDGE_ONLY mode: filtered to "
+              f"{sorted(PROVEN_EDGE_CATEGORIES)} -> {len(by_mid)} markets "
+              f"(dropped {before - len(by_mid)})")
 
     # ---- Walk-forward split: pick config on TRAIN, verify on HOLDOUT ----
     train_mids, holdout_mids = split_by_time(by_mid, train_frac=0.70)
