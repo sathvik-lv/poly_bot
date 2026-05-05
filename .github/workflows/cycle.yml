@@ -41,6 +41,8 @@ jobs:
       - name: Create .env
         run: |
           echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
           echo "METACULUS_API_TOKEN=${{ secrets.METACULUS_API_TOKEN }}" >> .env
           echo "RELAYER_API_KEY=${{ secrets.RELAYER_API_KEY }}" >> .env
           echo "RELAYER_API_KEY_ADDRESS=${{ secrets.RELAYER_API_KEY_ADDRESS }}" >> .env
@@ -106,32 +108,27 @@ jobs:
       # accumulation. Re-enable by removing `if: false` from each step.
       # All v2 modules + scripts remain in the repo and unit-tested.
       # ============================================================
-      - name: V2 collector (100 markets, adaptive)
-        if: false
-        run: python scripts/v2_collector.py -n 100
+      - name: V2 collector (150 markets, adaptive + niche-sports priority)
+        run: python scripts/v2_collector.py -n 150
         timeout-minutes: 12
         continue-on-error: true
 
       - name: V2 resolver
-        if: false
         run: python scripts/v2_resolver.py
         timeout-minutes: 5
         continue-on-error: true
 
       - name: V2 weight trainer (refresh model_weights.json)
-        if: false
         run: python scripts/v2_train_weights.py
         timeout-minutes: 2
         continue-on-error: true
 
       - name: V2 report
-        if: false
         run: python scripts/v2_report.py
         timeout-minutes: 1
         continue-on-error: true
 
       - name: V1 vs V2 comparison
-        if: false
         run: python scripts/compare_v1_v2.py
         timeout-minutes: 1
         continue-on-error: true

@@ -240,7 +240,13 @@ def passes_filters(m: dict) -> tuple:
 
 
 def fetch_markets(client: MarketClient, n_target: int) -> list:
-    """Fetch markets from 3 pools, deduped, all passing Test 1 filters."""
+    """Fetch markets from 3 generic pools + a deep niche-sports sweep, deduped.
+
+    The niche-sports sweep paginates ~3000 markets ordered by endDate (soonest
+    first) and keeps only those whose question matches our niche_sports
+    keywords. This actively hunts the proven-winning pattern (n=82, WR 74.4%)
+    instead of relying on the volume sort to surface them by luck.
+    """
     seen = set()
     out = []
 
@@ -270,6 +276,66 @@ def fetch_markets(client: MarketClient, n_target: int) -> list:
                     break
         except Exception:
             continue
+
+    # ---- Wide deep sweep for ALL winning category patterns -------------
+    # Uses CategoryGate's verdict on historical resolved bets to decide
+    # which categories to hunt. Sweeps deep (up to ~3000 markets, paged
+    # by endDate) and keeps ones whose category passes the gate
+    # (anything not BLOCKED or AMBIGUOUS). This actively hunts the
+    # proven-winning patterns instead of relying on volume sort.
+    try:
+        from src.category_gate import CategoryGate
+        gate = CategoryGate()
+        winning_cats = set()
+        for cat, stats in gate.stats.items():
+            decision = gate.decide(cat, abs_edge=1.0)  # max edge — only structural block matters
+            if decision["allow"]:
+                winning_cats.add(cat)
+        # Categories we have NO data on yet — let them through too
+        # (a future winner needs samples to prove itself)
+        all_known_cats = {name for name, _ in CATEGORY_RULES} | {"other"}
+        unknown_cats = all_known_cats - set(gate.stats.keys())
+        target_cats = winning_cats | unknown_cats
+    except Exception:
+        # If gate fails to load, default to the proven-winning niche bucket
+        target_cats = {"niche_sports", "other", "geopolitics", "crypto",
+                       "tech_ai", "elections", "fed_rate", "macro", "oil_energy"}
+
+    print(f"  Deep sweep targeting categories: {sorted(target_cats)}")
+    swept_added = 0
+    SWEEP_PAGES = 15  # 15 × 200 = up to 3000 markets scanned
+    for page_offset in range(0, SWEEP_PAGES * 200, 200):
+        if swept_added >= n_target:
+            break
+        try:
+            r = client.session.get(
+                f"{client.base_url}/markets",
+                params={"limit": 200, "active": True, "closed": False,
+                        "order": "endDate", "ascending": True,
+                        "offset": page_offset},
+                timeout=15,
+            ).json()
+            if not r:
+                break
+            for m in r:
+                mid = m.get("id")
+                if not mid or mid in seen:
+                    continue
+                cat = classify_market(m.get("question", ""))
+                if cat not in target_cats:
+                    continue
+                check = passes_filters(m)
+                if check is None:
+                    continue
+                seen.add(mid)
+                m["_days_left"], m["_price"] = check
+                m["_deep_sweep"] = True
+                m["_swept_category"] = cat
+                out.append(m)
+                swept_added += 1
+        except Exception:
+            continue
+    print(f"  Deep sweep added {swept_added} markets across winning categories")
 
     return out
 
@@ -328,10 +394,16 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
         raw["_round"] = next_round
         candidates.append(raw)
 
-    # Sort: lowest round first (new markets), then soonest resolving
-    candidates.sort(key=lambda x: (x.get("_round", 1), x.get("_days_left", 999)))
+    # Sort: deep-sweep candidates first (matched a winning category), then
+    # lowest round (new markets), then soonest resolving.
+    candidates.sort(key=lambda x: (
+        0 if x.get("_deep_sweep") else 1,
+        x.get("_round", 1),
+        x.get("_days_left", 999),
+    ))
     candidates = candidates[:n_markets]
-    print(f"  Will predict {len(candidates)} markets (new + re-predictions)")
+    n_swept = sum(1 for c in candidates if c.get("_deep_sweep"))
+    print(f"  Will predict {len(candidates)} markets ({n_swept} from deep sweep)")
 
     n_new = 0
     n_repred = 0

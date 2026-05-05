@@ -619,16 +619,38 @@ class OrderbookModel:
 # ===========================================================================
 
 class AISemanticModel:
-    """Use LLM via OpenRouter for semantic understanding of market questions.
+    """Use LLM for semantic understanding of market questions.
 
-    Rotates through ALL free models with automatic fallback on rate limits.
-    25 free models available — if one returns 429, try the next immediately.
+    Multi-provider rotation:
+      1. Groq (preferred — fast LPU, ~500 tok/s, 30 req/min free tier)
+      2. OpenRouter (fallback — many free models, less predictable rate limits)
+
+    On a per-call basis we try Groq first if GROQ_API_KEY is set, then fall
+    through to OpenRouter models on 429 / failure / timeout. Per-model
+    blacklisting prevents the same broken model getting re-tried within a scan.
     """
 
     OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+    GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+    GEMINI_URL_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
-    # All free models ranked by capability (best first)
-    FREE_MODELS = [
+    # Groq's currently-available free production models, best first.
+    # Verified at https://console.groq.com/docs/models (Apr 2026).
+    GROQ_MODELS = [
+        "llama-3.3-70b-versatile",   # best general-purpose
+        "llama-3.1-8b-instant",      # very fast fallback
+        "gemma2-9b-it",
+    ]
+
+    # Gemini free-tier models (15 RPM Flash, 1500 req/day — very generous)
+    GEMINI_MODELS = [
+        "gemini-flash-latest",        # currently 2.5 Flash
+        "gemini-2.0-flash",
+        "gemini-2.5-flash-lite",      # faster, cheaper fallback
+    ]
+
+    # OpenRouter free models, best first (used as fallback)
+    OPENROUTER_MODELS = [
         "nvidia/nemotron-3-super-120b-a12b:free",
         "openai/gpt-oss-120b:free",
         "nousresearch/hermes-3-llama-3.1-405b:free",
@@ -656,65 +678,121 @@ class AISemanticModel:
         "liquid/lfm-2.5-1.2b-thinking:free",
     ]
 
+    # Backwards-compat alias (older callers may reference FREE_MODELS).
+    FREE_MODELS = OPENROUTER_MODELS
+
     # Circuit breaker — after this many consecutive total-failures across markets,
     # AI is disabled for the rest of this engine's lifetime (one scan).
     STORM_THRESHOLD = 3
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "nvidia/nemotron-3-super-120b-a12b:free"):
-        self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
+    def __init__(self, api_key: Optional[str] = None, model: str = "llama-3.3-70b-versatile"):
+        self.openrouter_key = api_key or os.environ.get("OPENROUTER_API_KEY")
+        self.groq_key = os.environ.get("GROQ_API_KEY")
+        self.gemini_key = os.environ.get("GEMINI_API_KEY")
         self.model = model
-        self.enabled = bool(self.api_key)
+        self.enabled = bool(self.openrouter_key or self.groq_key or self.gemini_key)
         self.rag = NewsRAGEngine()
-        self._model_index = 0  # rotate through models
-        self._blocked_models: set = set()   # models that 429'd this scan — skip them
+        # Provider priority: Groq (fastest, ~500 tok/s) -> Gemini (15 RPM,
+        # very reliable) -> OpenRouter (chaotic free tier, last resort).
+        # Each entry = (provider_name, url_or_template, key, models).
+        self._providers: list = []
+        if self.groq_key:
+            self._providers.append(("groq", self.GROQ_URL, self.groq_key, self.GROQ_MODELS))
+        if self.gemini_key:
+            self._providers.append(("gemini", self.GEMINI_URL_TEMPLATE, self.gemini_key, self.GEMINI_MODELS))
+        if self.openrouter_key:
+            self._providers.append(("openrouter", self.OPENROUTER_URL, self.openrouter_key, self.OPENROUTER_MODELS))
+        # Flat (provider, url, key, model) sequence for rotation
+        self._sequence: list = [
+            (p_name, p_url, p_key, m)
+            for (p_name, p_url, p_key, models) in self._providers
+            for m in models
+        ]
+        self._index = 0
+        self._blocked: set = set()           # set of (provider, model) that 429'd this scan
         self._consecutive_total_failures = 0
-        self._storm_disabled = False        # tripped after STORM_THRESHOLD failures
+        self._storm_disabled = False
 
-    def _next_model(self) -> Optional[str]:
-        """Get next non-blocked model in rotation, or None if all are blocked."""
-        for _ in range(len(self.FREE_MODELS)):
-            model = self.FREE_MODELS[self._model_index % len(self.FREE_MODELS)]
-            self._model_index += 1
-            if model not in self._blocked_models:
-                return model
+    def _next_model(self) -> Optional[tuple]:
+        """Return next non-blocked (provider, url, key, model), or None if exhausted."""
+        if not self._sequence:
+            return None
+        for _ in range(len(self._sequence)):
+            entry = self._sequence[self._index % len(self._sequence)]
+            self._index += 1
+            key = (entry[0], entry[3])  # (provider_name, model)
+            if key not in self._blocked:
+                return entry
         return None
 
-    def _call_model(self, prompt: str, model: str) -> Optional[dict]:
-        """Call a single model. Returns parsed response or None on failure."""
+    def _call_model(self, prompt: str, entry: tuple) -> Optional[dict]:
+        """Call a single (provider, url, key, model). Returns parsed JSON or None."""
+        provider_name, url, key, model = entry
         try:
-            resp = requests.post(
-                self.OPENROUTER_URL,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.2,
-                    "max_tokens": 600,
-                },
-                timeout=12,
-            )
-            if resp.status_code == 429:
-                # Blacklist this model for the rest of the scan
-                self._blocked_models.add(model)
-                return None
-            resp.raise_for_status()
-            msg = resp.json()["choices"][0]["message"]
-            content = msg.get("content") or ""
-            if not content.strip() and msg.get("reasoning"):
-                content = msg["reasoning"]
-            content = content.strip()
+            if provider_name == "gemini":
+                # Gemini API: model is in URL path, key is X-goog-api-key header,
+                # body uses contents/parts not messages.
+                resp = requests.post(
+                    url.format(model=model),
+                    headers={
+                        "X-goog-api-key": key,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "temperature": 0.2,
+                            "maxOutputTokens": 600,
+                        },
+                    },
+                    timeout=12,
+                )
+                if resp.status_code in (429, 503):
+                    self._blocked.add((provider_name, model))
+                    return None
+                resp.raise_for_status()
+                data = resp.json()
+                # Gemini response: candidates[0].content.parts[0].text
+                content = ""
+                cands = data.get("candidates") or []
+                if cands and cands[0].get("content"):
+                    parts = cands[0]["content"].get("parts") or []
+                    if parts:
+                        content = (parts[0].get("text") or "").strip()
+            else:
+                # OpenAI-compatible (Groq + OpenRouter)
+                resp = requests.post(
+                    url,
+                    headers={
+                        "Authorization": f"Bearer {key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "temperature": 0.2,
+                        "max_tokens": 600,
+                    },
+                    timeout=12,
+                )
+                if resp.status_code == 429:
+                    self._blocked.add((provider_name, model))
+                    return None
+                resp.raise_for_status()
+                msg = resp.json()["choices"][0]["message"]
+                content = msg.get("content") or ""
+                if not content.strip() and msg.get("reasoning"):
+                    content = msg["reasoning"]
+                content = content.strip()
+
             if content.startswith("```"):
                 content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-            # Extract JSON from content (handle models that add extra text)
             start = content.find("{")
             end = content.rfind("}") + 1
             if start >= 0 and end > start:
                 content = content[start:end]
             parsed = json.loads(content)
-            parsed["_model_used"] = model
+            parsed["_model_used"] = f"{provider_name}/{model}"
             return parsed
         except Exception:
             return None
@@ -778,15 +856,17 @@ Respond with ONLY a JSON object (no other text):
     "edge_vs_market": <your probability minus market price>
 }}"""
 
-        # Try up to 8 models with rotation, skipping any already-blocked
+        # Try up to 8 (provider, model) entries with rotation; Groq comes first
+        # when its key is set, OpenRouter is the fallback.
         parsed = None
         models_tried = []
         for _ in range(8):
-            model = self._next_model()
-            if model is None:
-                break  # every model is blocked — no point looping
-            models_tried.append(model.split("/")[-1].split(":")[0])
-            parsed = self._call_model(prompt, model)
+            entry = self._next_model()
+            if entry is None:
+                break  # every (provider, model) is blocked — no point looping
+            provider_name, _url, _key, model_name = entry
+            models_tried.append(f"{provider_name}/{model_name.split('/')[-1].split(':')[0]}")
+            parsed = self._call_model(prompt, entry)
             if parsed is not None:
                 break
 
