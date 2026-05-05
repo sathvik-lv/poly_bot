@@ -123,6 +123,11 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      - name: V2 meta-model trainer (XGBoost on ledger features)
+        run: python scripts/v2_train_meta.py
+        timeout-minutes: 5
+        continue-on-error: true
+
       - name: V2 report
         run: python scripts/v2_report.py
         timeout-minutes: 1

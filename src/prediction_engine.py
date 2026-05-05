@@ -1069,8 +1069,11 @@ class PredictionEngine:
                 ob_result["variance"] = ob_result.get("variance", 0.06) / max(w, 0.01)
                 sub_results["orderbook"] = ob_result
 
-        # 2e. AI semantic analysis — primary edge source
-        if routing.get("ai_semantic", 0) > 0:
+        # 2e. AI semantic analysis — DISABLED by default (Brier worse than
+        # market baseline + 0% trained weight made it dead compute time).
+        # Re-enable by setting ENABLE_AI_SEMANTIC=1 in the environment.
+        if (os.environ.get("ENABLE_AI_SEMANTIC", "0") == "1"
+                and routing.get("ai_semantic", 0) > 0):
             ai_result = self.ai_model.analyze(market_data)
             if ai_result["estimate"] is not None:
                 w = routing["ai_semantic"]

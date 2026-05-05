@@ -24,6 +24,7 @@ load_dotenv()
 from src.adaptive_ensemble import AdaptiveEnsemble
 from src.category_gate import CategoryGate
 from src.market_client import MarketClient
+from src.meta_model import XGBoostMetaModel
 from src.prediction_engine import PredictionEngine
 from src.shadow_ledger import compute_per_model_shadow
 
@@ -36,7 +37,11 @@ from scripts.test1_collector import (
 
 DATA_DIR = "data"
 LEDGER_FILE = os.path.join(DATA_DIR, "v2_ledger.jsonl")
+META_MODEL_FILE = os.path.join(DATA_DIR, "meta_model.xgb")
 ADAPTIVE_BLEND = float(os.environ.get("V2_ADAPTIVE_BLEND", "0.5"))
+# Blend weight for meta-model when it's loaded (the rest goes to ensemble).
+# 0.0 -> meta ignored, 1.0 -> meta replaces ensemble entirely.
+META_BLEND = float(os.environ.get("V2_META_BLEND", "0.5"))
 
 
 def load_ledger() -> list:
@@ -94,6 +99,15 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
     gate = CategoryGate()
     print("  Category gate state:")
     print(gate.report())
+
+    meta = XGBoostMetaModel.load(META_MODEL_FILE)
+    if meta is not None and meta.loaded:
+        info = meta.info
+        print(f"  Meta-model: LOADED  n_train={info.n_train}  "
+              f"val_brier={info.val_brier:.4f}  market_brier={info.market_brier:.4f}  "
+              f"improvement={info.improvement:+.4f}  blend={META_BLEND}")
+    else:
+        print("  Meta-model: not loaded (will fall back to adaptive ensemble only)")
 
     client = MarketClient()
 
@@ -159,9 +173,35 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 token_id=parsed.get("_token_id"),
             )
 
-            edge = prediction["edge"]["edge"]
-            prob = prediction["prediction"]["probability"]
+            ensemble_edge = prediction["edge"]["edge"]
+            ensemble_prob = prediction["prediction"]["probability"]
             price = prediction["market"]["current_price"]
+
+            # Build market context once (also used later for the ledger record)
+            ctx = market_context(raw, parsed)
+            ctx.update(global_ctx)
+
+            model_estimates_for_meta = {}
+            for mname, mresult in prediction.get("sub_models", {}).items():
+                est = mresult.get("estimate")
+                if est is not None:
+                    model_estimates_for_meta[mname] = float(est)
+            meta_input = {
+                "market_price": price,
+                "days_left": raw.get("_days_left"),
+                "context": ctx,
+                "model_estimates": model_estimates_for_meta,
+                "prediction_round": raw.get("_round", 1),
+                "abs_edge": abs(ensemble_edge),
+            }
+
+            meta_prob = meta.predict_proba(meta_input) if meta is not None and meta.loaded else None
+
+            if meta_prob is not None and 0.0 < META_BLEND <= 1.0:
+                prob = (1 - META_BLEND) * ensemble_prob + META_BLEND * meta_prob
+            else:
+                prob = ensemble_prob
+            edge = prob - price
 
             sizing = prediction.get("sizing", {}) or {}
             kelly_fraction = sizing.get("kelly_fraction", 0.0)
@@ -190,9 +230,6 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
             ensemble_meta = prediction.get("ensemble", {}) or {}
             strategy_meta = prediction.get("strategy", {}) or {}
 
-            ctx = market_context(raw, parsed)
-            ctx.update(global_ctx)
-
             elapsed = time.time() - t0
             round_num = raw.get("_round", 1)
             record = {
@@ -206,6 +243,8 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 "days_left": raw.get("_days_left"),
                 "market_price": round(price, 4),
                 "predicted_prob": round(prob, 4),
+                "ensemble_prob": round(ensemble_prob, 4),
+                "meta_prob": round(meta_prob, 4) if meta_prob is not None else None,
                 "edge": round(edge, 4),
                 "abs_edge": round(abs(edge), 4),
                 "edge_confidence": prediction["edge"]["edge_confidence"],
