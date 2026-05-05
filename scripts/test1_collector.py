@@ -303,10 +303,12 @@ def fetch_markets(client: MarketClient, n_target: int) -> list:
 
     print(f"  Deep sweep targeting categories: {sorted(target_cats)}")
     swept_added = 0
-    # Default 30 pages = up to 6000 markets. Override via SWEEP_PAGES env var.
-    # Wider sweep finds more tier-eligible markets at the cost of ~2-3 extra
-    # seconds per cycle of metadata fetching.
-    SWEEP_PAGES = int(os.environ.get("SWEEP_PAGES", "30"))
+    # Default 50 pages = up to 10,000 markets — roughly the entire active
+    # Polymarket universe. Each page = 200 markets, ~500ms fetch =>
+    # ~25s of metadata fetching per cycle. Predictions still capped by
+    # n_target so this only WIDENS the candidate pool, doesn't slow them.
+    # Override via SWEEP_PAGES env var (e.g. SWEEP_PAGES=100 for 20k).
+    SWEEP_PAGES = int(os.environ.get("SWEEP_PAGES", "50"))
     for page_offset in range(0, SWEEP_PAGES * 200, 200):
         if swept_added >= n_target:
             break

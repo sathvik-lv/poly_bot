@@ -55,6 +55,11 @@ jobs:
         run: python scripts/paper_trader.py --scan -n 50
         timeout-minutes: 15
         continue-on-error: true
+        env:
+          # Option B A/B test: paper_trader uses category tiers (sports/niche
+          # full Kelly, other half, rest skip). v2_collector still ungated.
+          # Compare WR + ROI grouped by tier_applied field after ~1 week.
+          ENABLE_CATEGORY_TIERS: "1"
 
       - name: Resolve paper trades
         run: python scripts/paper_trader.py --resolve
