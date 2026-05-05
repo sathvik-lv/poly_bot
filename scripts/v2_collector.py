@@ -67,6 +67,38 @@ def tier_for(category: str) -> tuple[float, str]:
     return mult, "SKIP"
 
 
+# Per-category meta-blend rules — discovered via per-category walk-forward
+# Brier improvement on n=199 live bets. The meta-model has SKILL on different
+# categories than the ensemble does. Gated behind ENABLE_META_BY_CATEGORY=1.
+#
+# blend = 0.0  -> use ensemble probability alone (meta hurts here)
+# blend = 0.5  -> 50/50 blend
+# blend = 1.0  -> use meta probability alone (ensemble has no edge here)
+#
+# Categories not in this map: NOT TRADED when env is on (e.g. crypto, tech_ai
+# both showed negative Brier improvement and negative ROI).
+META_BLEND_BY_CATEGORY = {
+    "sports":       0.0,   # n=74, meta -0.020 worse -> ensemble alone
+    "niche_sports": 0.0,   # newly split, treat like sports until separate data
+    "other":        0.5,   # n=89, meta +0.030 better -> blend
+    "geopolitics":  1.0,   # n=12, meta +0.063 (HUGE) -> meta dominant
+}
+
+
+def meta_blend_for(category: str) -> tuple[float, bool]:
+    """Return (blend_weight, allow_entry).
+
+    When ENABLE_META_BY_CATEGORY=1: blend per the table; categories not
+    in the table are NOT TRADED. Otherwise falls back to the global
+    V2_META_BLEND env var with all categories allowed.
+    """
+    if os.environ.get("ENABLE_META_BY_CATEGORY", "0") != "1":
+        return META_BLEND, True
+    if category not in META_BLEND_BY_CATEGORY:
+        return 0.0, False  # not a category we trade in meta-mode
+    return META_BLEND_BY_CATEGORY[category], True
+
+
 def load_ledger() -> list:
     if not os.path.exists(LEDGER_FILE):
         return []
@@ -220,8 +252,15 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
 
             meta_prob = meta.predict_proba(meta_input) if meta is not None and meta.loaded else None
 
-            if meta_prob is not None and 0.0 < META_BLEND <= 1.0:
-                prob = (1 - META_BLEND) * ensemble_prob + META_BLEND * meta_prob
+            # Per-category meta blend (when ENABLE_META_BY_CATEGORY=1) takes
+            # precedence over the global V2_META_BLEND. Falls back to global
+            # behavior when env var is off.
+            category = classify_market(parsed.get("question", ""))
+            cat_blend, meta_cat_allows = meta_blend_for(category)
+            tier_mult, tier_applied = tier_for(category)
+
+            if meta_prob is not None and 0.0 < cat_blend <= 1.0:
+                prob = (1 - cat_blend) * ensemble_prob + cat_blend * meta_prob
             else:
                 prob = ensemble_prob
             edge = prob - price
@@ -234,11 +273,13 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 "BUY_YES" if edge > 0 else ("BUY_NO" if edge < 0 else "NO_BET")
             )
 
-            category = classify_market(parsed.get("question", ""))
             gate_decision = gate.decide(category, abs_edge=abs(edge))
-            tier_mult, tier_applied = tier_for(category)
 
-            if base_action != "NO_BET" and not gate_decision["allow"]:
+            if base_action != "NO_BET" and not meta_cat_allows:
+                # ENABLE_META_BY_CATEGORY=1 and category not in the trade list
+                action = "NO_BET"
+                n_gated_out += 1
+            elif base_action != "NO_BET" and not gate_decision["allow"]:
                 action = "NO_BET"
                 n_gated_out += 1
             elif base_action != "NO_BET" and tier_mult <= 0:
@@ -274,6 +315,8 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 "category": category,
                 "tier_applied": tier_applied,
                 "tier_mult": tier_mult,
+                "meta_blend_used": cat_blend,
+                "meta_cat_allows": meta_cat_allows,
                 "end_date": parsed.get("end_date"),
                 "days_left": raw.get("_days_left"),
                 "market_price": round(price, 4),

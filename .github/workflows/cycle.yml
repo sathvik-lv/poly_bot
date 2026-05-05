@@ -117,6 +117,14 @@ jobs:
         run: python scripts/v2_collector.py -n 150
         timeout-minutes: 12
         continue-on-error: true
+        env:
+          # Per-category meta blend — derived from per-category walk-forward
+          # Brier improvement on n=199 live bets:
+          #   sports/niche_sports: blend=0 (ensemble alone — meta hurts)
+          #   other:               blend=0.5 (50/50)
+          #   geopolitics:         blend=1.0 (meta dominant — best edge)
+          #   crypto/elections/etc: NOT TRADED (negative meta + ensemble)
+          ENABLE_META_BY_CATEGORY: "1"
 
       - name: V2 resolver
         run: python scripts/v2_resolver.py
