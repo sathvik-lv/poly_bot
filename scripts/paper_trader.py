@@ -38,6 +38,28 @@ PAPER_FILE = os.path.join(DATA_DIR, "paper_trades.json")
 ANALYTICS_FILE = os.path.join(DATA_DIR, "weight_analytics.json")
 GAMMA_API = "https://gamma-api.polymarket.com"
 
+# Category-tiered Kelly multipliers (HIGH/MEDIUM/SKIP).
+# Derived from grid-sweep per-category analysis: HIGH categories have
+# ret/DD >= 5 and WR >= 55%, MEDIUM has ret/DD >= 1.5 and WR >= 50%,
+# everything else has insufficient data or negative ret/DD -> SKIP.
+# Gated behind ENABLE_CATEGORY_TIERS=1; defaults to old behavior (1x for all).
+CATEGORY_TIER_MULT = {
+    # HIGH tier (n>=30, WR>=55%, ret/DD>=5): bet full Kelly
+    "sports":       1.0,
+    "niche_sports": 1.0,
+    # MEDIUM tier (n>=30, WR>=50%, ret/DD>=1.5): half Kelly
+    "other":        0.5,
+    # SKIP tier (n<20 OR WR<50% OR ret/DD<1.5): zero capital, no entry
+    "crypto":       0.0,
+    "geopolitics":  0.0,
+    "elections":    0.0,
+    "tech_ai":      0.0,
+    "fed_rate":     0.0,
+    "oil_energy":   0.0,
+    "macro":        0.0,
+}
+DEFAULT_TIER_MULT = 0.0  # any unknown category is SKIPped under tier mode
+
 # Market category classification keywords.
 # Order matters — first match wins. niche_sports comes BEFORE sports so the
 # proven-winning patterns (tennis tournaments, esports, micro-prop bets) get
@@ -293,6 +315,26 @@ def scan_and_trade(state: dict, n_markets: int = 30):
             # PLACE PAPER TRADE
             sizing = strat["sizing"]
             trade_amount = sizing["size_dollars"]
+
+            # Category-tier multiplier (gated). HIGH=1.0, MEDIUM=0.5, SKIP=0.0.
+            # Backed by grid-sweep per-category ret/DD analysis.
+            category = classify_market(market.get("question", ""))
+            tier_mult = 1.0
+            tier_applied = "ungated"
+            if os.environ.get("ENABLE_CATEGORY_TIERS", "0") == "1":
+                tier_mult = CATEGORY_TIER_MULT.get(category, DEFAULT_TIER_MULT)
+                if tier_mult >= 1.0:
+                    tier_applied = "HIGH"
+                elif tier_mult >= 0.4:
+                    tier_applied = "MEDIUM"
+                else:
+                    tier_applied = "SKIP"
+                if tier_mult <= 0:
+                    q = market.get("question", "")[:50]
+                    print(f"  [{i+1:>2}] SKIP-TIER [{category:<12}] {q}  Edge={edge:+.3f}")
+                    continue
+                trade_amount = trade_amount * tier_mult
+
             if trade_amount <= 0 or trade_amount > state["cash"]:
                 continue
 
@@ -312,7 +354,9 @@ def scan_and_trade(state: dict, n_markets: int = 30):
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "market_id": market.get("id"),
                 "question": market.get("question", ""),
-                "category": classify_market(market.get("question", "")),
+                "category": category,
+                "tier_applied": tier_applied,
+                "tier_mult": tier_mult,
                 "action": action,
                 "entry_price": price,
                 "predicted_prob": prob,

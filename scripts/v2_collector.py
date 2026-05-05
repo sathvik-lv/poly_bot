@@ -43,6 +43,29 @@ ADAPTIVE_BLEND = float(os.environ.get("V2_ADAPTIVE_BLEND", "0.5"))
 # 0.0 -> meta ignored, 1.0 -> meta replaces ensemble entirely.
 META_BLEND = float(os.environ.get("V2_META_BLEND", "0.5"))
 
+# Category-tier multipliers — same table as paper_trader.py. Gated behind
+# ENABLE_CATEGORY_TIERS=1. When enabled, SKIP-tier markets are converted
+# to action=NO_BET and tier_applied is logged for A/B comparison.
+CATEGORY_TIER_MULT = {
+    "sports": 1.0, "niche_sports": 1.0,
+    "other": 0.5,
+    "crypto": 0.0, "geopolitics": 0.0, "elections": 0.0, "tech_ai": 0.0,
+    "fed_rate": 0.0, "oil_energy": 0.0, "macro": 0.0,
+}
+DEFAULT_TIER_MULT = 0.0
+
+
+def tier_for(category: str) -> tuple[float, str]:
+    """Return (multiplier, label). Always returns (1.0, 'ungated') if env off."""
+    if os.environ.get("ENABLE_CATEGORY_TIERS", "0") != "1":
+        return 1.0, "ungated"
+    mult = CATEGORY_TIER_MULT.get(category, DEFAULT_TIER_MULT)
+    if mult >= 1.0:
+        return mult, "HIGH"
+    if mult >= 0.4:
+        return mult, "MEDIUM"
+    return mult, "SKIP"
+
 
 def load_ledger() -> list:
     if not os.path.exists(LEDGER_FILE):
@@ -213,12 +236,22 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
 
             category = classify_market(parsed.get("question", ""))
             gate_decision = gate.decide(category, abs_edge=abs(edge))
+            tier_mult, tier_applied = tier_for(category)
 
             if base_action != "NO_BET" and not gate_decision["allow"]:
                 action = "NO_BET"
                 n_gated_out += 1
+            elif base_action != "NO_BET" and tier_mult <= 0:
+                # SKIP-tier when ENABLE_CATEGORY_TIERS=1: don't enter
+                action = "NO_BET"
+                n_gated_out += 1
             else:
                 action = base_action
+
+            # Scale stored kelly_fraction by tier multiplier so the report
+            # automatically applies the tier when computing equity replay.
+            kelly_fraction = float(kelly_fraction) * tier_mult
+            kelly_full = float(kelly_full) * tier_mult
 
             model_estimates = {}
             for mname, mresult in prediction.get("sub_models", {}).items():
@@ -239,6 +272,8 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 "market_id": raw.get("id"),
                 "question": parsed.get("question", ""),
                 "category": category,
+                "tier_applied": tier_applied,
+                "tier_mult": tier_mult,
                 "end_date": parsed.get("end_date"),
                 "days_left": raw.get("_days_left"),
                 "market_price": round(price, 4),
