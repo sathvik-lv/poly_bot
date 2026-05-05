@@ -22,6 +22,7 @@ The calendar spread strategy proved that:
 """
 
 import math
+import os
 import time
 from typing import Optional
 from dataclasses import dataclass, field
@@ -243,7 +244,13 @@ class EntryFilterGate:
     MIN_VOLUME_24H = 100          # Minimum $100 in 24h volume
     MIN_MODEL_AGREEMENT = 0.40    # At least 40% model agreement
     MAX_IMBALANCE = 0.85          # Orderbook imbalance cap (from OI_DOMINANCE_X)
-    MIN_EDGE = 0.02               # Minimum 2% edge to enter
+    # Default 2% edge to enter. Loose-entry mode (ENABLE_LOOSE_ENTRY=1)
+    # drops it to 1% — pairs with ENABLE_EARLY_EXIT=1 to capture more
+    # marginal-EV trades and exit them when their edge fades.
+    # Walk-forward on 290 live bets: loose+exit nets +$23.48 vs current
+    # +$22.18 (~+6% total PnL). Requires capital headroom for higher
+    # concurrent-position count.
+    MIN_EDGE = 0.01 if os.environ.get("ENABLE_LOOSE_ENTRY", "0") == "1" else 0.02
     PRICE_SANITY_RANGE = (0.05, 0.95)  # Don't bet on near-certain outcomes
 
     def check_all(self, market_data: dict, prediction: dict) -> dict:
