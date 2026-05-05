@@ -1,9 +1,38 @@
 {
-  "timestamp": "2026-05-05T20:37:32.272692+00:00",
+  "timestamp": "2026-05-05T22:35:26.594131+00:00",
   "n_markets": 1000,
-  "n_constraints": 50,
-  "n_violations": 5,
-  "time_hierarchy_violations": [],
+  "n_constraints": 49,
+  "n_violations": 7,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "MicroStrategy sells any Bitcoin by June 30, 2026? <= MicroStrategy sells any Bitcoin by December 31, 20",
+      "prices": "A=0.344 > B=0.270",
+      "gap": 0.0745,
+      "profit_pct": 15.82,
+      "trade": "BUY 'MicroStrategy sells any Bitcoin by Decem' YES + BUY 'MicroStrategy sells any Bitcoin by June ' NO",
+      "reason": "P(by by june 30, 2026) <= P(by by december 31, 2026)",
+      "group": "time_hierarchy:microstrategy sells any bitcoin ___DATE_",
+      "market_a": {
+        "id": "692258",
+        "question": "MicroStrategy sells any Bitcoin by June 30, 2026?",
+        "slug": "microstrategy-sells-any-bitcoin-by-june-30-2026",
+        "yes_price": 0.3445,
+        "no_price": 0.6555,
+        "volume": 1236636.8927619976,
+        "end_date": "2026-07-01T04:00:00Z"
+      },
+      "market_b": {
+        "id": "824952",
+        "question": "MicroStrategy sells any Bitcoin by December 31, 2026?",
+        "slug": "microstrategy-sells-any-bitcoin-by-december-31-2026",
+        "yes_price": 0.27,
+        "no_price": 0.73,
+        "volume": 600783.4481760011,
+        "end_date": "2026-07-01T04:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
@@ -15,31 +44,38 @@
     },
     {
       "group": "Brazil_Pres_2026",
-      "prices": "sum=0.6030 (off by -0.3970)",
-      "profit_pct": 62.52,
-      "trade": "BUY_ALL across 12 outcomes",
-      "n_markets": 12
+      "prices": "sum=0.5445 (off by -0.4555)",
+      "profit_pct": 79.98,
+      "trade": "BUY_ALL across 10 outcomes",
+      "n_markets": 10
     },
     {
       "group": "US_Pres_2028",
-      "prices": "sum=0.7400 (off by -0.2600)",
-      "profit_pct": 32.43,
+      "prices": "sum=0.7450 (off by -0.2550)",
+      "profit_pct": 31.54,
       "trade": "BUY_ALL across 28 outcomes",
       "n_markets": 28
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.7915 (off by -0.2085)",
-      "profit_pct": 23.82,
+      "prices": "sum=0.7860 (off by -0.2140)",
+      "profit_pct": 24.68,
       "trade": "BUY_ALL across 38 outcomes",
       "n_markets": 38
     },
     {
+      "group": "Colombia_Pres_2026",
+      "prices": "sum=0.9715 (off by -0.0285)",
+      "profit_pct": 0.87,
+      "trade": "BUY_ALL across 6 outcomes",
+      "n_markets": 6
+    },
+    {
       "group": "FIFA_WC_2026",
-      "prices": "sum=1.0325 (off by +0.0325)",
-      "profit_pct": 1.21,
-      "trade": "SELL_ALL across 49 outcomes",
-      "n_markets": 49
+      "prices": "sum=1.0270 (off by +0.0270)",
+      "profit_pct": 0.68,
+      "trade": "SELL_ALL across 48 outcomes",
+      "n_markets": 48
     }
   ]
 }
