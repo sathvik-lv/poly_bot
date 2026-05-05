@@ -356,8 +356,106 @@ def scan_and_trade(state: dict, n_markets: int = 30):
 # RESOLVE
 # =========================================================
 
+def early_exit_open_positions(state: dict):
+    """Re-predict each open position; close it if entry edge has decayed.
+
+    Disabled by default. Set ENABLE_EARLY_EXIT=1 to turn on.
+    Tunable via EXIT_DECAY_THRESHOLD (default 0.5) and EXIT_SPREAD_COST
+    (default 0.02 — 2% slippage on close).
+
+    Backed by data: scripts/v2_exit_sim.py shows ~+18% PnL improvement
+    on the existing ledger at decay=0.5, spread=0.02.
+    """
+    if os.environ.get("ENABLE_EARLY_EXIT", "0") != "1":
+        return
+    open_pos = state["open_positions"]
+    if not open_pos:
+        return
+
+    decay_threshold = float(os.environ.get("EXIT_DECAY_THRESHOLD", "0.5"))
+    spread_cost = float(os.environ.get("EXIT_SPREAD_COST", "0.02"))
+
+    # Lazy imports — keeps the resolver fast when feature is off
+    from src.exit_simulator import per_dollar_pnl, should_exit
+    from src.market_client import MarketClient
+    from src.prediction_engine import PredictionEngine
+
+    print(f"\n  EARLY EXIT CHECK: {len(open_pos)} open, "
+          f"decay_threshold={decay_threshold}, spread_cost={spread_cost}")
+
+    engine = PredictionEngine(backtest_mode=False, total_equity=state["equity"])
+    client = MarketClient()
+
+    still_open = []
+    for pos in open_pos:
+        mid = pos.get("market_id")
+        if not mid or pos.get("entry_edge") is None and pos.get("edge") is None:
+            still_open.append(pos)
+            continue
+        try:
+            resp = client.session.get(f"{client.base_url}/markets/{mid}", timeout=10)
+            if resp.status_code != 200:
+                still_open.append(pos)
+                continue
+            market = resp.json()
+            if market.get("closed"):
+                # Will be handled by resolve_positions
+                still_open.append(pos)
+                continue
+            parsed = MarketClient.parse_market(market)
+            time_rem = compute_time_remaining(parsed.get("end_date"))
+            tids = parse_token_ids(market)
+            parsed["_token_id"] = tids[0] if tids else None
+            prediction = engine.predict(
+                market_data=parsed,
+                time_remaining_frac=time_rem,
+                token_id=parsed.get("_token_id"),
+            )
+            new_edge = prediction["edge"]["edge"]
+            current_price = prediction["market"]["current_price"]
+            entry_edge = float(pos.get("edge") or pos.get("entry_edge") or 0.0)
+
+            if not should_exit(entry_edge, new_edge, decay_threshold):
+                still_open.append(pos)
+                continue
+
+            # Trigger early exit
+            action = pos["action"]
+            entry_price = pos["entry_price"]
+            amount = pos["amount"]
+            pnl_per_dollar = per_dollar_pnl(action, entry_price, current_price) - spread_cost
+            pnl = round(amount * pnl_per_dollar, 2)
+            payout = round(amount + pnl, 2)
+            pos["outcome"] = None  # not resolved yet
+            pos["pnl"] = pnl
+            pos["payout"] = payout
+            pos["resolved_at"] = datetime.now(timezone.utc).isoformat()
+            pos["result"] = "EXIT_WIN" if pnl > 0 else "EXIT_LOSS" if pnl < 0 else "EXIT_FLAT"
+            pos["closed_reason"] = "edge_decay"
+            pos["exit_price"] = round(current_price, 4)
+            pos["entry_edge"] = entry_edge
+            pos["exit_edge"] = round(float(new_edge), 4)
+            state["closed_positions"].append(pos)
+            state["cash"] += payout
+            tag = "EXIT-WIN" if pnl > 0 else "EXIT-LOSS"
+            q = pos.get("question", "")[:50]
+            print(f"  [{tag}] {q}")
+            print(f"       entry_edge={entry_edge:+.3f} -> new_edge={new_edge:+.3f}  "
+                  f"price {entry_price:.3f}->{current_price:.3f}  P&L=${pnl:+.2f}")
+        except Exception as e:
+            still_open.append(pos)
+            print(f"  [SKIP] {mid}: {str(e)[:60]}")
+
+    state["open_positions"] = still_open
+    state["equity"] = state["cash"] + sum(p["amount"] for p in still_open)
+    save_state(state)
+
+
 def resolve_positions(state: dict):
     """Check if any open positions have resolved."""
+    # Run early-exit check before checking for natural resolution
+    early_exit_open_positions(state)
+
     open_pos = state["open_positions"]
     if not open_pos:
         print("\n  No open positions to resolve.")

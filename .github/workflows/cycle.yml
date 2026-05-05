@@ -128,6 +128,11 @@ jobs:
         timeout-minutes: 5
         continue-on-error: true
 
+      - name: V2 exit-decay simulator (observation only)
+        run: python scripts/v2_exit_sim.py
+        timeout-minutes: 1
+        continue-on-error: true
+
       - name: V2 report
         run: python scripts/v2_report.py
         timeout-minutes: 1
