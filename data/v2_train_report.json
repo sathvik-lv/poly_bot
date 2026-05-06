@@ -1,38 +1,30 @@
 {
-  "trained_at": "2026-05-06T03:45:20.027991+00:00",
-  "n_validated_bets": 469,
-  "validation_rejected": 50502,
+  "trained_at": "2026-05-06T06:42:10.680671+00:00",
+  "n_validated_bets": 630,
+  "validation_rejected": 50691,
   "quality_rejected": 0,
-  "expected_filtered": 50502,
+  "expected_filtered": 50691,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 19542,
-    "not_resolved": 30960
+    "action_not_a_bet:'NO_BET'": 19576,
+    "not_resolved": 31115
   },
   "model_stats": {
-    "external_data": {
-      "n": 469,
-      "brier": 0.209766,
-      "market_brier": 0.210022,
-      "improvement": 0.000256,
-      "wins": 270,
-      "wr": 0.5757
+    "microstructure": {
+      "n": 630,
+      "brier": 0.210614,
+      "market_brier": 0.220235,
+      "improvement": 0.00962,
+      "wins": 360,
+      "wr": 0.5714
     },
     "orderbook": {
-      "n": 469,
-      "brier": 0.204979,
-      "market_brier": 0.210022,
-      "improvement": 0.005043,
-      "wins": 259,
-      "wr": 0.5522
-    },
-    "ai_semantic": {
-      "n": 57,
-      "brier": 0.2363,
-      "market_brier": 0.208207,
-      "improvement": -0.028093,
-      "wins": 25,
-      "wr": 0.4386
+      "n": 630,
+      "brier": 0.216495,
+      "market_brier": 0.220235,
+      "improvement": 0.003739,
+      "wins": 340,
+      "wr": 0.5397
     },
     "time_series": {
       "n": 2,
@@ -42,20 +34,28 @@
       "wins": 1,
       "wr": 0.5
     },
-    "microstructure": {
-      "n": 469,
-      "brier": 0.194675,
-      "market_brier": 0.210022,
-      "improvement": 0.015347,
-      "wins": 290,
-      "wr": 0.6183
+    "ai_semantic": {
+      "n": 57,
+      "brier": 0.2363,
+      "market_brier": 0.208207,
+      "improvement": -0.028093,
+      "wins": 25,
+      "wr": 0.4386
+    },
+    "external_data": {
+      "n": 630,
+      "brier": 0.220044,
+      "market_brier": 0.220235,
+      "improvement": 0.000191,
+      "wins": 338,
+      "wr": 0.5365
     }
   },
   "weights": {
-    "external_data": 0.012399,
-    "orderbook": 0.24426,
-    "ai_semantic": 0.0,
+    "microstructure": 0.709963,
+    "orderbook": 0.275941,
     "time_series": 0.0,
-    "microstructure": 0.74334
+    "ai_semantic": 0.0,
+    "external_data": 0.014096
   }
 }
