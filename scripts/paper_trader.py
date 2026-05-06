@@ -736,10 +736,11 @@ def report(state: dict):
     print(f"  Closed positions: {len(closed)}")
 
     if closed:
-        wins = [p for p in closed if p["pnl"] > 0]
-        losses = [p for p in closed if p["pnl"] < 0]
-        total_pnl = sum(p["pnl"] for p in closed)
-        total_wagered = sum(p["amount"] for p in closed)
+        # Defensive .get(): one ancient record from early dev had no pnl key.
+        wins = [p for p in closed if p.get("pnl", 0) > 0]
+        losses = [p for p in closed if p.get("pnl", 0) < 0]
+        total_pnl = sum(p.get("pnl", 0) for p in closed)
+        total_wagered = sum(p.get("amount", 0) for p in closed)
 
         print(f"\n  CLOSED TRADES:")
         print(f"    Wins:           {len(wins)}")
