@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-05T18:40:03.414626+00:00",
+  "timestamp": "2026-05-07T14:53:05.516440+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,199 +26,219 @@
       "symbol": "sp500"
     },
     "btc": {
-      "error": "all sources failed",
+      "price": 80200,
+      "change_24h": -1.87,
+      "change_7d": 5.13918,
+      "change_30d": 17.23452,
+      "ath": 126080,
+      "high_24h": 81780,
+      "low_24h": 80082,
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 50,
+      "value": 47,
       "classification": "Neutral"
     }
   },
-  "n_markets": 20,
+  "n_markets": 23,
   "n_with_edge": 20,
   "results": [
     {
-      "question": "Will there be no change in Fed interest rates after the June 2026 meeting?",
-      "market_price": 0.955,
-      "our_estimate": 0.8025,
-      "quant_estimate": 0.85,
-      "ai_estimate": 0.78,
-      "ai_reasoning": "Yield curve remains modestly positive, inflation pressures have eased and the 10\u2011year yield is near the Fed's target range, while market volatility is low (VIX ~20) and sentiment is neutral. These conditions favor a steady\u2011hand approach, making a rate hold at the June meeting more likely than a change.",
-      "edge": -0.1525,
-      "real_edge": -0.1525,
+      "question": "Will the Fed decrease interest rates by 25 bps after the June 2026 meeting?",
+      "market_price": 0.03,
+      "our_estimate": 0.0668,
+      "quant_estimate": 0.0635,
+      "ai_estimate": 0.07,
+      "ai_reasoning": "The quantitative model yields ~6% odds and market signals (moderate VIX, still\u2011elevated Treasury yields, modest yield\u2011curve spread) point to a cautious stance, making a 25\u202fbps cut after June unlikely. However, lingering inflation uncertainty leaves a small tail risk of a cut.",
+      "edge": 0.0368,
+      "real_edge": 0.0368,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(32%)+AI(68%)",
+      "models": "quant(49%)+AI(51%)",
       "n_models": 2,
-      "volume": 3006816.944903007,
+      "volume": 3392577.3920809748,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 50,
+        "fear_greed": 47,
+        "yield_curve_spread": 0.2999999999999998,
+        "logic": "small_cut_data_dependent"
+      }
+    },
+    {
+      "question": "Will there be no change in Fed interest rates after the June 2026 meeting?",
+      "market_price": 0.955,
+      "our_estimate": 0.8306,
+      "quant_estimate": 0.85,
+      "ai_estimate": 0.82,
+      "ai_reasoning": "The combination of low VIX (20), stable treasury yields around 4.0-4.3%, a slightly positive yield curve spread (0.3%), and the quantitative model's 0.85 estimate strongly suggests rates will be held steady. The neutral market sentiment (Fear & Greed at 47) and 'no_change_base' logic in the key signals further support this outlook, though some uncertainty remains given we're ~1 month from the meeting.",
+      "edge": -0.1244,
+      "real_edge": -0.1244,
+      "categories": [
+        "fed_rate"
+      ],
+      "models": "quant(35%)+AI(65%)",
+      "n_models": 2,
+      "volume": 3207371.413353998,
+      "signals": {
+        "vix": 20,
+        "tbill_rate": 4.0,
+        "yield_10y": 4.3,
+        "fear_greed": 47,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "no_change_base"
       }
     },
     {
+      "question": "Will Crude Oil (CL) hit (HIGH) $150 by end of June?",
+      "market_price": 0.135,
+      "our_estimate": 0.025,
+      "quant_estimate": 0.01,
+      "ai_estimate": 0.04,
+      "ai_reasoning": "WTI is trading near $70 with a 23\u2011day horizon to $150, requiring a 114% upside in less than a month\u2014an extreme move given current 2.5% daily volatility and a 6.36\u202fz\u2011score. Macro fundamentals (steady growth, moderate inflation, no supply shock) and the absence of any structural catalyst make a June 150 rally highly unlikely.",
+      "edge": -0.11,
+      "real_edge": -0.11,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant(50%)+AI(50%)",
+      "n_models": 2,
+      "volume": 1975579.5772679953,
+      "signals": {
+        "current_price": 70,
+        "target": 150.0,
+        "direction": "HIGH",
+        "days_left": 23,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 6.36,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
       "question": "MicroStrategy sells any Bitcoin by June 30, 2026?",
-      "market_price": 0.045,
+      "market_price": 0.2685,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.455,
-      "real_edge": 0.455,
+      "edge": 0.2315,
+      "real_edge": 0.2315,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1216562.0303039977,
+      "volume": 1777497.09998199,
       "signals": {
-        "current_price": 60000,
+        "current_price": 80200,
         "target": 2026.0,
         "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
+        "change_24h": -1.87,
+        "change_7d": 5.14,
         "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $150 in May?",
-      "market_price": 0.065,
-      "our_estimate": 0.0262,
+      "market_price": 0.0325,
+      "our_estimate": 0.0148,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.04,
-      "ai_reasoning": "WTI is currently $70 with a 25\u2011day window to reach $150, requiring a 114% upside in less than a month\u2014well beyond the typical 2\u20133\u00d7 annualized volatility. Macro fundamentals (steady growth, no supply shocks, moderate inflation) and a neutral fear\u2011greed index make a rapid rally unlikely, so the chance is very low.",
-      "edge": -0.0388,
-      "real_edge": -0.0388,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "WTI would need to more than double from $70 to $150 in under a month, implying a >6\u03c3 move given current volatility, which is statistically implausible without a major supply shock or geopolitical crisis. Absent such an event, the odds of hitting $150 by the end of May are very low.",
+      "edge": -0.0177,
+      "real_edge": 0.0,
       "categories": [
         "oil"
       ],
-      "models": "quant(46%)+AI(54%)",
+      "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 1145309.0660660008,
+      "volume": 1588494.500376005,
       "signals": {
         "current_price": 70,
         "target": 150.0,
         "direction": "HIGH",
-        "days_left": 25,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 6.1,
+        "z_score": 6.36,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $120 in May?",
-      "market_price": 0.365,
-      "our_estimate": 0.01,
-      "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.355,
-      "real_edge": -0.355,
+      "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
+      "market_price": 0.305,
+      "our_estimate": 0.4741,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.45,
+      "ai_reasoning": "This is primarily a geopolitical event with limited direct financial market linkage. The incomplete market data (many values missing) and empty key signals provide no strong directional bias. Given Iran's historical resistance to fully surrendering nuclear capabilities and the complex diplomatic dynamics, combined with the relatively short 7-week timeframe, the probability slightly below 50% seems reasonable. Low confidence reflects the high uncertainty inherent in predicting diplomatic outcomes from financial data.",
+      "edge": 0.1691,
+      "real_edge": 0.1691,
       "categories": [
-        "oil"
+        "stocks"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 757410.6949110015,
-      "signals": {
-        "current_price": 70,
-        "target": 120.0,
-        "direction": "HIGH",
-        "days_left": 25,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 4.31,
-        "recent_closes": [],
-        "vix": 20
-      }
-    },
-    {
-      "question": "Will Crude Oil (CL) hit (HIGH) $140 by end of June?",
-      "market_price": 0.185,
-      "our_estimate": 0.0147,
-      "quant_estimate": 0.01,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "Doubling WTI from $70 to $140 in 25 days requires a >5\u2011sigma move given current 2.5% daily volatility, which is statistically implausible without a major supply shock or geopolitical crisis. Absent such an event, the odds of hitting $140 by end\u2011June remain very low.",
-      "edge": -0.1703,
-      "real_edge": -0.1703,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant(53%)+AI(47%)",
+      "models": "quant(48%)+AI(52%)",
       "n_models": 2,
-      "volume": 709659.0884020005,
-      "signals": {
-        "current_price": 70,
-        "target": 140.0,
-        "direction": "HIGH",
-        "days_left": 25,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 5.55,
-        "recent_closes": [],
-        "vix": 20
-      }
+      "volume": 1341029.364367,
+      "signals": {}
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $140 in May?",
-      "market_price": 0.1005,
-      "our_estimate": 0.01,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in May?",
+      "market_price": 0.335,
+      "our_estimate": 0.0022,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.0905,
-      "real_edge": -0.0905,
+      "ai_estimate": 1e-06,
+      "ai_reasoning": "With a 23\u2011day horizon, daily volatility of 2.5% yields a cumulative 12% standard deviation, while the price must rise 57% to hit $110. This is a ~4.7\u2011sigma event, giving a probability on the order of one in a million.",
+      "edge": -0.3328,
+      "real_edge": -0.3328,
       "categories": [
         "oil"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 658257.8764929998,
+      "models": "quant(22%)+AI(78%)",
+      "n_models": 2,
+      "volume": 1215097.9709379983,
       "signals": {
         "current_price": 70,
-        "target": 140.0,
+        "target": 110.0,
         "direction": "HIGH",
-        "days_left": 25,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 5.55,
+        "z_score": 3.77,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $130 in May?",
-      "market_price": 0.215,
-      "our_estimate": 0.04,
+      "market_price": 0.085,
+      "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.07,
-      "ai_reasoning": "The current price is $70 with a high z\u2011score of 4.95 and only 25 days to reach $130, implying an extreme 1.5\u2011day daily return. Volatility is moderate (VIX 20) and macro conditions (stable yields, neutral fear\u2011greed) do not support such a spike. Thus the event is unlikely but not impossible, giving a low probability estimate.",
-      "edge": -0.175,
-      "real_edge": -0.175,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.075,
+      "real_edge": -0.075,
       "categories": [
         "oil"
       ],
-      "models": "quant(50%)+AI(50%)",
-      "n_models": 2,
-      "volume": 644333.6619970019,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 883283.7726310025,
       "signals": {
         "current_price": 70,
         "target": 130.0,
         "direction": "HIGH",
-        "days_left": 25,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 4.95,
+        "z_score": 5.16,
         "recent_closes": [],
         "vix": 20
       }
@@ -226,340 +246,371 @@
     {
       "question": "Will Bitcoin dip to $65,000 in May?",
       "market_price": 0.075,
-      "our_estimate": 0.9,
-      "quant_estimate": 0.9,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.825,
-      "real_edge": 0.825,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 468583.9835590001,
-      "signals": {
-        "current_price": 60000,
-        "target": 65000.0,
-        "direction": "DIP",
-        "change_24h": 0,
-        "change_7d": 0,
-        "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
-      }
-    },
-    {
-      "question": "Will Bitcoin dip to $60,000 in May?",
-      "market_price": 0.039,
-      "our_estimate": 0.8654,
-      "quant_estimate": 0.9,
-      "ai_estimate": 0.85,
-      "ai_reasoning": "Bitcoin is trading flat at $60,000 with low volatility and no directional bias, and the quantitative model assigns a 0.9 score to a dip scenario. Given the neutral macro backdrop and lack of catalyst, the price is likely to stay at or slip slightly below $60,000 in May.",
-      "edge": 0.8264,
-      "real_edge": 0.8264,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(31%)+AI(69%)",
-      "n_models": 2,
-      "volume": 400569.88304499927,
-      "signals": {
-        "current_price": 60000,
-        "target": 60000.0,
-        "direction": "DIP",
-        "change_24h": 0,
-        "change_7d": 0,
-        "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $90,000 in May?",
-      "market_price": 0.275,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.225,
-      "real_edge": 0.225,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 371961.26892499987,
-      "signals": {
-        "current_price": 60000,
-        "target": 90000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
-        "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $85,000 in May?",
-      "market_price": 0.685,
-      "our_estimate": 0.3147,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "Bitcoin is currently at $60k with no recent trend or volatility change, and macro conditions (neutral fear\u2011greed, unspecified yields) provide no clear bullish catalyst. The 25\u2011day window to $85k is long and the model\u2019s 0.5 estimate is weak, so the chance of hitting $85k in May is modest but not negligible.",
-      "edge": -0.3703,
-      "real_edge": -0.3703,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(47%)+AI(53%)",
-      "n_models": 2,
-      "volume": 365270.32387799997,
-      "signals": {
-        "current_price": 60000,
-        "target": 85000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
-        "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
-      }
-    },
-    {
-      "question": "Will Bitcoin dip to $70,000 in May?",
-      "market_price": 0.195,
-      "our_estimate": 0.9,
-      "quant_estimate": 0.9,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.705,
-      "real_edge": 0.705,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 304406.58490800025,
-      "signals": {
-        "current_price": 60000,
-        "target": 70000.0,
-        "direction": "DIP",
-        "change_24h": 0,
-        "change_7d": 0,
-        "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $100,000 in May?",
-      "market_price": 0.041,
-      "our_estimate": 0.3048,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.14,
-      "ai_reasoning": "With Bitcoin at $60k, a 66% gain in 25 days would require a sustained ~2.5% daily rise, far above the current 3.5% daily volatility and no observable trend. Macro conditions and neutral sentiment do not provide a catalyst strong enough to justify such a move.",
-      "edge": 0.2638,
-      "real_edge": 0.2638,
+      "our_estimate": 0.2428,
+      "quant_estimate": 0.2106,
+      "ai_estimate": 0.27,
+      "ai_reasoning": "Bitcoin is trading ~19% above the $65k target with a 7\u2011day uptrend and modest daily volatility (~3.5%). While a sharp correction is possible in a volatile crypto market, the current bullish momentum and neutral macro backdrop make a dip to $65k in the next 23 days less likely than not.",
+      "edge": 0.1678,
+      "real_edge": 0.1678,
       "categories": [
         "crypto"
       ],
       "models": "quant(46%)+AI(54%)",
       "n_models": 2,
-      "volume": 271788.1075480001,
+      "volume": 782720.1706839994,
       "signals": {
-        "current_price": 60000,
-        "target": 100000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
+        "current_price": 80200,
+        "target": 65000.0,
+        "direction": "DIP",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
         "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
     },
     {
-      "question": "Jerome Powell out as Fed Chair by May 15, 2026?",
-      "market_price": 0.435,
-      "our_estimate": 0.5,
+      "question": "Will Bitcoin reach $85,000 in May?",
+      "market_price": 0.535,
+      "our_estimate": 0.545,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.065,
-      "real_edge": 0.065,
+      "ai_estimate": 0.58,
+      "ai_reasoning": "Bitcoin needs ~6% gain to reach $85,000 with 23 days left, which is achievable given 3.5% daily volatility and the positive 7-day trend (+5.14%). However, the negative 24h movement (-1.87%) and neutral sentiment (F&G at 47) introduce uncertainty, making it a toss-up rather than a clear conviction play.",
+      "edge": 0.01,
+      "real_edge": 0.0,
       "categories": [
-        "fed_rate"
+        "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 266626.6135710001,
-      "signals": {
-        "vix": 20,
-        "tbill_rate": 4.0,
-        "yield_10y": 4.3,
-        "fear_greed": 50,
-        "yield_curve_spread": 0.2999999999999998,
-        "logic": "unclassified_fed"
-      }
-    },
-    {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $115 in May?",
-      "market_price": 0.52,
-      "our_estimate": 0.0022,
-      "quant_estimate": 0.01,
-      "ai_estimate": 3e-05,
-      "ai_reasoning": "The target requires a 64% jump from $70 in 25 days, which is about 3.97 standard deviations above the mean given a 2.5% daily volatility. Such a move is statistically extremely unlikely, yielding a probability on the order of 3\u00d710\u207b\u2075.",
-      "edge": -0.5178,
-      "real_edge": -0.5178,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant(22%)+AI(78%)",
+      "models": "quant(44%)+AI(56%)",
       "n_models": 2,
-      "volume": 237918.28282400005,
+      "volume": 609583.0044529997,
       "signals": {
-        "current_price": 70,
-        "target": 115.0,
-        "direction": "HIGH",
-        "days_left": 25,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 3.97,
-        "recent_closes": [],
-        "vix": 20
+        "current_price": 80200,
+        "target": 85000.0,
+        "direction": "UNKNOWN",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
     },
     {
-      "question": "Will Bitcoin dip to $75,000 in May?",
-      "market_price": 0.445,
-      "our_estimate": 0.9,
-      "quant_estimate": 0.9,
+      "question": "Will Bitcoin dip to $60,000 in May?",
+      "market_price": 0.0425,
+      "our_estimate": 0.1189,
+      "quant_estimate": 0.0839,
+      "ai_estimate": 0.15,
+      "ai_reasoning": "Bitcoin is currently 80k with a 7\u2011day uptrend and only 3.5% daily volatility, making a 20% drop in 23 days unlikely. Macro conditions are neutral and the Fear & Greed Index is 47, so a sharp reversal is not strongly supported.",
+      "edge": 0.0764,
+      "real_edge": 0.0764,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(47%)+AI(53%)",
+      "n_models": 2,
+      "volume": 512215.53973499866,
+      "signals": {
+        "current_price": 80200,
+        "target": 60000.0,
+        "direction": "DIP",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
+      }
+    },
+    {
+      "question": "Will Bitcoin dip to $70,000 in May?",
+      "market_price": 0.155,
+      "our_estimate": 0.4177,
+      "quant_estimate": 0.4177,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.455,
-      "real_edge": 0.455,
+      "edge": 0.2627,
+      "real_edge": 0.2627,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 212225.81552799986,
+      "volume": 500094.5546410012,
       "signals": {
-        "current_price": 60000,
-        "target": 75000.0,
+        "current_price": 80200,
+        "target": 70000.0,
         "direction": "DIP",
-        "change_24h": 0,
-        "change_7d": 0,
+        "change_24h": -1.87,
+        "change_7d": 5.14,
         "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (LOW) $85 in May?",
-      "market_price": 0.385,
-      "our_estimate": 0.0601,
-      "quant_estimate": 0.0602,
-      "ai_estimate": 0.06,
-      "ai_reasoning": "WTI is at $70 with 25 days to May and a daily volatility of ~2.5%, implying a 25\u2011day \u03c3 of ~12.5%. Reaching $85 requires a ~21% gain (\u22481.7\u03c3), giving a roughly 4\u20116% tail probability. The quantitative model aligns with this estimate.",
-      "edge": -0.3249,
-      "real_edge": -0.3249,
+      "question": "Will WTI Crude Oil (WTI) hit (LOW) $70 in May?",
+      "market_price": 0.115,
+      "our_estimate": 0.524,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.55,
+      "ai_reasoning": "WTI is trading at $70 with modest daily volatility (~2.5%) and no strong bearish catalysts, while inventory data and OPEC+ stance remain supportive, making a dip below $70 in the next 23 days slightly less likely than staying at or above current levels.",
+      "edge": 0.409,
+      "real_edge": 0.409,
       "categories": [
         "oil"
       ],
       "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 134085.94194999998,
+      "volume": 465837.6538529987,
       "signals": {
         "current_price": 70,
-        "target": 85.0,
+        "target": 70.0,
         "direction": "HIGH",
-        "days_left": 25,
+        "days_left": 23,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 1.55,
+        "z_score": 0.0,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will Ethereum reach $2,400 in May?",
-      "market_price": 0.8935,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $115 in May?",
+      "market_price": 0.205,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": 0.01,
+      "ai_reasoning": "WTI would need to rise from $70 to $115, a 64% increase with only 23 days left - requiring ~2.8% daily gains versus 2.5% daily volatility. The z-score of 4.14 indicates $115 is over 4 standard deviations away, making this extremely unlikely. Even with geopolitical tailwinds, the quantitative model estimate of 1% appropriately reflects the near-zero probability of this outcome.",
+      "edge": -0.195,
+      "real_edge": -0.195,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant(13%)+AI(87%)",
+      "n_models": 2,
+      "volume": 408711.904885001,
+      "signals": {
+        "current_price": 70,
+        "target": 115.0,
+        "direction": "HIGH",
+        "days_left": 23,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 4.14,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $80,000 on May 7?",
+      "market_price": 0.635,
+      "our_estimate": 0.995,
+      "quant_estimate": 0.95,
+      "ai_estimate": 1.0,
+      "ai_reasoning": "Bitcoin is currently trading at $80,200, already above the $80,000 threshold, and the short-term trend is positive with modest volatility, making it virtually certain that the price remains above $80,000 on May 7.",
+      "edge": 0.36,
+      "real_edge": 0.36,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(10%)+AI(90%)",
+      "n_models": 2,
+      "volume": 375754.45213399996,
+      "signals": {
+        "current_price": 80200,
+        "target": 80000.0,
+        "direction": "ABOVE",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
+      }
+    },
+    {
+      "question": "Will Bitcoin dip to $75,000 in May?",
+      "market_price": 0.475,
+      "our_estimate": 0.6896,
+      "quant_estimate": 0.6896,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.3935,
-      "real_edge": -0.3935,
+      "edge": 0.2146,
+      "real_edge": 0.2146,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 118247.35679300003,
+      "volume": 365297.93828899984,
       "signals": {
-        "current_price": 60000,
-        "target": 2400.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
+        "current_price": 80200,
+        "target": 75000.0,
+        "direction": "DIP",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
         "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
     },
     {
-      "question": "NHL Playoffs: Who Will Win Series? - Ducks vs. Golden Knights ",
-      "market_price": 0.225,
-      "our_estimate": 0.5,
+      "question": "Iran agrees to surrender enriched uranium stockpile by May 31, 2026?",
+      "market_price": 0.22,
+      "our_estimate": 0.2643,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.5,
-      "ai_reasoning": "With no specific performance or injury data provided, the outcome is essentially a coin flip; market conditions and macro factors are neutral, so a 50/50 estimate is reasonable.",
-      "edge": 0.275,
-      "real_edge": 0.275,
+      "ai_estimate": 0.17,
+      "ai_reasoning": "Geopolitical tensions and Iran's history of non\u2011compliance make a voluntary surrender by the May 31 deadline unlikely, while no concrete diplomatic breakthroughs or sanctions relief have emerged to shift incentives. Market pricing of oil and risk assets shows modest stress but not a dramatic shift that would signal a credible agreement.",
+      "edge": 0.0443,
+      "real_edge": 0.0443,
       "categories": [
-        "gold"
+        "stocks"
       ],
-      "models": "quant(50%)+AI(50%)",
+      "models": "quant(29%)+AI(71%)",
       "n_models": 2,
-      "volume": 94406.26741700001,
+      "volume": 359093.86932200025,
       "signals": {}
     },
     {
-      "question": "Will Bitcoin reach $83,000 on May 5?",
-      "market_price": 0.08,
+      "question": "MicroStrategy sells any Bitcoin by May 31, 2026?",
+      "market_price": 0.145,
+      "our_estimate": 0.14,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "MicroStrategy's entire corporate strategy revolves around accumulating and holding Bitcoin as a long-term treasury asset - they have never historically sold Bitcoin from their treasury despite significant price appreciation. Their business model, ongoing convertible bond issuances for further Bitcoin acquisition, and explicit positioning as a 'Bitcoin treasury' company make any sale within the next 24 days extremely unlikely unless facing severe financial distress, for which there is no indication.",
+      "edge": -0.005,
+      "real_edge": 0.0,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(25%)+AI(75%)",
+      "n_models": 2,
+      "volume": 298415.0738309993,
+      "signals": {
+        "current_price": 80200,
+        "target": 2026.0,
+        "direction": "UNKNOWN",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be between $80,000 and $82,000 on May 7?",
+      "market_price": 0.655,
+      "our_estimate": 0.5953,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.68,
+      "ai_reasoning": "Bitcoin is currently trading at $80,200 with a 24\u2011hour high of $81,780 and a low of $80,082, indicating that the price is already within the target band. The 7\u2011day trend is positive (+5.1%) and daily volatility is moderate (3.5%), suggesting a reasonable chance of staying in the $80k\u2013$82k range on May\u202f7, though macro uncertainty and potential market swings reduce certainty.",
+      "edge": -0.0597,
+      "real_edge": -0.0597,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(47%)+AI(53%)",
+      "n_models": 2,
+      "volume": 77852.24258400005,
+      "signals": {
+        "current_price": 80200,
+        "target": 82000.0,
+        "direction": "UNKNOWN",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
+        "daily_vol": 0.035,
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
+      }
+    },
+    {
+      "question": "S&P 500 (SPX) Up or Down on May 7?",
+      "market_price": 0.68,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.42,
-      "real_edge": 0.42,
+      "edge": -0.18,
+      "real_edge": -0.18,
       "categories": [
-        "crypto"
+        "stocks"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 52173.02984399999,
+      "volume": 75882.180677,
+      "signals": {}
+    },
+    {
+      "question": "Will the price of Ethereum be above $2,300 on May 7?",
+      "market_price": 0.349,
+      "our_estimate": 0.4568,
+      "quant_estimate": 0.95,
+      "ai_estimate": 0.15,
+      "ai_reasoning": "Ethereum is trading well below $2,300 in a modestly bullish but volatile crypto environment, with Bitcoin only modestly up over the week and a neutral fear\u2011greed index. Given the limited upside in the short\u2011term and no strong macro catalyst, the chance of breaching $2,300 today is low.",
+      "edge": 0.1078,
+      "real_edge": 0.1078,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(38%)+AI(62%)",
+      "n_models": 2,
+      "volume": 63609.36440399998,
       "signals": {
-        "current_price": 60000,
-        "target": 83000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0,
-        "change_7d": 0,
+        "current_price": 80200,
+        "target": 2300.0,
+        "direction": "ABOVE",
+        "change_24h": -1.87,
+        "change_7d": 5.14,
         "daily_vol": 0.035,
-        "days_left": 25,
-        "high_24h": 60000,
-        "low_24h": 60000
+        "days_left": 23,
+        "high_24h": 81780,
+        "low_24h": 80082
       }
+    },
+    {
+      "question": "Bitcoin Up or Down - May 7, 10:40AM-10:45AM ET",
+      "market_price": 0.615,
+      "our_estimate": 0.4973,
+      "quant_estimate": 0.45,
+      "ai_estimate": 0.53,
+      "ai_reasoning": "Bitcoin shows slight negative momentum with a 1.87% decline over 24 hours, and the quantitative model estimates 0.45 (slightly bearish). However, the 7-day gain of 5.14% and neutral Fear & Greed index (47) suggest no strong directional conviction. For a narrow 5-minute window, the probability remains close to 50/50 with modest tilt toward continued weakness given the recent negative momentum.",
+      "edge": -0.1177,
+      "real_edge": -0.1177,
+      "categories": [
+        "crypto",
+        "stocks"
+      ],
+      "models": "quant(41%)+AI(59%)",
+      "n_models": 2,
+      "volume": 61562.990255999954,
+      "signals": {
+        "type": "direction",
+        "change_24h": -1.87
+      }
+    },
+    {
+      "question": "SPY (SPY) Up or Down on May 7?",
+      "market_price": 0.685,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.5,
+      "ai_reasoning": "With incomplete market data and no clear trend signals, the best estimate is a neutral 50/50 chance for SPY to move up or down on May\u202f7, reflecting high uncertainty and low confidence.",
+      "edge": -0.185,
+      "real_edge": -0.185,
+      "categories": [
+        "stocks"
+      ],
+      "models": "quant(53%)+AI(47%)",
+      "n_models": 2,
+      "volume": 59855.86022000003,
+      "signals": {}
     }
   ]
 }
