@@ -1,9 +1,66 @@
 {
-  "timestamp": "2026-05-08T16:33:24.062256+00:00",
+  "timestamp": "2026-05-08T18:37:33.866691+00:00",
   "n_markets": 1000,
-  "n_constraints": 61,
-  "n_violations": 8,
-  "time_hierarchy_violations": [],
+  "n_constraints": 65,
+  "n_violations": 9,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by June 30, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=0.470 > B=0.255",
+      "gap": 0.215,
+      "profit_pct": 41.49,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by June 30, 2' NO",
+      "reason": "P(by by june 30, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1171663",
+        "question": "Russia x Ukraine ceasefire by June 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-june-30-2026",
+        "yes_price": 0.47,
+        "no_price": 0.53,
+        "volume": 8639749.267911011,
+        "end_date": "2026-06-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by May 31, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=0.446 > B=0.255",
+      "gap": 0.191,
+      "profit_pct": 38.34,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by May 31, 20' NO",
+      "reason": "P(by by may 31, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1795527",
+        "question": "Russia x Ukraine ceasefire by May 31, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-may-31-2026",
+        "yes_price": 0.446,
+        "no_price": 0.554,
+        "volume": 5239284.525353984,
+        "end_date": "2026-05-31T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
@@ -15,45 +72,38 @@
     },
     {
       "group": "France_Pres_2027",
-      "prices": "sum=0.1930 (off by -0.8070)",
-      "profit_pct": 407.77,
-      "trade": "BUY_ALL across 22 outcomes",
-      "n_markets": 22
+      "prices": "sum=0.1790 (off by -0.8210)",
+      "profit_pct": 447.49,
+      "trade": "BUY_ALL across 20 outcomes",
+      "n_markets": 20
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.2815 (off by -0.7185)",
-      "profit_pct": 248.13,
-      "trade": "BUY_ALL across 28 outcomes",
-      "n_markets": 28
+      "prices": "sum=0.2700 (off by -0.7300)",
+      "profit_pct": 262.96,
+      "trade": "BUY_ALL across 27 outcomes",
+      "n_markets": 27
     },
     {
       "group": "Colombia_Pres_2026",
-      "prices": "sum=0.7920 (off by -0.2080)",
-      "profit_pct": 23.74,
-      "trade": "BUY_ALL across 4 outcomes",
-      "n_markets": 4
-    },
-    {
-      "group": "NHL_Cup_2026",
-      "prices": "sum=0.9215 (off by -0.0785)",
-      "profit_pct": 6.35,
-      "trade": "BUY_ALL across 7 outcomes",
-      "n_markets": 7
-    },
-    {
-      "group": "GOP_Nom_2028",
-      "prices": "sum=0.9405 (off by -0.0595)",
-      "profit_pct": 4.2,
-      "trade": "BUY_ALL across 32 outcomes",
-      "n_markets": 32
+      "prices": "sum=0.3870 (off by -0.6130)",
+      "profit_pct": 153.23,
+      "trade": "BUY_ALL across 3 outcomes",
+      "n_markets": 3
     },
     {
       "group": "US_Pres_2028",
-      "prices": "sum=0.9455 (off by -0.0545)",
-      "profit_pct": 3.65,
-      "trade": "BUY_ALL across 34 outcomes",
-      "n_markets": 34
+      "prices": "sum=0.8655 (off by -0.1345)",
+      "profit_pct": 13.23,
+      "trade": "BUY_ALL across 29 outcomes",
+      "n_markets": 29
+    },
+    {
+      "group": "GOP_Nom_2028",
+      "prices": "sum=0.9690 (off by -0.0310)",
+      "profit_pct": 1.14,
+      "trade": "BUY_ALL across 33 outcomes",
+      "n_markets": 33
     },
     {
       "group": "FIFA_WC_2026",
