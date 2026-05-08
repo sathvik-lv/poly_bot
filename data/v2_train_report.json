@@ -1,23 +1,15 @@
 {
-  "trained_at": "2026-05-08T15:21:47.977766+00:00",
+  "trained_at": "2026-05-08T16:27:32.538967+00:00",
   "n_validated_bets": 2785,
-  "validation_rejected": 55976,
+  "validation_rejected": 56373,
   "quality_rejected": 0,
-  "expected_filtered": 55976,
+  "expected_filtered": 56373,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
     "action_not_a_bet:'NO_BET'": 20615,
-    "not_resolved": 35361
+    "not_resolved": 35758
   },
   "model_stats": {
-    "time_series": {
-      "n": 2,
-      "brier": 0.135666,
-      "market_brier": 0.125439,
-      "improvement": -0.010228,
-      "wins": 1,
-      "wr": 0.5
-    },
     "ai_semantic": {
       "n": 57,
       "brier": 0.2363,
@@ -25,14 +17,6 @@
       "improvement": -0.028093,
       "wins": 25,
       "wr": 0.4386
-    },
-    "external_data": {
-      "n": 2785,
-      "brier": 0.226626,
-      "market_brier": 0.226669,
-      "improvement": 4.3e-05,
-      "wins": 1573,
-      "wr": 0.5648
     },
     "microstructure": {
       "n": 2785,
@@ -49,13 +33,29 @@
       "improvement": 0.002168,
       "wins": 1497,
       "wr": 0.5375
+    },
+    "time_series": {
+      "n": 2,
+      "brier": 0.135666,
+      "market_brier": 0.125439,
+      "improvement": -0.010228,
+      "wins": 1,
+      "wr": 0.5
+    },
+    "external_data": {
+      "n": 2785,
+      "brier": 0.226626,
+      "market_brier": 0.226669,
+      "improvement": 4.3e-05,
+      "wins": 1573,
+      "wr": 0.5648
     }
   },
   "weights": {
-    "time_series": 0.0,
     "ai_semantic": 0.0,
-    "external_data": 0.003437,
     "microstructure": 0.823261,
-    "orderbook": 0.173301
+    "orderbook": 0.173301,
+    "time_series": 0.0,
+    "external_data": 0.003437
   }
 }
