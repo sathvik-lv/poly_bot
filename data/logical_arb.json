@@ -1,43 +1,100 @@
 {
-  "timestamp": "2026-05-09T04:01:55.520315+00:00",
+  "timestamp": "2026-05-09T06:32:41.638946+00:00",
   "n_markets": 1000,
-  "n_constraints": 56,
-  "n_violations": 5,
-  "time_hierarchy_violations": [],
+  "n_constraints": 64,
+  "n_violations": 7,
+  "time_hierarchy_violations": [
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by May 31, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=1.000 > B=0.255",
+      "gap": 0.7445,
+      "profit_pct": 72.49,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by May 31, 20' NO",
+      "reason": "P(by by may 31, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1795527",
+        "question": "Russia x Ukraine ceasefire by May 31, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-may-31-2026",
+        "yes_price": 0.9995,
+        "no_price": 0.0005,
+        "volume": 7649008.360331017,
+        "end_date": "2026-05-31T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    },
+    {
+      "type": "subset_violation",
+      "constraint": "Russia x Ukraine ceasefire by June 30, 2026? <= Russia x Ukraine ceasefire by end of 2026?",
+      "prices": "A=1.000 > B=0.255",
+      "gap": 0.7445,
+      "profit_pct": 72.49,
+      "trade": "BUY 'Russia x Ukraine ceasefire by end of 202' YES + BUY 'Russia x Ukraine ceasefire by June 30, 2' NO",
+      "reason": "P(by by june 30, 2026) <= P(by by end of 2026)",
+      "group": "time_hierarchy:russia x ukraine ceasefire ___DATE___?",
+      "market_a": {
+        "id": "1171663",
+        "question": "Russia x Ukraine ceasefire by June 30, 2026?",
+        "slug": "russia-x-ukraine-ceasefire-by-june-30-2026",
+        "yes_price": 0.9995,
+        "no_price": 0.0005,
+        "volume": 9681463.325602042,
+        "end_date": "2026-06-30T00:00:00Z"
+      },
+      "market_b": {
+        "id": "567687",
+        "question": "Russia x Ukraine ceasefire by end of 2026?",
+        "slug": "russia-x-ukraine-ceasefire-before-2027",
+        "yes_price": 0.255,
+        "no_price": 0.745,
+        "volume": 14502613.985482976,
+        "end_date": "2026-12-31T00:00:00Z"
+      }
+    }
+  ],
   "subset_violations": [],
   "sum_violations": [
     {
       "group": "France_Pres_2027",
-      "prices": "sum=0.4965 (off by -0.5035)",
-      "profit_pct": 97.38,
-      "trade": "BUY_ALL across 26 outcomes",
-      "n_markets": 26
+      "prices": "sum=0.4315 (off by -0.5685)",
+      "profit_pct": 127.11,
+      "trade": "BUY_ALL across 24 outcomes",
+      "n_markets": 24
     },
     {
       "group": "Dem_Nom_2028",
-      "prices": "sum=0.6060 (off by -0.3940)",
-      "profit_pct": 61.72,
-      "trade": "BUY_ALL across 37 outcomes",
-      "n_markets": 37
+      "prices": "sum=0.5815 (off by -0.4185)",
+      "profit_pct": 68.53,
+      "trade": "BUY_ALL across 36 outcomes",
+      "n_markets": 36
     },
     {
       "group": "GOP_Nom_2028",
-      "prices": "sum=0.6965 (off by -0.3035)",
-      "profit_pct": 40.7,
-      "trade": "BUY_ALL across 30 outcomes",
-      "n_markets": 30
+      "prices": "sum=0.6790 (off by -0.3210)",
+      "profit_pct": 44.33,
+      "trade": "BUY_ALL across 29 outcomes",
+      "n_markets": 29
     },
     {
       "group": "US_Pres_2028",
-      "prices": "sum=0.9060 (off by -0.0940)",
-      "profit_pct": 8.17,
-      "trade": "BUY_ALL across 32 outcomes",
-      "n_markets": 32
+      "prices": "sum=0.9050 (off by -0.0950)",
+      "profit_pct": 8.29,
+      "trade": "BUY_ALL across 31 outcomes",
+      "n_markets": 31
     },
     {
       "group": "FIFA_WC_2026",
-      "prices": "sum=1.0290 (off by +0.0290)",
-      "profit_pct": 0.87,
+      "prices": "sum=1.0300 (off by +0.0300)",
+      "profit_pct": 0.97,
       "trade": "SELL_ALL across 48 outcomes",
       "n_markets": 48
     }
