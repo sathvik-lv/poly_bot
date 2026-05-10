@@ -34,8 +34,25 @@ from src.prediction_engine import PredictionEngine
 from src.strategy_adapter import StrategyAdapter, MarketRegime
 
 DATA_DIR = "data"
-PAPER_FILE = os.path.join(DATA_DIR, "paper_trades.json")
-ANALYTICS_FILE = os.path.join(DATA_DIR, "weight_analytics.json")
+# Paths and category filter can be overridden via env vars to run multiple
+# parallel paper-trading "arms" (V3, V4, etc.) in the same cycle without
+# duplicating this file.
+PAPER_FILE = os.environ.get(
+    "PAPER_TRADER_STATE_FILE",
+    os.path.join(DATA_DIR, "paper_trades.json"),
+)
+ANALYTICS_FILE = os.environ.get(
+    "PAPER_TRADER_ANALYTICS_FILE",
+    os.path.join(DATA_DIR, "weight_analytics.json"),
+)
+# Comma-separated list of categories to trade. When set, ONLY these
+# categories are entered (regardless of tier multipliers). Empty/unset =
+# default behavior (any category, optionally constrained by tier system).
+_RAW_TRADE_CATS = os.environ.get("PAPER_TRADER_TRADE_CATEGORIES", "").strip()
+TRADE_CATEGORIES_FILTER: set | None = (
+    {c.strip() for c in _RAW_TRADE_CATS.split(",") if c.strip()}
+    if _RAW_TRADE_CATS else None
+)
 GAMMA_API = "https://gamma-api.polymarket.com"
 
 # Category-tiered Kelly multipliers (HIGH/MEDIUM/SKIP).
@@ -154,6 +171,9 @@ def save_state(state: dict):
 def scan_and_trade(state: dict, n_markets: int = 30):
     """Scan markets, run predictions, place paper trades."""
     print(f"\n  PAPER TRADER — Scanning {n_markets} markets")
+    print(f"  State file: {PAPER_FILE}")
+    if TRADE_CATEGORIES_FILTER:
+        print(f"  Category filter: ONLY {sorted(TRADE_CATEGORIES_FILTER)}")
     print(f"  Cash: ${state['cash']:.2f} | Open positions: {len(state['open_positions'])}")
 
     engine = PredictionEngine(backtest_mode=False, total_equity=state["equity"])
@@ -319,6 +339,12 @@ def scan_and_trade(state: dict, n_markets: int = 30):
             # Category-tier multiplier (gated). HIGH=1.0, MEDIUM=0.5, SKIP=0.0.
             # Backed by grid-sweep per-category ret/DD analysis.
             category = classify_market(market.get("question", ""))
+
+            # Hard category filter (env-var driven, e.g. V3 = niche+geo+sports
+            # only). Skips before any sizing — independent of tier system.
+            if TRADE_CATEGORIES_FILTER and category not in TRADE_CATEGORIES_FILTER:
+                continue
+
             tier_mult = 1.0
             tier_applied = "ungated"
             if os.environ.get("ENABLE_CATEGORY_TIERS", "0") == "1":

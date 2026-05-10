@@ -71,6 +71,64 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
 
+      # ============================================================
+      # V3a — Paper trader, ONLY {niche_sports, geopolitics, other}
+      # User's V3 proposal. Walk-forward backtest: ROI +103.6%, MaxDD 3.77%
+      # ============================================================
+      - name: V3a scan (niche+geo+other)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
+          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
+
+      - name: V3a resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
+
+      - name: V3a report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
+
+      # ============================================================
+      # V3b — Paper trader, ONLY {niche_sports, geopolitics, sports}
+      # Walk-forward bench winner: ROI +93.9%, MaxDD 0.82%, Ret/DD 114
+      # ============================================================
+      - name: V3b scan (niche+geo+sports, no other)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
+          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,sports"
+
+      - name: V3b resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
+
+      - name: V3b report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
+
       - name: Live tracker scan (record predictions for accuracy data)
         run: python scripts/live_tracker.py --scan -n 50
         timeout-minutes: 15
