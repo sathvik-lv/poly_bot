@@ -53,6 +53,11 @@ TRADE_CATEGORIES_FILTER: set | None = (
     {c.strip() for c in _RAW_TRADE_CATS.split(",") if c.strip()}
     if _RAW_TRADE_CATS else None
 )
+# When set, the 'other' category drops underdog trades (BUY_YES at price <
+# 0.5 OR BUY_NO at price > 0.5). Underdog 'other' trades won 21% historically
+# vs 67% for favorites — this filter cuts the losing slice of 'other'.
+# Other categories are unaffected by this filter.
+OTHER_FAVORITES_ONLY = os.environ.get("PAPER_TRADER_OTHER_FAVORITES_ONLY", "0") == "1"
 GAMMA_API = "https://gamma-api.polymarket.com"
 
 # Category-tiered Kelly multipliers (HIGH/MEDIUM/SKIP).
@@ -344,6 +349,18 @@ def scan_and_trade(state: dict, n_markets: int = 30):
             # only). Skips before any sizing — independent of tier system.
             if TRADE_CATEGORIES_FILTER and category not in TRADE_CATEGORIES_FILTER:
                 continue
+
+            # 'other' category correction: drop underdog trades (the losing slice).
+            # Empirical: BUY_YES at p<0.5 OR BUY_NO at p>0.5 in 'other' = 21% WR.
+            # Favorites in 'other' = 67% WR.
+            if OTHER_FAVORITES_ONLY and category == "other":
+                action_dir = sizing.get("action", "")
+                is_favorite = ((action_dir == "BUY_YES" and price >= 0.5)
+                               or (action_dir == "BUY_NO" and price <= 0.5))
+                if not is_favorite:
+                    q = market.get("question", "")[:50]
+                    print(f"  [{i+1:>2}] SKIP-UNDERDOG-OTHER {q}  price={price:.3f}")
+                    continue
 
             tier_mult = 1.0
             tier_applied = "ungated"

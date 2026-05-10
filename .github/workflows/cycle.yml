@@ -130,6 +130,37 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
 
       # ============================================================
+      # V3c — niche + geo + CORRECTED other (favorites only).
+      # 'other' underdog trades historically lose (21% WR vs 67% favorites).
+      # This drops the losing slice, expected to fix 'other'-category ROI.
+      # ============================================================
+      - name: V3c scan (niche+geo+favorite-other)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
+          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
+          PAPER_TRADER_OTHER_FAVORITES_ONLY: "1"
+
+      - name: V3c resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
+
+      - name: V3c report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
+
+      # ============================================================
       # SAME-WINDOW COMPARISON across all 6 arms
       # Reads data/comparison_anchor.json, replays each arm from $10k
       # using only post-anchor activity. Apples-to-apples report.
