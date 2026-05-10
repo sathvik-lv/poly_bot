@@ -129,6 +129,16 @@ jobs:
           PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
           PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
 
+      # ============================================================
+      # SAME-WINDOW COMPARISON across all 6 arms
+      # Reads data/comparison_anchor.json, replays each arm from $10k
+      # using only post-anchor activity. Apples-to-apples report.
+      # ============================================================
+      - name: Same-window comparison report
+        run: python scripts/compare_arms.py
+        timeout-minutes: 1
+        continue-on-error: true
+
       - name: Live tracker scan (record predictions for accuracy data)
         run: python scripts/live_tracker.py --scan -n 50
         timeout-minutes: 15
