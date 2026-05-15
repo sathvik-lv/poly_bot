@@ -1,15 +1,23 @@
 {
-  "trained_at": "2026-05-15T17:55:05.677032+00:00",
-  "n_validated_bets": 9098,
-  "validation_rejected": 73377,
+  "trained_at": "2026-05-15T19:53:49.471419+00:00",
+  "n_validated_bets": 9109,
+  "validation_rejected": 73710,
   "quality_rejected": 0,
-  "expected_filtered": 73377,
+  "expected_filtered": 73710,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 22147,
-    "not_resolved": 51230
+    "action_not_a_bet:'NO_BET'": 22194,
+    "not_resolved": 51516
   },
   "model_stats": {
+    "external_data": {
+      "n": 9109,
+      "brier": 0.227869,
+      "market_brier": 0.227887,
+      "improvement": 1.7e-05,
+      "wins": 5306,
+      "wr": 0.5825
+    },
     "time_series": {
       "n": 2,
       "brier": 0.135666,
@@ -18,13 +26,13 @@
       "wins": 1,
       "wr": 0.5
     },
-    "external_data": {
-      "n": 9098,
-      "brier": 0.227843,
-      "market_brier": 0.22786,
-      "improvement": 1.7e-05,
-      "wins": 5302,
-      "wr": 0.5828
+    "orderbook": {
+      "n": 9109,
+      "brier": 0.225241,
+      "market_brier": 0.227887,
+      "improvement": 0.002645,
+      "wins": 5002,
+      "wr": 0.5491
     },
     "ai_semantic": {
       "n": 57,
@@ -35,27 +43,19 @@
       "wr": 0.4386
     },
     "microstructure": {
-      "n": 9098,
-      "brier": 0.216655,
-      "market_brier": 0.22786,
-      "improvement": 0.011205,
-      "wins": 4858,
-      "wr": 0.534
-    },
-    "orderbook": {
-      "n": 9098,
-      "brier": 0.225209,
-      "market_brier": 0.22786,
-      "improvement": 0.002651,
-      "wins": 4998,
-      "wr": 0.5494
+      "n": 9109,
+      "brier": 0.216674,
+      "market_brier": 0.227887,
+      "improvement": 0.011213,
+      "wins": 4863,
+      "wr": 0.5339
     }
   },
   "weights": {
-    "time_series": 0.0,
     "external_data": 0.001225,
+    "time_series": 0.0,
+    "orderbook": 0.190631,
     "ai_semantic": 0.0,
-    "microstructure": 0.807684,
-    "orderbook": 0.191091
+    "microstructure": 0.808144
   }
 }
