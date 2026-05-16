@@ -1,39 +1,15 @@
 {
-  "trained_at": "2026-05-16T13:49:22.446266+00:00",
-  "n_validated_bets": 9147,
-  "validation_rejected": 76034,
+  "trained_at": "2026-05-16T15:10:54.988323+00:00",
+  "n_validated_bets": 9155,
+  "validation_rejected": 76142,
   "quality_rejected": 0,
-  "expected_filtered": 76034,
+  "expected_filtered": 76142,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 22612,
-    "not_resolved": 53422
+    "action_not_a_bet:'NO_BET'": 22661,
+    "not_resolved": 53481
   },
   "model_stats": {
-    "orderbook": {
-      "n": 9147,
-      "brier": 0.225125,
-      "market_brier": 0.227739,
-      "improvement": 0.002614,
-      "wins": 5015,
-      "wr": 0.5483
-    },
-    "external_data": {
-      "n": 9147,
-      "brier": 0.227722,
-      "market_brier": 0.227739,
-      "improvement": 1.7e-05,
-      "wins": 5331,
-      "wr": 0.5828
-    },
-    "microstructure": {
-      "n": 9147,
-      "brier": 0.216555,
-      "market_brier": 0.227739,
-      "improvement": 0.011184,
-      "wins": 4878,
-      "wr": 0.5333
-    },
     "time_series": {
       "n": 2,
       "brier": 0.135666,
@@ -49,13 +25,37 @@
       "improvement": -0.028093,
       "wins": 25,
       "wr": 0.4386
+    },
+    "microstructure": {
+      "n": 9155,
+      "brier": 0.216472,
+      "market_brier": 0.227648,
+      "improvement": 0.011176,
+      "wins": 4882,
+      "wr": 0.5333
+    },
+    "external_data": {
+      "n": 9155,
+      "brier": 0.227631,
+      "market_brier": 0.227648,
+      "improvement": 1.7e-05,
+      "wins": 5339,
+      "wr": 0.5832
+    },
+    "orderbook": {
+      "n": 9155,
+      "brier": 0.225034,
+      "market_brier": 0.227648,
+      "improvement": 0.002614,
+      "wins": 5019,
+      "wr": 0.5482
     }
   },
   "weights": {
-    "orderbook": 0.189215,
-    "external_data": 0.001231,
-    "microstructure": 0.809555,
     "time_series": 0.0,
-    "ai_semantic": 0.0
+    "ai_semantic": 0.0,
+    "microstructure": 0.809444,
+    "external_data": 0.001231,
+    "orderbook": 0.189324
   }
 }
