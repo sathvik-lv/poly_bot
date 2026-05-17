@@ -73,6 +73,23 @@ def _parse_iso(ts: Optional[str]) -> Optional[datetime]:
         return None
 
 
+def _flatten_estimates(estimates: dict) -> dict:
+    """Live_predictions stores per-model estimates as nested dicts:
+        {"microstructure": {"estimate": 0.5, "variance": 1.04}, ...}
+    v2/test1 use flat: {"microstructure": 0.5, ...}.
+    Normalize to flat form so downstream code reads one schema.
+    """
+    if not isinstance(estimates, dict):
+        return estimates
+    flat = {}
+    for k, v in estimates.items():
+        if isinstance(v, dict) and "estimate" in v:
+            flat[k] = v["estimate"]
+        else:
+            flat[k] = v
+    return flat
+
+
 def validate_record(rec: dict) -> tuple[bool, str]:
     """Return (ok, reason). ok=True means safe to train on."""
     if not isinstance(rec, dict):
@@ -121,16 +138,21 @@ def validate_record(rec: dict) -> tuple[bool, str]:
         return False, "edge_nonfinite"
 
     # --- Models / per-model breakdown ---
-    models = rec.get("models")
+    # Field naming differs across sources:
+    #   v2/test1 use 'models' + 'model_estimates'
+    #   live_predictions uses 'model_names' + 'sub_model_estimates'
+    # Accept either.
+    models = rec.get("models") or rec.get("model_names")
     if not isinstance(models, list) or not models:
         return False, "missing_models_list"
     unknown = [m for m in models if m not in KNOWN_MODELS]
     if unknown:
         return False, f"unknown_model_name:{unknown[:1]}"
 
-    estimates = rec.get("model_estimates", {})
+    estimates = rec.get("model_estimates") or rec.get("sub_model_estimates") or {}
     if not isinstance(estimates, dict):
         return False, "model_estimates_not_dict"
+    estimates = _flatten_estimates(estimates)
     for m in models:
         if m not in estimates:
             return False, f"model_estimate_missing:{m}"
@@ -141,7 +163,8 @@ def validate_record(rec: dict) -> tuple[bool, str]:
             return False, f"model_estimate_out_of_bounds:{m}"
 
     # --- Kelly fields if present ---
-    for fname in ("kelly_fraction", "kelly_full"):
+    # v2/test1 use 'kelly_fraction', live_predictions uses 'kelly'.
+    for fname in ("kelly_fraction", "kelly_full", "kelly"):
         v = rec.get(fname)
         if v is not None and not _is_finite_number(v):
             return False, f"{fname}_nonfinite"
@@ -191,8 +214,22 @@ def iter_validated(
                 continue
             seen_keys.add(key)
 
+        # Canonicalize cross-source field names so downstream code (trainers,
+        # feature builders) only reads one set of keys. Don't mutate the
+        # caller's dict — produce a normalized copy.
+        out = dict(rec)
+        if "model_estimates" not in out and "sub_model_estimates" in out:
+            out["model_estimates"] = out["sub_model_estimates"]
+        if "models" not in out and "model_names" in out:
+            out["models"] = out["model_names"]
+        if "kelly_fraction" not in out and "kelly" in out:
+            out["kelly_fraction"] = out["kelly"]
+        # Flatten nested {estimate, variance} structure used by live_tracker
+        if "model_estimates" in out:
+            out["model_estimates"] = _flatten_estimates(out["model_estimates"])
+
         stats.accept()
-        yield rec
+        yield out
 
 
 def load_validated_jsonl(

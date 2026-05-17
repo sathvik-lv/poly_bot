@@ -58,6 +58,9 @@ MAX_QUALITY_REJECT_RATE = 0.10
 LEDGER_SOURCES = [
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
+    # live_predictions = pure engine output, no entry-gate filtering.
+    # Has the highest WR (74.8% on n=385) of any data source.
+    os.path.join(DATA_DIR, "live_predictions.jsonl"),
 ]
 
 

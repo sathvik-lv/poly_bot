@@ -42,6 +42,7 @@ TRAIN_REPORT = os.path.join(DATA_DIR, "v2_meta_train_report.json")
 LEDGER_SOURCES = [
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
+    os.path.join(DATA_DIR, "live_predictions.jsonl"),
 ]
 
 MIN_TRAIN_N = 80           # don't fit XGBoost on tiny samples

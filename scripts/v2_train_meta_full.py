@@ -50,7 +50,10 @@ TRAIN_REPORT = os.path.join(DATA_DIR, "v2_meta_full_train_report.json")
 
 HISTORICAL_FILE = os.path.join(DATA_DIR, "backtest_honest_preds.jsonl")
 T1_FILES = [os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-            os.path.join(DATA_DIR, "v2_ledger.jsonl")]
+            os.path.join(DATA_DIR, "v2_ledger.jsonl"),
+            # live_predictions = pure engine output, no entry-gate filtering.
+            # 74.8% WR on n=385 — highest-signal data source.
+            os.path.join(DATA_DIR, "live_predictions.jsonl")]
 T0_FILE = os.path.join(DATA_DIR, "paper_trades.json")
 
 
