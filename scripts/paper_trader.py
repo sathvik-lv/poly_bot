@@ -100,6 +100,10 @@ CATEGORY_RULES = [
         "barcelona open", "porsche tennis", "indian wells", "miami open",
         "madrid open", "italian open", "wimbledon", "us open tennis",
         "qualification", "qualifying", "ladies linz",
+        # Italian Open's official name in Italian (was being mis-tagged 'other')
+        "internazionali", "bnl d'italia",
+        # Other tour-level tennis events
+        "olympia", "next gen", "challenger", "atp tour", "wta tour",
         # Cricket leagues
         "ipl", "indian premier league", "t20", "test match", "odi ",
         # Esports
@@ -109,17 +113,52 @@ CATEGORY_RULES = [
         "over/under", "o/u ", "total kills", "set handicap", "spread:",
         "games total", "round robin", "handicap:",
     ]),
-    ("sports",       ["fifa", "world cup", "nba ", "nfl ", "mlb ", "nhl ", "f1 ", "champion", "tournament", "ufc"]),
+    # Mainstream sports leagues — MLB + NBA team names added because
+    # Polymarket questions usually use team names not the league prefix
+    # (was mis-tagging baseball/basketball matchups as 'other').
+    ("sports",       [
+        "fifa", "world cup", "nba ", "nfl ", "mlb ", "nhl ", "f1 ", "champion",
+        "tournament", "ufc",
+        # NBA team names
+        "lakers", "celtics", "warriors", "knicks", "bulls", "heat", "spurs",
+        "nuggets", "thunder", "timberwolves", "mavericks", "rockets", "clippers",
+        "76ers", "raptors", "nets",
+        # MLB team names — were silently falling through to 'other'
+        "yankees", "red sox", "rockies", "braves", "dodgers", "tigers", "mets",
+        "padres", "guardians", "phillies", "marlins", "rangers", "orioles",
+        "blue jays", "astros", "cardinals", "giants", "diamondbacks",
+        "athletics", "white sox", "reds", "pirates", "royals", "twins",
+        "brewers", "cubs", "nationals",
+        # NHL team names
+        "bruins", "canadiens", "maple leafs",
+    ]),
     ("tech_ai",      ["openai", "chatgpt", "artificial intelligence", " ai ", "google", "apple", "tesla"]),
 ]
 
 
-def classify_market(question: str) -> str:
-    """Classify a market question into a category."""
-    q = question.lower()
+def classify_market(question: str, raw_market: dict = None) -> str:
+    """Classify a market. raw_market is optional — when supplied we also
+    inspect event title/ticker/slug/description (catches markets whose
+    question text alone lacks the league keyword, e.g. team-only baseball
+    questions inside an event titled 'MLB').
+
+    Signature is backwards-compatible: every existing call site that passes
+    just the question still works.
+    """
+    text = (question or "").lower()
+    if raw_market and isinstance(raw_market, dict):
+        for ev in (raw_market.get("events") or []):
+            if not isinstance(ev, dict):
+                continue
+            for k in ("title", "ticker", "slug", "description"):
+                v = ev.get(k)
+                if isinstance(v, str):
+                    # Normalize dashes/underscores to spaces so keywords
+                    # like "atp " match slug "atp-finals-2026"
+                    text += " " + v.lower().replace("-", " ").replace("_", " ")
     for category, keywords in CATEGORY_RULES:
         for kw in keywords:
-            if kw in q:
+            if kw in text:
                 return category
     return "other"
 
@@ -343,7 +382,9 @@ def scan_and_trade(state: dict, n_markets: int = 30):
 
             # Category-tier multiplier (gated). HIGH=1.0, MEDIUM=0.5, SKIP=0.0.
             # Backed by grid-sweep per-category ret/DD analysis.
-            category = classify_market(market.get("question", ""))
+            # Pass market dict so classifier can check event title (catches
+            # MLB markets whose question has team names but no 'MLB' prefix).
+            category = classify_market(market.get("question", ""), market)
 
             # Hard category filter (env-var driven, e.g. V3 = niche+geo+sports
             # only). Skips before any sizing — independent of tier system.

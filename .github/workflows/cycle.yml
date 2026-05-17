@@ -161,6 +161,41 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
 
       # ============================================================
+      # V4-AI — Test hypothesis: AI semantic has edge on the categories
+      # where microstructure DOESN'T (crypto, geopolitics, elections,
+      # tech_ai). Training run with live_predictions added showed AI at
+      # 70.7% WR on n=440. This arm specifically isolates that signal by
+      # trading ONLY the previously-SKIP categories with AI ON.
+      # If WR holds at >65% after ~30 closed trades, we've doubled the
+      # bot's edge surface area. If WR collapses, AI was sample-biased.
+      # ============================================================
+      - name: V4-AI scan (crypto+geo+elections+tech_ai, AI on)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
+          PAPER_TRADER_TRADE_CATEGORIES: "crypto,geopolitics,elections,tech_ai,macro,oil_energy,fed_rate"
+          ENABLE_AI_SEMANTIC: "1"
+
+      - name: V4-AI resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
+
+      - name: V4-AI report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
+
+      # ============================================================
       # SAME-WINDOW COMPARISON across all 6 arms
       # Reads data/comparison_anchor.json, replays each arm from $10k
       # using only post-anchor activity. Apples-to-apples report.

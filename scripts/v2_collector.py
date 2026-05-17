@@ -255,7 +255,9 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
             # Per-category meta blend (when ENABLE_META_BY_CATEGORY=1) takes
             # precedence over the global V2_META_BLEND. Falls back to global
             # behavior when env var is off.
-            category = classify_market(parsed.get("question", ""))
+            # Pass raw market dict so classifier can also inspect event
+            # title/ticker (catches mainstream sports by team name etc.)
+            category = classify_market(parsed.get("question", ""), raw)
             cat_blend, meta_cat_allows = meta_blend_for(category)
             tier_mult, tier_applied = tier_for(category)
 

@@ -176,6 +176,8 @@ def main():
          lambda: replay_paper_arm("data/v3b_paper_trades.json", anchor_dt)),
         ("V3c (real, niche+geo+favorite-other)",
          lambda: replay_paper_arm("data/v3c_paper_trades.json", anchor_dt)),
+        ("V4-AI (real, SKIP cats + AI on)",
+         lambda: replay_paper_arm("data/v4_ai_paper_trades.json", anchor_dt)),
         ("Test 1 (shadow, all, 1/3x Kelly)",
          lambda: replay_shadow_arm("data/test1_ledger.jsonl", anchor_dt)),
         ("V2 (shadow, adaptive+meta, 1/3x Kelly)",

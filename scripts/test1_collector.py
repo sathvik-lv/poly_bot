@@ -67,6 +67,10 @@ CATEGORY_RULES = [
         "barcelona open", "porsche tennis", "indian wells", "miami open",
         "madrid open", "italian open", "wimbledon", "us open tennis",
         "qualification", "qualifying", "ladies linz",
+        # Italian Open's official name in Italian (was being mis-tagged 'other')
+        "internazionali", "bnl d'italia",
+        # Other tour-level tennis events
+        "olympia", "next gen", "challenger", "atp tour", "wta tour",
         # Cricket leagues
         "ipl", "indian premier league", "t20", "test match", "odi ",
         # Esports
@@ -76,19 +80,44 @@ CATEGORY_RULES = [
         "over/under", "o/u ", "total kills", "set handicap", "spread:",
         "games total", "round robin", "handicap:",
     ]),
+    # Mainstream sports — MLB team names added (were mis-tagging 'other' since
+    # questions usually use team names not 'MLB' prefix).
     ("sports",      ["fifa", "world cup", "nba ", "nfl ", "mlb ", "f1 ", "champion",
                      "tournament", "lakers", "celtics", "warriors", "yankees", "dodgers",
-                     "match", "winner", "beat", "vs.", "points", "goals", "ufc", "nhl "]),
+                     "match", "winner", "beat", "vs.", "points", "goals", "ufc", "nhl ",
+                     # MLB team names
+                     "red sox", "rockies", "braves", "tigers", "mets", "padres",
+                     "guardians", "phillies", "marlins", "rangers", "orioles",
+                     "blue jays", "astros", "cardinals", "giants", "diamondbacks",
+                     "athletics", "white sox", "reds", "pirates", "royals", "twins",
+                     "brewers", "cubs", "nationals",
+                     # NHL team names
+                     "bruins", "canadiens", "maple leafs"]),
     ("tech_ai",     ["openai", "chatgpt", "artificial intelligence", " ai ", "google",
                      "apple", "tesla"]),
 ]
 
 
-def classify_market(question: str) -> str:
-    q = (question or "").lower()
+def classify_market(question: str, raw_market: dict = None) -> str:
+    """Classify a market. When raw_market is provided, also checks event
+    title + ticker (catches markets whose question lacks the league keyword
+    but whose parent event has it, e.g. an event titled 'MLB' with team-only
+    question text)."""
+    text = (question or "").lower()
+    if raw_market and isinstance(raw_market, dict):
+        # Polymarket structure: events is a list of dicts with title/ticker/slug
+        for ev in (raw_market.get("events") or []):
+            if not isinstance(ev, dict):
+                continue
+            for k in ("title", "ticker", "slug", "description"):
+                v = ev.get(k)
+                if isinstance(v, str):
+                    # Normalize dashes/underscores to spaces so keywords
+                    # like "atp " match slug "atp-finals-2026"
+                    text += " " + v.lower().replace("-", " ").replace("_", " ")
     for category, keywords in CATEGORY_RULES:
         for kw in keywords:
-            if kw in q:
+            if kw in text:
                 return category
     return "other"
 
@@ -326,7 +355,7 @@ def fetch_markets(client: MarketClient, n_target: int) -> list:
                 mid = m.get("id")
                 if not mid or mid in seen:
                     continue
-                cat = classify_market(m.get("question", ""))
+                cat = classify_market(m.get("question", ""), m)
                 if cat not in target_cats:
                     continue
                 check = passes_filters(m)
@@ -461,7 +490,7 @@ def scan(n_markets: int = DEFAULT_SCAN_SIZE):
                 "prediction_round": round_num,
                 "market_id": raw.get("id"),
                 "question": parsed.get("question", ""),
-                "category": classify_market(parsed.get("question", "")),
+                "category": classify_market(parsed.get("question", ""), raw),
                 "end_date": parsed.get("end_date"),
                 "days_left": raw.get("_days_left"),
                 "market_price": round(price, 4),
