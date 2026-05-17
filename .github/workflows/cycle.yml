@@ -212,9 +212,9 @@ jobs:
       # accumulation. Re-enable by removing `if: false` from each step.
       # All v2 modules + scripts remain in the repo and unit-tested.
       # ============================================================
-      - name: V2 collector (150 markets, adaptive + niche-sports priority)
-        run: python scripts/v2_collector.py -n 150
-        timeout-minutes: 12
+      - name: V2 collector (100 markets, adaptive + AI live A/B)
+        run: python scripts/v2_collector.py -n 100
+        timeout-minutes: 18
         continue-on-error: true
         env:
           # Per-category meta blend — derived from per-category walk-forward
@@ -224,6 +224,13 @@ jobs:
           #   geopolitics:         blend=1.0 (meta dominant — best edge)
           #   crypto/elections/etc: NOT TRADED (negative meta + ensemble)
           ENABLE_META_BY_CATEGORY: "1"
+          # Activate AI semantic model: live A/B test of the new training
+          # finding (n=440, WR 70.7%, Brier improvement +0.0497 better
+          # than market). All other arms keep AI off as the control.
+          # Scan reduced 150 -> 100 + timeout 12 -> 18 min to absorb AI
+          # latency (~3-8s per market via Groq -> Gemini -> OpenRouter).
+          # Circuit breaker shuts AI off after 3 consecutive failures.
+          ENABLE_AI_SEMANTIC: "1"
 
       - name: V2 resolver
         run: python scripts/v2_resolver.py
