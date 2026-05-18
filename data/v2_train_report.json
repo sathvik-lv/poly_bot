@@ -1,23 +1,15 @@
 {
-  "trained_at": "2026-05-18T21:50:41.703559+00:00",
-  "n_validated_bets": 9724,
-  "validation_rejected": 85960,
+  "trained_at": "2026-05-18T23:49:19.046556+00:00",
+  "n_validated_bets": 9731,
+  "validation_rejected": 86161,
   "quality_rejected": 0,
-  "expected_filtered": 85960,
+  "expected_filtered": 86161,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 26891,
-    "not_resolved": 59069
+    "action_not_a_bet:'NO_BET'": 26912,
+    "not_resolved": 59249
   },
   "model_stats": {
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
-    },
     "ai_semantic": {
       "n": 488,
       "brier": 0.184684,
@@ -26,36 +18,44 @@
       "wins": 345,
       "wr": 0.707
     },
-    "external_data": {
-      "n": 9724,
-      "brier": 0.22796,
-      "market_brier": 0.227972,
-      "improvement": 1.2e-05,
-      "wins": 5715,
-      "wr": 0.5877
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
     },
     "microstructure": {
-      "n": 9724,
-      "brier": 0.217456,
-      "market_brier": 0.227972,
-      "improvement": 0.010516,
-      "wins": 5204,
+      "n": 9731,
+      "brier": 0.217466,
+      "market_brier": 0.227988,
+      "improvement": 0.010522,
+      "wins": 5208,
       "wr": 0.5352
     },
+    "external_data": {
+      "n": 9731,
+      "brier": 0.227976,
+      "market_brier": 0.227988,
+      "improvement": 1.2e-05,
+      "wins": 5722,
+      "wr": 0.588
+    },
     "orderbook": {
-      "n": 9723,
-      "brier": 0.225143,
-      "market_brier": 0.227969,
+      "n": 9730,
+      "brier": 0.225159,
+      "market_brier": 0.227985,
       "improvement": 0.002826,
-      "wins": 5385,
-      "wr": 0.5538
+      "wins": 5389,
+      "wr": 0.5539
     }
   },
   "weights": {
+    "ai_semantic": 0.782176,
     "time_series": 0.0,
-    "ai_semantic": 0.782253,
+    "microstructure": 0.171552,
     "external_data": 0.000196,
-    "microstructure": 0.171471,
-    "orderbook": 0.04608
+    "orderbook": 0.046076
   }
 }
