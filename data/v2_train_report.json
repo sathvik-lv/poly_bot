@@ -1,23 +1,15 @@
 {
-  "trained_at": "2026-05-18T20:17:10.142153+00:00",
-  "n_validated_bets": 9721,
-  "validation_rejected": 85663,
+  "trained_at": "2026-05-18T21:50:41.703559+00:00",
+  "n_validated_bets": 9724,
+  "validation_rejected": 85960,
   "quality_rejected": 0,
-  "expected_filtered": 85663,
+  "expected_filtered": 85960,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 26885,
-    "not_resolved": 58778
+    "action_not_a_bet:'NO_BET'": 26891,
+    "not_resolved": 59069
   },
   "model_stats": {
-    "orderbook": {
-      "n": 9720,
-      "brier": 0.225142,
-      "market_brier": 0.227963,
-      "improvement": 0.002821,
-      "wins": 5382,
-      "wr": 0.5537
-    },
     "time_series": {
       "n": 3,
       "brier": 0.174446,
@@ -25,14 +17,6 @@
       "improvement": -0.006818,
       "wins": 2,
       "wr": 0.6667
-    },
-    "external_data": {
-      "n": 9721,
-      "brier": 0.227953,
-      "market_brier": 0.227965,
-      "improvement": 1.2e-05,
-      "wins": 5712,
-      "wr": 0.5876
     },
     "ai_semantic": {
       "n": 488,
@@ -42,20 +26,36 @@
       "wins": 345,
       "wr": 0.707
     },
+    "external_data": {
+      "n": 9724,
+      "brier": 0.22796,
+      "market_brier": 0.227972,
+      "improvement": 1.2e-05,
+      "wins": 5715,
+      "wr": 0.5877
+    },
     "microstructure": {
-      "n": 9721,
-      "brier": 0.217493,
-      "market_brier": 0.227965,
-      "improvement": 0.010472,
-      "wins": 5201,
-      "wr": 0.535
+      "n": 9724,
+      "brier": 0.217456,
+      "market_brier": 0.227972,
+      "improvement": 0.010516,
+      "wins": 5204,
+      "wr": 0.5352
+    },
+    "orderbook": {
+      "n": 9723,
+      "brier": 0.225143,
+      "market_brier": 0.227969,
+      "improvement": 0.002826,
+      "wins": 5385,
+      "wr": 0.5538
     }
   },
   "weights": {
-    "orderbook": 0.046035,
     "time_series": 0.0,
+    "ai_semantic": 0.782253,
     "external_data": 0.000196,
-    "ai_semantic": 0.782878,
-    "microstructure": 0.170891
+    "microstructure": 0.171471,
+    "orderbook": 0.04608
   }
 }
