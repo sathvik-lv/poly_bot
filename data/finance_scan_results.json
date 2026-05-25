@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-25T13:51:44.584493+00:00",
+  "timestamp": "2026-05-25T16:47:50.223066+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,13 +26,7 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 77246,
-      "change_24h": 0.51535,
-      "change_7d": -0.43156,
-      "change_30d": -0.42143,
-      "ath": 126080,
-      "high_24h": 77578,
-      "low_24h": 76053,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
@@ -40,97 +34,70 @@
       "classification": "Fear"
     }
   },
-  "n_markets": 14,
-  "n_with_edge": 12,
+  "n_markets": 9,
+  "n_with_edge": 8,
   "results": [
     {
       "question": "MicroStrategy sells any Bitcoin by May 31, 2026?",
-      "market_price": 0.095,
-      "our_estimate": 0.3601,
+      "market_price": 0.08,
+      "our_estimate": 0.2842,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.27,
-      "ai_reasoning": "MicroStrategy has historically treated Bitcoin as a strategic reserve and only sells in extreme liquidity or valuation events; the current price is near recent highs with modest upside, and the firm faces no imminent cash pressure. Combined with a low Fear & Greed index and limited 5\u2011day window, the odds of a sale before May\u202f31 are modest.",
-      "edge": 0.2651,
-      "real_edge": 0.2651,
+      "ai_estimate": 0.15,
+      "ai_reasoning": "MicroStrategy has historically used Bitcoin as a treasury reserve and has no disclosed liquidity pressure; with Bitcoin near $60k, low volatility and a bearish macro environment, there is little incentive to liquidate before the deadline.",
+      "edge": 0.2042,
+      "real_edge": 0.2042,
       "categories": [
         "crypto"
       ],
-      "models": "quant(39%)+AI(61%)",
+      "models": "quant(38%)+AI(62%)",
       "n_models": 2,
-      "volume": 5251361.307707985,
+      "volume": 5270213.966251986,
       "signals": {
-        "current_price": 77246,
+        "current_price": 60000,
         "target": 2026.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.52,
-        "change_7d": -0.43,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 5,
-        "high_24h": 77578,
-        "low_24h": 76053
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will bitcoin hit $1m before GTA VI?",
-      "market_price": 0.4905,
+      "market_price": 0.4925,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0095,
+      "edge": 0.0075,
       "real_edge": 0.0,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 4410696.718029519,
+      "volume": 4411227.007867521,
       "signals": {
         "error": "no_target_found"
       }
     },
     {
-      "question": "Will Bitcoin reach $85,000 in May?",
-      "market_price": 0.0305,
-      "our_estimate": 0.3147,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "Bitcoin is currently below the target and has been in a slight downtrend over the past week, with only a modest 24\u2011hour uptick. The short 5\u2011day horizon, combined with modest volatility and a fear\u2011dominated sentiment, makes a jump to $85k unlikely but not impossible.",
-      "edge": 0.2842,
-      "real_edge": 0.2842,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(47%)+AI(53%)",
-      "n_models": 2,
-      "volume": 3725544.9823329966,
-      "signals": {
-        "current_price": 77246,
-        "target": 85000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.52,
-        "change_7d": -0.43,
-        "daily_vol": 0.035,
-        "days_left": 5,
-        "high_24h": 77578,
-        "low_24h": 76053
-      }
-    },
-    {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in May?",
-      "market_price": 0.08,
-      "our_estimate": 0.01,
+      "market_price": 0.065,
+      "our_estimate": 0.003,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.07,
-      "real_edge": -0.07,
+      "ai_estimate": 0.001,
+      "ai_reasoning": "Reaching $110 from $70 in five days would require a 16\u2011day\u2011equivalent move at 2.5% daily volatility, an event with a z\u2011score of 8.09\u2014far beyond normal market behavior. Macro fundamentals and current volatility regime make such a jump virtually impossible.",
+      "edge": -0.062,
+      "real_edge": -0.062,
       "categories": [
         "oil"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 3637597.720503003,
+      "models": "quant(22%)+AI(78%)",
+      "n_models": 2,
+      "volume": 3646355.558986003,
       "signals": {
         "current_price": 70,
         "target": 110.0,
@@ -145,134 +112,97 @@
     },
     {
       "question": "Iran agrees to surrender enriched uranium stockpile by May 31, 2026?",
-      "market_price": 0.1085,
-      "our_estimate": 0.3374,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.27,
-      "ai_reasoning": "Geopolitical friction with the West remains high, and recent sanctions have tightened, making a voluntary surrender of enriched uranium unlikely before the deadline. However, diplomatic back\u2011channel talks and Iran's desire to avoid further isolation keep a modest chance alive.",
-      "edge": 0.2289,
-      "real_edge": 0.2289,
-      "categories": [
-        "stocks"
-      ],
-      "models": "quant(29%)+AI(71%)",
-      "n_models": 2,
-      "volume": 3039373.342487992,
-      "signals": {}
-    },
-    {
-      "question": "Will Bitcoin dip to $70,000 in May?",
-      "market_price": 0.0345,
-      "our_estimate": 0.2082,
-      "quant_estimate": 0.2082,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.1737,
-      "real_edge": 0.1737,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 2553232.1439080006,
-      "signals": {
-        "current_price": 77246,
-        "target": 70000.0,
-        "direction": "DIP",
-        "change_24h": 0.52,
-        "change_7d": -0.43,
-        "daily_vol": 0.035,
-        "days_left": 5,
-        "high_24h": 77578,
-        "low_24h": 76053
-      }
-    },
-    {
-      "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
-      "market_price": 0.255,
+      "market_price": 0.164,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.245,
-      "real_edge": 0.245,
+      "edge": 0.336,
+      "real_edge": 0.336,
       "categories": [
         "stocks"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2443772.8955180165,
+      "volume": 3098967.5617459947,
       "signals": {}
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $115 in May?",
+      "question": "Will Bitcoin dip to $70,000 in May?",
       "market_price": 0.0335,
-      "our_estimate": 0.0135,
-      "quant_estimate": 0.01,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "WTI would need an 64% gain in five days, implying a z\u2011score >8 despite modest volatility (2.5% daily). Such a move would require an extreme supply shock or geopolitical event, which is unlikely in the short\u2011term.",
-      "edge": -0.02,
-      "real_edge": -0.02,
+      "our_estimate": 0.3291,
+      "quant_estimate": 0.9,
+      "ai_estimate": 0.05,
+      "ai_reasoning": "Bitcoin is trading around $60,000 with negligible recent movement and low volatility, far below the $70,000 dip target; macro conditions (high fear sentiment, stable yields) do not support a rapid rise to $70k within five days.",
+      "edge": 0.2956,
+      "real_edge": 0.2956,
       "categories": [
-        "oil"
+        "crypto"
       ],
-      "models": "quant(65%)+AI(35%)",
+      "models": "quant(33%)+AI(67%)",
       "n_models": 2,
-      "volume": 1406976.4222320046,
+      "volume": 2563360.4906140016,
       "signals": {
-        "current_price": 70,
-        "target": 115.0,
-        "direction": "HIGH",
+        "current_price": 60000,
+        "target": 70000.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
         "days_left": 5,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 8.88,
-        "recent_closes": [],
-        "vix": 20
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
-      "question": "Will WTI Crude Oil (WTI) hit (LOW) $80 in May?",
-      "market_price": 0.17,
-      "our_estimate": 0.01,
-      "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.16,
-      "real_edge": -0.16,
+      "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
+      "market_price": 0.345,
+      "our_estimate": 0.4759,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.45,
+      "ai_reasoning": "This is a geopolitical outcome largely driven by diplomatic negotiations rather than financial market conditions. The provided financial data is largely placeholder values and would have limited direct predictive power for nuclear non-proliferation decisions. Given we're ~5 weeks from the deadline with complex ongoing negotiations involving Iran, IAEA, and global powers, the probability remains uncertain. The baseline model estimate of 0.5 seems reasonable, though recent diplomatic tensions suggest a slightly lower likelihood.",
+      "edge": 0.1309,
+      "real_edge": 0.1309,
       "categories": [
-        "oil"
+        "stocks"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 1011857.2133359977,
-      "signals": {
-        "current_price": 70,
-        "target": 80.0,
-        "direction": "HIGH",
-        "days_left": 5,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 2.39,
-        "recent_closes": [],
-        "vix": 20
-      }
+      "models": "quant(52%)+AI(48%)",
+      "n_models": 2,
+      "volume": 2488346.905668018,
+      "signals": {}
+    },
+    {
+      "question": "Iran agrees to surrender enriched uranium stockpile by December 31, 2026?",
+      "market_price": 0.59,
+      "our_estimate": 0.2773,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.15,
+      "ai_reasoning": "The current geopolitical climate, sanctions regime, and Iran\u2019s strategic use of nuclear assets make a full surrender unlikely by the deadline. Market sentiment remains fearful, and the lack of concrete diplomatic progress suggests a modest chance of compliance.",
+      "edge": -0.3127,
+      "real_edge": -0.3127,
+      "categories": [
+        "stocks"
+      ],
+      "models": "quant(36%)+AI(64%)",
+      "n_models": 2,
+      "volume": 1176938.61909,
+      "signals": {}
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $85 in May?",
-      "market_price": 0.385,
+      "market_price": 0.415,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.375,
-      "real_edge": -0.375,
+      "edge": -0.405,
+      "real_edge": -0.405,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 961664.8483959971,
+      "volume": 971041.594309997,
       "signals": {
         "current_price": 70,
         "target": 85.0,
@@ -287,19 +217,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (LOW) $90 in May?",
-      "market_price": 0.815,
-      "our_estimate": 0.0322,
+      "market_price": 0.835,
+      "our_estimate": 0.0148,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.05,
-      "ai_reasoning": "WTI is trading around $70 with only five trading days left in May, requiring a 28% jump to reach $90, which is far beyond the 2.5% daily volatility implied by the model. The high z\u2011score (4.5) indicates the price is far below the target, making a breach highly unlikely despite any short\u2011term bullish sentiment.",
-      "edge": -0.7828,
-      "real_edge": -0.7828,
+      "ai_estimate": 0.02,
+      "ai_reasoning": "WTI is trading around $70 with only five trading days left, requiring a 28% jump despite a daily volatility of ~2.5%, yielding a z\u2011score of 4.5. The macro backdrop (steady demand, no major supply shock) does not support such a rapid move, making a rise to $90 highly improbable.",
+      "edge": -0.8202,
+      "real_edge": -0.8202,
       "categories": [
         "oil"
       ],
-      "models": "quant(44%)+AI(56%)",
+      "models": "quant(52%)+AI(48%)",
       "n_models": 2,
-      "volume": 790082.2782249985,
+      "volume": 817032.6220549989,
       "signals": {
         "current_price": 70,
         "target": 90.0,
@@ -310,77 +240,6 @@
         "z_score": 4.5,
         "recent_closes": [],
         "vix": 20
-      }
-    },
-    {
-      "question": "Roland Garros WTA: Elina Svitolina vs Anna Bondar",
-      "market_price": 0.675,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.175,
-      "real_edge": -0.175,
-      "categories": [
-        "treasury"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 674677.4027999986,
-      "signals": {}
-    },
-    {
-      "question": "Will Trump agree to Iranian oil sanction relief by May 31?",
-      "market_price": 0.225,
-      "our_estimate": 0.598,
-      "quant_estimate": 0.99,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "The quantitative oil model suggests a very high probability of a price drop, but the political context\u2014Trump\u2019s administration\u2019s recent hardline stance on Iran and the lack of any public sign of policy shift\u2014reduces the likelihood of sanction relief. Volatility is moderate (VIX 20) and the market is still in a fear regime, further dampening expectations of a sudden policy reversal.",
-      "edge": 0.373,
-      "real_edge": 0.373,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant(53%)+AI(47%)",
-      "n_models": 2,
-      "volume": 453245.51918499987,
-      "signals": {
-        "current_price": 70,
-        "target": 31.0,
-        "direction": "LOW",
-        "days_left": 5,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": -14.57,
-        "recent_closes": [],
-        "vix": 20
-      }
-    },
-    {
-      "question": "Will the price of Bitcoin be above $78,000 on May 25?",
-      "market_price": 0.065,
-      "our_estimate": 0.4506,
-      "quant_estimate": 0.4506,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.3856,
-      "real_edge": 0.3856,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 153070.18549599996,
-      "signals": {
-        "current_price": 77246,
-        "target": 78000.0,
-        "direction": "ABOVE",
-        "change_24h": 0.52,
-        "change_7d": -0.43,
-        "daily_vol": 0.035,
-        "days_left": 5,
-        "high_24h": 77578,
-        "low_24h": 76053
       }
     }
   ]
