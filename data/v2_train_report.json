@@ -1,28 +1,36 @@
 {
-  "trained_at": "2026-05-26T00:44:40.035883+00:00",
-  "n_validated_bets": 9824,
-  "validation_rejected": 103464,
+  "trained_at": "2026-05-26T05:26:38.285303+00:00",
+  "n_validated_bets": 9825,
+  "validation_rejected": 103793,
   "quality_rejected": 0,
-  "expected_filtered": 103464,
+  "expected_filtered": 103793,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 27913,
-    "not_resolved": 75551
+    "action_not_a_bet:'NO_BET'": 27919,
+    "not_resolved": 75874
   },
   "model_stats": {
     "external_data": {
-      "n": 9824,
-      "brier": 0.227857,
-      "market_brier": 0.227869,
+      "n": 9825,
+      "brier": 0.227834,
+      "market_brier": 0.227846,
       "improvement": 1.2e-05,
       "wins": 5772,
       "wr": 0.5875
     },
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
+    },
     "microstructure": {
-      "n": 9824,
-      "brier": 0.217455,
-      "market_brier": 0.227869,
-      "improvement": 0.010414,
+      "n": 9825,
+      "brier": 0.217443,
+      "market_brier": 0.227846,
+      "improvement": 0.010404,
       "wins": 5266,
       "wr": 0.536
     },
@@ -35,27 +43,19 @@
       "wr": 0.7047
     },
     "orderbook": {
-      "n": 9823,
-      "brier": 0.225055,
-      "market_brier": 0.227867,
+      "n": 9824,
+      "brier": 0.225032,
+      "market_brier": 0.227844,
       "improvement": 0.002812,
-      "wins": 5441,
+      "wins": 5442,
       "wr": 0.5539
-    },
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
     }
   },
   "weights": {
     "external_data": 0.0002,
-    "microstructure": 0.173738,
-    "ai_semantic": 0.779149,
-    "orderbook": 0.046913,
-    "time_series": 0.0
+    "time_series": 0.0,
+    "microstructure": 0.1736,
+    "ai_semantic": 0.77928,
+    "orderbook": 0.046921
   }
 }
