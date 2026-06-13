@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-31T23:11:46.730267+00:00",
+  "timestamp": "2026-06-13T16:20:49.061298+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,200 +26,116 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 73887,
-      "change_24h": 0.17716,
-      "change_7d": -2.84862,
-      "change_30d": -5.48443,
+      "price": 64016,
+      "change_24h": 0.30755,
+      "change_7d": 5.28749,
+      "change_30d": -21.25293,
       "ath": 126080,
-      "high_24h": 74110,
-      "low_24h": 73352,
+      "high_24h": 64287,
+      "low_24h": 63397,
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 28,
-      "classification": "Fear"
+      "value": 13,
+      "classification": "Extreme Fear"
     }
   },
-  "n_markets": 7,
-  "n_with_edge": 7,
+  "n_markets": 4,
+  "n_with_edge": 4,
   "results": [
     {
-      "question": "MicroStrategy sells any Bitcoin by May 31, 2026?",
-      "market_price": 0.1695,
-      "our_estimate": 0.2966,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.17,
-      "ai_reasoning": "MicroStrategy has consistently treated Bitcoin as a strategic treasury asset and has shown little inclination to liquidate holdings, even amid short\u2011term price volatility. With Bitcoin near $73.9k, modest 24\u2011hour gains, and a fear\u2011driven market sentiment, the incentive to sell is low, making a sale before the end of the day unlikely.",
-      "edge": 0.1271,
-      "real_edge": 0.1271,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(38%)+AI(62%)",
-      "n_models": 2,
-      "volume": 8578196.00291789,
-      "signals": {
-        "current_price": 73887,
-        "target": 2026.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
-      }
-    },
-    {
-      "question": "MicroStrategy sells any Bitcoin by June 30, 2026?",
-      "market_price": 0.7345,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.2345,
-      "real_edge": -0.2345,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 5786086.827875011,
-      "signals": {
-        "current_price": 73887,
-        "target": 2026.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
-      }
-    },
-    {
       "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
-      "market_price": 0.155,
-      "our_estimate": 0.2773,
+      "market_price": 0.065,
+      "our_estimate": 0.3509,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "Given Iran\u2019s historical reluctance to fully comply with nuclear demands, the lack of recent diplomatic breakthroughs, and the current geopolitical tension in the region, the likelihood of Iran surrendering its enriched uranium stockpile by the June 30, 2026 deadline remains low. However, the possibility is not negligible due to potential diplomatic incentives and sanctions relief that could motivate compliance.",
-      "edge": 0.1223,
-      "real_edge": 0.1223,
+      "ai_estimate": 0.27,
+      "ai_reasoning": "Iran has repeatedly missed nuclear deadlines and faces internal political pressure, making a full surrender by mid\u20112026 unlikely; however, recent diplomatic overtures and sanctions relief incentives keep the scenario from being impossible.",
+      "edge": 0.2859,
+      "real_edge": 0.2859,
       "categories": [
         "stocks"
       ],
-      "models": "quant(36%)+AI(64%)",
+      "models": "quant(35%)+AI(65%)",
       "n_models": 2,
-      "volume": 3067228.591297026,
+      "volume": 4039686.4271780127,
       "signals": {}
     },
     {
-      "question": "MicroStrategy sells any Bitcoin by December 31, 2026?",
-      "market_price": 0.895,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will there be no change in Fed interest rates after the July 2026 meeting?",
+      "market_price": 0.925,
+      "our_estimate": 0.85,
+      "quant_estimate": 0.85,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.395,
-      "real_edge": -0.395,
+      "edge": -0.075,
+      "real_edge": -0.075,
       "categories": [
-        "crypto"
+        "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2067347.446902007,
+      "volume": 1516817.1288139983,
       "signals": {
-        "current_price": 73887,
-        "target": 2026.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
+        "vix": 20,
+        "tbill_rate": 4.0,
+        "yield_10y": 4.3,
+        "fear_greed": 13,
+        "yield_curve_spread": 0.2999999999999998,
+        "logic": "no_change_base"
       }
     },
     {
-      "question": "Will Bitcoin dip to $72,500 in May?",
-      "market_price": 0.04,
-      "our_estimate": 0.5187,
-      "quant_estimate": 0.5882,
-      "ai_estimate": 0.46,
-      "ai_reasoning": "Bitcoin is ~1.9% above the $72,500 target and daily volatility (~3.5%) easily accommodates such a move. However, the Fear & Greed Index is low (28) and macro conditions (high rates, risk\u2011off sentiment) are bearish, making a dip plausible but not certain on the final day of the month.",
-      "edge": 0.4787,
-      "real_edge": 0.4787,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(46%)+AI(54%)",
-      "n_models": 2,
-      "volume": 707058.1386279988,
-      "signals": {
-        "current_price": 73887,
-        "target": 72500.0,
-        "direction": "DIP",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $75,000 in May?",
-      "market_price": 0.075,
-      "our_estimate": 0.5,
+      "question": "Will Bitcoin reach $65,000 in June?",
+      "market_price": 0.875,
+      "our_estimate": 0.4206,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.425,
-      "real_edge": 0.425,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 255380.63289900028,
-      "signals": {
-        "current_price": 73887,
-        "target": 75000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
-      }
-    },
-    {
-      "question": "Will the price of Bitcoin be above $76,000 on June 1?",
-      "market_price": 0.051,
-      "our_estimate": 0.1783,
-      "quant_estimate": 0.2102,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "Bitcoin is currently 1.7% below the target, exceeding the typical 3.5% daily volatility range, and the market sentiment is fearful with a low Fear & Greed Index. Given the short time horizon and bearish macro backdrop, the chance of breaching $76,000 in one day is modest but not negligible.",
-      "edge": 0.1273,
-      "real_edge": 0.1273,
+      "ai_estimate": 0.35,
+      "ai_reasoning": "Bitcoin is currently 1.5% below the target with a modest 5% 7\u2011day uptrend and low volatility, but the extreme fear index and lack of a clear macro tailwind reduce upside momentum. The 17\u2011day horizon is short enough for a rally yet long enough for a pullback, yielding a moderate probability of reaching $65,000.",
+      "edge": -0.4544,
+      "real_edge": -0.4544,
       "categories": [
         "crypto"
       ],
       "models": "quant(47%)+AI(53%)",
       "n_models": 2,
-      "volume": 138309.109224,
+      "volume": 532390.0240040005,
       "signals": {
-        "current_price": 73887,
-        "target": 76000.0,
-        "direction": "ABOVE",
-        "change_24h": 0.18,
-        "change_7d": -2.85,
+        "current_price": 64016,
+        "target": 65000.0,
+        "direction": "UNKNOWN",
+        "change_24h": 0.31,
+        "change_7d": 5.29,
         "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 74110,
-        "low_24h": 73352
+        "days_left": 17,
+        "high_24h": 64287,
+        "low_24h": 63397
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $66,000 on June 14?",
+      "market_price": 0.0355,
+      "our_estimate": 0.4579,
+      "quant_estimate": 0.4579,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.4224,
+      "real_edge": 0.4224,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 114461.85588700003,
+      "signals": {
+        "current_price": 64016,
+        "target": 66000.0,
+        "direction": "ABOVE",
+        "change_24h": 0.31,
+        "change_7d": 5.29,
+        "daily_vol": 0.035,
+        "days_left": 17,
+        "high_24h": 64287,
+        "low_24h": 63397
       }
     }
   ]
