@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-13T16:20:49.061298+00:00",
+  "timestamp": "2026-06-14T17:32:33.200745+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,38 +26,82 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 64016,
-      "change_24h": 0.30755,
-      "change_7d": 5.28749,
-      "change_30d": -21.25293,
+      "price": 63874,
+      "change_24h": -0.30061,
+      "change_7d": 2.95587,
+      "change_30d": -19.37953,
       "ath": 126080,
-      "high_24h": 64287,
-      "low_24h": 63397,
+      "high_24h": 64633,
+      "low_24h": 63877,
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 13,
+      "value": 18,
       "classification": "Extreme Fear"
     }
   },
-  "n_markets": 4,
-  "n_with_edge": 4,
+  "n_markets": 6,
+  "n_with_edge": 6,
   "results": [
     {
       "question": "Iran agrees to surrender enriched uranium stockpile by June 30, 2026?",
-      "market_price": 0.065,
-      "our_estimate": 0.3509,
+      "market_price": 0.045,
+      "our_estimate": 0.3963,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.27,
-      "ai_reasoning": "Iran has repeatedly missed nuclear deadlines and faces internal political pressure, making a full surrender by mid\u20112026 unlikely; however, recent diplomatic overtures and sanctions relief incentives keep the scenario from being impossible.",
-      "edge": 0.2859,
-      "real_edge": 0.2859,
+      "ai_estimate": 0.34,
+      "ai_reasoning": "With only two weeks left until the June\u202f30 deadline, Iran has a history of stalling nuclear commitments, and heightened geopolitical tension is keeping markets volatile (VIX elevated, Fear & Greed at extreme fear). However, recent diplomatic pressure and the risk of renewed sanctions increase the incentive to comply, keeping the odds away from negligible.",
+      "edge": 0.3513,
+      "real_edge": 0.3513,
       "categories": [
         "stocks"
       ],
       "models": "quant(35%)+AI(65%)",
       "n_models": 2,
-      "volume": 4039686.4271780127,
+      "volume": 4128438.2290290147,
+      "signals": {}
+    },
+    {
+      "question": "Will Satoshi move any Bitcoin in 2026?",
+      "market_price": 0.0495,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.4505,
+      "real_edge": 0.4505,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 3480846.1329670143,
+      "signals": {
+        "current_price": 63874,
+        "target": 2026.0,
+        "direction": "UNKNOWN",
+        "change_24h": -0.3,
+        "change_7d": 2.96,
+        "daily_vol": 0.035,
+        "days_left": 16,
+        "high_24h": 64633,
+        "low_24h": 63877
+      }
+    },
+    {
+      "question": "Will the Vegas Golden Knights win the 2026 NHL Stanley Cup?",
+      "market_price": 0.2085,
+      "our_estimate": 0.2577,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.05,
+      "ai_reasoning": "With no specific team performance data, the Vegas Golden Knights have a low baseline chance of winning the 2026 Stanley Cup, similar to a typical NHL team\u2019s odds in a given season. The lack of recent roster or playoff success indicators further reduces the likelihood.",
+      "edge": 0.0492,
+      "real_edge": 0.0492,
+      "categories": [
+        "gold"
+      ],
+      "models": "quant(46%)+AI(54%)",
+      "n_models": 2,
+      "volume": 3462862.2751319776,
       "signals": {}
     },
     {
@@ -74,68 +118,68 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1516817.1288139983,
+      "volume": 1625004.7535569982,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 13,
+        "fear_greed": 18,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "no_change_base"
       }
     },
     {
-      "question": "Will Bitcoin reach $65,000 in June?",
-      "market_price": 0.875,
-      "our_estimate": 0.4206,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.35,
-      "ai_reasoning": "Bitcoin is currently 1.5% below the target with a modest 5% 7\u2011day uptrend and low volatility, but the extreme fear index and lack of a clear macro tailwind reduce upside momentum. The 17\u2011day horizon is short enough for a rally yet long enough for a pullback, yielding a moderate probability of reaching $65,000.",
-      "edge": -0.4544,
-      "real_edge": -0.4544,
+      "question": "Will Bitcoin dip to $55,000 in June?",
+      "market_price": 0.1205,
+      "our_estimate": 0.3041,
+      "quant_estimate": 0.2853,
+      "ai_estimate": 0.32,
+      "ai_reasoning": "A 14% drop to $55k within 16 days requires roughly a 2\u2011sigma move given current 3.5% daily volatility, making it unlikely but not impossible. Extreme fear in the market and a modest 24\u2011hour pullback add downside pressure, while a 7\u2011day gain suggests residual bullish momentum, leading to a roughly 30% chance of the dip.",
+      "edge": 0.1836,
+      "real_edge": 0.1836,
       "categories": [
         "crypto"
       ],
-      "models": "quant(47%)+AI(53%)",
+      "models": "quant(46%)+AI(54%)",
       "n_models": 2,
-      "volume": 532390.0240040005,
+      "volume": 1409662.8616340011,
       "signals": {
-        "current_price": 64016,
-        "target": 65000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.31,
-        "change_7d": 5.29,
+        "current_price": 63874,
+        "target": 55000.0,
+        "direction": "DIP",
+        "change_24h": -0.3,
+        "change_7d": 2.96,
         "daily_vol": 0.035,
-        "days_left": 17,
-        "high_24h": 64287,
-        "low_24h": 63397
+        "days_left": 16,
+        "high_24h": 64633,
+        "low_24h": 63877
       }
     },
     {
-      "question": "Will the price of Bitcoin be above $66,000 on June 14?",
-      "market_price": 0.0355,
-      "our_estimate": 0.4579,
-      "quant_estimate": 0.4579,
+      "question": "Will Bitcoin reach $65,000 in June?",
+      "market_price": 0.825,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4224,
-      "real_edge": 0.4224,
+      "edge": -0.325,
+      "real_edge": -0.325,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 114461.85588700003,
+      "volume": 653960.0689880005,
       "signals": {
-        "current_price": 64016,
-        "target": 66000.0,
-        "direction": "ABOVE",
-        "change_24h": 0.31,
-        "change_7d": 5.29,
+        "current_price": 63874,
+        "target": 65000.0,
+        "direction": "UNKNOWN",
+        "change_24h": -0.3,
+        "change_7d": 2.96,
         "daily_vol": 0.035,
-        "days_left": 17,
-        "high_24h": 64287,
-        "low_24h": 63397
+        "days_left": 16,
+        "high_24h": 64633,
+        "low_24h": 63877
       }
     }
   ]
