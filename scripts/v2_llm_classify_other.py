@@ -29,13 +29,14 @@ load_dotenv()
 import requests
 
 from src.exit_simulator import held_pnl
+from src.ledger_reader import expand_with_archives
 
 DATA_DIR = "data"
 CACHE_FILE = os.path.join(DATA_DIR, "llm_subcategories.json")
-LEDGER_SOURCES = [
+LEDGER_SOURCES = expand_with_archives([
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-]
+])
 
 # Sub-categories the LLM is constrained to choose from
 SUB_CATEGORIES = [
@@ -158,11 +159,13 @@ def main():
     print(f"  Cache: {len(cache)} pre-classified markets")
 
     # Collect all 'other'-bucket records from both ledgers
+    import gzip
     other_records = []
     for path in LEDGER_SOURCES:
         if not os.path.exists(path):
             continue
-        with open(path, "r", encoding="utf-8") as f:
+        opener = gzip.open if path.endswith(".gz") else open
+        with opener(path, "rt", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:

@@ -48,12 +48,15 @@ def _wilson_ci(wins: int, n: int, z: float = 1.96) -> tuple[float, float]:
 
 
 def aggregate_by_category(ledger_path: str) -> dict[str, CategoryStats]:
-    """Walk a ledger jsonl and bucket resolved bets by category."""
+    """Walk a ledger jsonl (or gzipped archive) and bucket resolved bets by category."""
+    import gzip
+
     if not os.path.exists(ledger_path):
         return {}
 
     by_cat: dict[str, dict] = {}
-    with open(ledger_path, "r", encoding="utf-8") as f:
+    opener = gzip.open if ledger_path.endswith(".gz") else open
+    with opener(ledger_path, "rt", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -122,10 +125,13 @@ class CategoryGate:
         ambiguous_edge_required: float = 0.05,
     ):
         if ledger_paths is None:
-            ledger_paths = [
+            # Include rotated .gz archives so category stats reflect the full
+            # historical ledger, not just what happens to be in the live file.
+            from src.ledger_reader import expand_with_archives
+            ledger_paths = expand_with_archives([
                 os.path.join(DATA_DIR, "v2_ledger.jsonl"),
                 os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-            ]
+            ])
         self.min_trades_for_decision = min_trades_for_decision
         self.block_threshold = block_threshold
         self.ambiguous_threshold = ambiguous_threshold

@@ -19,25 +19,14 @@ from src.shadow_ledger import (
     replay_per_model_kelly_fraction,
 )
 from src.data_validator import iter_validated, ValidationStats
+from src.ledger_reader import iter_ledger
 
 DATA_DIR = "data"
-LEDGER_FILE = os.path.join(DATA_DIR, "v2_ledger.jsonl")
 
 
 def load_all() -> list:
-    if not os.path.exists(LEDGER_FILE):
-        return []
-    out = []
-    with open(LEDGER_FILE, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                out.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    return out
+    """Load all records across the current file + rotated .gz archives."""
+    return list(iter_ledger("v2"))
 
 
 def fmt_money(v): return f"${v:>10,.2f}"

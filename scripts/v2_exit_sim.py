@@ -18,23 +18,26 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.exit_simulator import simulate_ledger
+from src.ledger_reader import expand_with_archives
 
 DATA_DIR = "data"
 REPORT_FILE = os.path.join(DATA_DIR, "v2_exit_sim_report.json")
-LEDGER_SOURCES = [
+LEDGER_SOURCES = expand_with_archives([
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-]
+])
 THRESHOLDS = [0.5, 0.7, 0.9]
 SPREAD_COSTS = [0.0, 0.02, 0.05]
 
 
 def load_records() -> list:
+    import gzip
     out = []
     for path in LEDGER_SOURCES:
         if not os.path.exists(path):
             continue
-        with open(path, "r", encoding="utf-8") as f:
+        opener = gzip.open if path.endswith(".gz") else open
+        with opener(path, "rt", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:

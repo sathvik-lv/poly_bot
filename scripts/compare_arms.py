@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.exit_simulator import held_pnl
+from src.ledger_reader import iter_ledger
 
 DATA_DIR = "data"
 ANCHOR_FILE = os.path.join(DATA_DIR, "comparison_anchor.json")
@@ -102,34 +103,30 @@ def replay_paper_arm(state_path, anchor_dt) -> dict:
     }
 
 
-def replay_shadow_arm(ledger_path, anchor_dt, kelly_const=1/3) -> dict:
-    """Replay a shadow ledger (test1 / v2) using stored kelly_fraction."""
-    if not os.path.exists(ledger_path):
+def replay_shadow_arm(ledger_name, anchor_dt, kelly_const=1/3) -> dict:
+    """Replay a shadow ledger (test1 / v2) using stored kelly_fraction.
+
+    ``ledger_name`` is the stem ("test1" or "v2") — iter_ledger unions the
+    current file with any rotated .gz archives under data/archive/.
+    """
+    bets = []
+    for r in iter_ledger(ledger_name):
+        if not r.get("resolved"):
+            continue
+        if r.get("action") not in ("BUY_YES", "BUY_NO"):
+            continue
+        if r.get("outcome") not in (0.0, 1.0):
+            continue
+        ts = parse_iso(r.get("resolved_at") or r.get("timestamp"))
+        if ts is None or ts < anchor_dt:
+            continue
+        mp = r.get("market_price")
+        if mp is None:
+            continue
+        bets.append(r)
+    if not bets:
         return {"n": 0, "wins": 0, "final": 10000.0, "roi": 0.0,
                 "max_dd": 0.0, "ret_dd": 0.0, "started": None}
-    bets = []
-    with open(ledger_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                r = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if not r.get("resolved"):
-                continue
-            if r.get("action") not in ("BUY_YES", "BUY_NO"):
-                continue
-            if r.get("outcome") not in (0.0, 1.0):
-                continue
-            ts = parse_iso(r.get("resolved_at") or r.get("timestamp"))
-            if ts is None or ts < anchor_dt:
-                continue
-            mp = r.get("market_price")
-            if mp is None:
-                continue
-            bets.append(r)
     bets.sort(key=lambda r: r.get("resolved_at") or r.get("timestamp") or "")
 
     eq = 10000.0
@@ -179,9 +176,9 @@ def main():
         ("V4-AI (real, SKIP cats + AI on)",
          lambda: replay_paper_arm("data/v4_ai_paper_trades.json", anchor_dt)),
         ("Test 1 (shadow, all, 1/3x Kelly)",
-         lambda: replay_shadow_arm("data/test1_ledger.jsonl", anchor_dt)),
+         lambda: replay_shadow_arm("test1", anchor_dt)),
         ("V2 (shadow, adaptive+meta, 1/3x Kelly)",
-         lambda: replay_shadow_arm("data/v2_ledger.jsonl", anchor_dt)),
+         lambda: replay_shadow_arm("v2", anchor_dt)),
     ]
 
     print(f"\n  {'Strategy':<42} {'n':>5} {'WR':>6} {'Final':>10} "

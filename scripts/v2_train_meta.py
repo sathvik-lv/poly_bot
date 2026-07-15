@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 from src.data_validator import iter_validated, ValidationStats
+from src.ledger_reader import expand_with_archives
 from src.meta_model import (
     FEATURE_NAMES, MetaModelInfo, XGBoostMetaModel, build_feature_vector,
 )
@@ -39,11 +40,11 @@ MODEL_FILE = os.path.join(DATA_DIR, "meta_model.xgb")
 MODEL_BACKUP = MODEL_FILE + ".prev"
 TRAIN_REPORT = os.path.join(DATA_DIR, "v2_meta_train_report.json")
 
-LEDGER_SOURCES = [
+LEDGER_SOURCES = expand_with_archives([
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
     os.path.join(DATA_DIR, "live_predictions.jsonl"),
-]
+])
 
 MIN_TRAIN_N = 80           # don't fit XGBoost on tiny samples
 VAL_FRACTION = 0.20        # last 20% by time = held-out validation
@@ -53,9 +54,11 @@ EXPECTED_FILTER_PREFIXES = ("action_not_a_bet:",)
 
 
 def _read_jsonl(path: str):
+    import gzip
     if not os.path.exists(path):
         return
-    with open(path, "r", encoding="utf-8") as f:
+    opener = gzip.open if path.endswith(".gz") else open
+    with opener(path, "rt", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

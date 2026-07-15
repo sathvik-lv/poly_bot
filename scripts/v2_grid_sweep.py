@@ -26,13 +26,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 from src.exit_simulator import per_dollar_pnl, should_exit, held_pnl
+from src.ledger_reader import expand_with_archives
 
 DATA_DIR = "data"
 REPORT_FILE = os.path.join(DATA_DIR, "v2_grid_sweep_report.json")
-LEDGER_SOURCES = [
+LEDGER_SOURCES = expand_with_archives([
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-]
+])
 
 ENTRY_THRESHOLDS = [0.005, 0.01, 0.02, 0.03]
 DECAY_THRESHOLDS = [0.3, 0.5, 0.7, 0.9, 1.1]   # 1.1 = effectively no exit
@@ -52,11 +53,13 @@ MED_TIER_RET_OVER_DD = 1.5      # return >= 1.5x maxDD -> medium allocation
 
 
 def load_records():
+    import gzip
     out = []
     for path in LEDGER_SOURCES:
         if not os.path.exists(path):
             continue
-        with open(path, "r", encoding="utf-8") as f:
+        opener = gzip.open if path.endswith(".gz") else open
+        with opener(path, "rt", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:

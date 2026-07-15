@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 from src.exit_simulator import held_pnl
+from src.ledger_reader import expand_with_archives
 from src.meta_model import (
     FEATURE_NAMES, MetaModelInfo, XGBoostMetaModel, build_feature_vector,
 )
@@ -49,11 +50,13 @@ MODEL_BACKUP = MODEL_FILE + ".prev"
 TRAIN_REPORT = os.path.join(DATA_DIR, "v2_meta_full_train_report.json")
 
 HISTORICAL_FILE = os.path.join(DATA_DIR, "backtest_honest_preds.jsonl")
-T1_FILES = [os.path.join(DATA_DIR, "test1_ledger.jsonl"),
-            os.path.join(DATA_DIR, "v2_ledger.jsonl"),
-            # live_predictions = pure engine output, no entry-gate filtering.
-            # 74.8% WR on n=385 — highest-signal data source.
-            os.path.join(DATA_DIR, "live_predictions.jsonl")]
+T1_FILES = expand_with_archives([
+    os.path.join(DATA_DIR, "test1_ledger.jsonl"),
+    os.path.join(DATA_DIR, "v2_ledger.jsonl"),
+    # live_predictions = pure engine output, no entry-gate filtering.
+    # 74.8% WR on n=385 — highest-signal data source.
+    os.path.join(DATA_DIR, "live_predictions.jsonl"),
+])
 T0_FILE = os.path.join(DATA_DIR, "paper_trades.json")
 
 
@@ -149,9 +152,11 @@ def _normalize(rec: dict, src: str) -> dict:
 
 
 def _read_jsonl(path: str):
+    import gzip
     if not os.path.exists(path):
         return
-    with open(path, "r", encoding="utf-8") as f:
+    opener = gzip.open if path.endswith(".gz") else open
+    with opener(path, "rt", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

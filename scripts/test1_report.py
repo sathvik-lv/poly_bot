@@ -21,25 +21,14 @@ from src.shadow_ledger import (
     replay_kelly_fraction,
     replay_per_model_kelly_fraction,
 )
+from src.ledger_reader import iter_ledger
 
 DATA_DIR = "data"
-LEDGER_FILE = os.path.join(DATA_DIR, "test1_ledger.jsonl")
 
 
 def load_all() -> list:
-    if not os.path.exists(LEDGER_FILE):
-        return []
-    out = []
-    with open(LEDGER_FILE, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                out.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    return out
+    """Load all records across the current file + any rotated .gz archives."""
+    return list(iter_ledger("test1"))
 
 
 def fmt_money(v):

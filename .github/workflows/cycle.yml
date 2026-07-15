@@ -178,6 +178,11 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
           PAPER_TRADER_TRADE_CATEGORIES: "crypto,geopolitics,elections,tech_ai,macro,oil_energy,fed_rate"
           ENABLE_AI_SEMANTIC: "1"
+          # Per-trade cap: no single AI-driven bet may exceed 2.5% of equity.
+          # Backstop after a single election trade lost 5.5% (Kelly + AI
+          # over-confidence). Geopolitics signal (n=11, 90.9% WR, +$210) is
+          # kept; oversized outliers are clipped.
+          PAPER_TRADER_MAX_TRADE_PCT: "0.025"
 
       - name: V4-AI resolve
         run: python scripts/paper_trader.py --resolve
@@ -330,6 +335,15 @@ jobs:
       - name: Rotate old price snapshots
         run: python scripts/rotate_snapshots.py
         timeout-minutes: 1
+        continue-on-error: true
+
+      # Keep test1_ledger.jsonl / v2_ledger.jsonl under GitHub's 100 MB
+      # per-file cap. Old resolved records get moved into gzipped monthly
+      # archives under data/archive/. All readers glob current + archives
+      # via src.ledger_reader so historical data stays available.
+      - name: Rotate large ledgers into archives
+        run: python scripts/rotate_ledger.py
+        timeout-minutes: 2
         continue-on-error: true
 
       - name: Commit results

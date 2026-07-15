@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.shadow_ledger import (
     KELLY_FRACTIONS, DEFAULT_NOTIONAL, replay_kelly_fraction,
 )
-from src.data_validator import load_validated_jsonl
+from src.data_validator import load_validated_ledger
 
 DATA_DIR = "data"
 V1_LEDGER = os.path.join(DATA_DIR, "test1_ledger.jsonl")
@@ -48,8 +48,8 @@ def main():
     print("  v1 vs v2 — SIDE BY SIDE")
     print("=" * 78)
 
-    v1_recs, v1_stats = load_validated_jsonl(V1_LEDGER, drop_duplicates=True)
-    v2_recs, v2_stats = load_validated_jsonl(V2_LEDGER, drop_duplicates=True)
+    v1_recs, v1_stats = load_validated_ledger("test1", drop_duplicates=True)
+    v2_recs, v2_stats = load_validated_ledger("v2", drop_duplicates=True)
 
     print("\n  Validation:")
     print(f"  v1 ({V1_LEDGER}):")

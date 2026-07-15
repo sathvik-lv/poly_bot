@@ -236,13 +236,20 @@ def load_validated_jsonl(
     path: str,
     drop_duplicates: bool = True,
 ) -> tuple[list[dict], ValidationStats]:
-    """Convenience loader. Returns (validated_records, stats)."""
+    """Convenience loader. Returns (validated_records, stats).
+
+    Transparently opens ``.jsonl`` or ``.jsonl.gz`` (rotated archive) files.
+    """
+    import gzip
+
     stats = ValidationStats()
     if not os.path.exists(path):
         return [], stats
 
+    opener = gzip.open if path.endswith(".gz") else open
+
     def _gen():
-        with open(path, "r", encoding="utf-8") as f:
+        with opener(path, "rt", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -254,3 +261,43 @@ def load_validated_jsonl(
                     stats.reject("malformed_json_line")
 
     return list(iter_validated(_gen(), stats=stats, drop_duplicates=drop_duplicates)), stats
+
+
+def load_validated_ledger(
+    name: str,
+    drop_duplicates: bool = True,
+) -> tuple[list[dict], ValidationStats]:
+    """Combined loader across archives + current for a ledger family.
+
+    ``name`` is the ledger stem (e.g. "test1" reads
+    ``data/test1_ledger.jsonl`` plus any ``data/archive/test1_ledger_*.jsonl(.gz)``).
+    Archives are read first, then the current file. Dedup keys are shared
+    across archives + current so a moved record cannot double-count.
+    """
+    from src.ledger_reader import ledger_paths
+
+    combined_stats = ValidationStats()
+    combined_records: list[dict] = []
+    for path in ledger_paths(name):
+        recs, s = load_validated_jsonl(path, drop_duplicates=False)
+        combined_records.extend(recs)
+        combined_stats.seen += s.seen
+        combined_stats.accepted += s.accepted
+        combined_stats.rejected += s.rejected
+        for k, v in s.reasons.items():
+            combined_stats.reasons[k] += v
+
+    if not drop_duplicates:
+        return combined_records, combined_stats
+
+    seen_keys: set = set()
+    deduped: list[dict] = []
+    for r in combined_records:
+        key = (r.get("market_id"), r.get("prediction_round"), r.get("action"))
+        if key in seen_keys:
+            combined_stats.reject("duplicate_market_round_action")
+            combined_stats.accepted -= 1
+            continue
+        seen_keys.add(key)
+        deduped.append(r)
+    return deduped, combined_stats

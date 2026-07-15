@@ -58,6 +58,16 @@ TRADE_CATEGORIES_FILTER: set | None = (
 # vs 67% for favorites — this filter cuts the losing slice of 'other'.
 # Other categories are unaffected by this filter.
 OTHER_FAVORITES_ONLY = os.environ.get("PAPER_TRADER_OTHER_FAVORITES_ONLY", "0") == "1"
+# Cap a single trade at this fraction of current equity, regardless of what
+# Kelly / tier multiplier produced. 0.0 = no cap (default). Live-armed on
+# V4-AI after a single election trade lost 5.5% of equity because AI's
+# high-conviction sizing sailed past any prudent per-trade risk limit.
+try:
+    MAX_TRADE_PCT = float(os.environ.get("PAPER_TRADER_MAX_TRADE_PCT", "0") or 0)
+except ValueError:
+    MAX_TRADE_PCT = 0.0
+if MAX_TRADE_PCT < 0:
+    MAX_TRADE_PCT = 0.0
 GAMMA_API = "https://gamma-api.polymarket.com"
 
 # Category-tiered Kelly multipliers (HIGH/MEDIUM/SKIP).
@@ -418,6 +428,16 @@ def scan_and_trade(state: dict, n_markets: int = 30):
                     print(f"  [{i+1:>2}] SKIP-TIER [{category:<12}] {q}  Edge={edge:+.3f}")
                     continue
                 trade_amount = trade_amount * tier_mult
+
+            # Per-trade equity cap (V4-AI safety net). No single position can
+            # exceed MAX_TRADE_PCT of current equity, regardless of Kelly
+            # confidence. Off by default; set via PAPER_TRADER_MAX_TRADE_PCT
+            # on arms where the sizing model is under-tested (e.g. AI on
+            # low-sample categories).
+            if MAX_TRADE_PCT > 0:
+                cap_dollars = state.get("equity", state["cash"]) * MAX_TRADE_PCT
+                if trade_amount > cap_dollars:
+                    trade_amount = cap_dollars
 
             if trade_amount <= 0 or trade_amount > state["cash"]:
                 continue

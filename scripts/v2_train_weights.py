@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.data_validator import (
     KNOWN_MODELS, ValidationStats, iter_validated, load_validated_jsonl,
 )
+from src.ledger_reader import expand_with_archives
 
 DATA_DIR = "data"
 WEIGHTS_FILE = os.path.join(DATA_DIR, "model_weights.json")
@@ -55,13 +56,13 @@ EXPECTED_FILTER_PREFIXES = ("action_not_a_bet:",)
 # True data-quality budget: of the records that COULD have been training
 # input (resolved, real bets), how many fail integrity checks?
 MAX_QUALITY_REJECT_RATE = 0.10
-LEDGER_SOURCES = [
+LEDGER_SOURCES = expand_with_archives([
     os.path.join(DATA_DIR, "v2_ledger.jsonl"),
     os.path.join(DATA_DIR, "test1_ledger.jsonl"),
     # live_predictions = pure engine output, no entry-gate filtering.
     # Has the highest WR (74.8% on n=385) of any data source.
     os.path.join(DATA_DIR, "live_predictions.jsonl"),
-]
+])
 
 
 def collect_validated_bets() -> tuple[list, ValidationStats]:
