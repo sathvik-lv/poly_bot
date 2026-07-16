@@ -1,15 +1,31 @@
 {
-  "trained_at": "2026-07-16T00:50:13.133080+00:00",
-  "n_validated_bets": 9977,
-  "validation_rejected": 106668,
+  "trained_at": "2026-07-16T04:35:05.020179+00:00",
+  "n_validated_bets": 9994,
+  "validation_rejected": 106963,
   "quality_rejected": 0,
-  "expected_filtered": 106668,
+  "expected_filtered": 106963,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 28785,
-    "not_resolved": 77883
+    "action_not_a_bet:'NO_BET'": 28843,
+    "not_resolved": 78120
   },
   "model_stats": {
+    "microstructure": {
+      "n": 9994,
+      "brier": 0.217172,
+      "market_brier": 0.227687,
+      "improvement": 0.010515,
+      "wins": 5359,
+      "wr": 0.5362
+    },
+    "orderbook": {
+      "n": 9993,
+      "brier": 0.224832,
+      "market_brier": 0.227685,
+      "improvement": 0.002853,
+      "wins": 5547,
+      "wr": 0.5551
+    },
     "ai_semantic": {
       "n": 495,
       "brier": 0.183783,
@@ -17,22 +33,6 @@
       "improvement": 0.046674,
       "wins": 350,
       "wr": 0.7071
-    },
-    "microstructure": {
-      "n": 9977,
-      "brier": 0.21722,
-      "market_brier": 0.227726,
-      "improvement": 0.010506,
-      "wins": 5349,
-      "wr": 0.5361
-    },
-    "orderbook": {
-      "n": 9976,
-      "brier": 0.224871,
-      "market_brier": 0.227724,
-      "improvement": 0.002852,
-      "wins": 5536,
-      "wr": 0.5549
     },
     "time_series": {
       "n": 3,
@@ -43,18 +43,18 @@
       "wr": 0.6667
     },
     "external_data": {
-      "n": 9977,
-      "brier": 0.227718,
-      "market_brier": 0.227726,
+      "n": 9994,
+      "brier": 0.227679,
+      "market_brier": 0.227687,
       "improvement": 8e-06,
-      "wins": 5865,
-      "wr": 0.5879
+      "wins": 5876,
+      "wr": 0.588
     }
   },
   "weights": {
-    "ai_semantic": 0.777382,
-    "microstructure": 0.174983,
-    "orderbook": 0.047502,
+    "microstructure": 0.175104,
+    "orderbook": 0.04751,
+    "ai_semantic": 0.777252,
     "time_series": 0.0,
     "external_data": 0.000133
   }
