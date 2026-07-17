@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-16T23:08:42.113389+00:00",
+  "timestamp": "2026-07-17T03:44:32.218826+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,43 +26,37 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 63897,
-      "change_24h": -1.49383,
-      "change_7d": 1.04861,
-      "change_30d": -2.76934,
-      "ath": 126080,
-      "high_24h": 64914,
-      "low_24h": 63866,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 25,
-      "classification": "Extreme Fear"
+      "value": 27,
+      "classification": "Fear"
     }
   },
   "n_markets": 24,
-  "n_with_edge": 23,
+  "n_with_edge": 22,
   "results": [
     {
       "question": "Will there be no change in Fed interest rates after the July 2026 meeting?",
-      "market_price": 0.9575,
+      "market_price": 0.9585,
       "our_estimate": 0.85,
       "quant_estimate": 0.85,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.1075,
-      "real_edge": -0.1075,
+      "edge": -0.1085,
+      "real_edge": -0.1085,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 19464589.680606112,
+      "volume": 19510089.616265073,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "no_change_base"
       }
@@ -81,86 +75,130 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 14263328.147629183,
+      "volume": 14265806.757663185,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "hike_very_unlikely"
       }
     },
     {
       "question": "Will no Fed rate cuts happen in 2026?",
-      "market_price": 0.84,
-      "our_estimate": 0.0855,
-      "quant_estimate": 0.0855,
+      "market_price": 0.8395,
+      "our_estimate": 0.0835,
+      "quant_estimate": 0.0835,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.7545,
-      "real_edge": -0.7545,
+      "edge": -0.756,
+      "real_edge": -0.756,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 6254246.752869998,
+      "volume": 6256142.3844989985,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "small_cut_data_dependent"
       }
     },
     {
       "question": "Will Bitcoin dip to $55,000 by December 31, 2026?",
-      "market_price": 0.485,
+      "market_price": 0.505,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.475,
-      "real_edge": -0.475,
+      "edge": -0.495,
+      "real_edge": -0.495,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 4399973.987770995,
+      "volume": 4424510.731220997,
       "signals": {
-        "current_price": 63897,
+        "current_price": 60000,
         "target": 2026.0,
         "direction": "DIP",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will Rodri win the Golden Ball at the 2026 FIFA World Cup?",
-      "market_price": 0.068,
+      "market_price": 0.0645,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.432,
-      "real_edge": 0.432,
+      "edge": 0.4355,
+      "real_edge": 0.4355,
       "categories": [
         "gold"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2460604.3178760116,
+      "volume": 2479174.409549012,
       "signals": {}
     },
     {
       "question": "Will LeBron James play for the Golden State Warriors in 2026-27?",
+      "market_price": 0.3355,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.1645,
+      "real_edge": 0.1645,
+      "categories": [
+        "gold"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 2421497.8691029972,
+      "signals": {}
+    },
+    {
+      "question": "Will Ethereum dip to $1,500 by December 31, 2026?",
+      "market_price": 0.4995,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.4895,
+      "real_edge": -0.4895,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1470118.4342470036,
+      "signals": {
+        "current_price": 60000,
+        "target": 2026.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will Bitcoin reach $67,500 in July?",
       "market_price": 0.325,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
@@ -169,92 +207,21 @@
       "edge": 0.175,
       "real_edge": 0.175,
       "categories": [
-        "gold"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 2378778.1360189975,
-      "signals": {}
-    },
-    {
-      "question": "Will Ethereum dip to $1,500 by December 31, 2026?",
-      "market_price": 0.465,
-      "our_estimate": 0.01,
-      "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.455,
-      "real_edge": -0.455,
-      "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 1459781.516633004,
+      "volume": 1202920.8592939996,
       "signals": {
-        "current_price": 63897,
-        "target": 2026.0,
-        "direction": "DIP",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
-        "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
-      }
-    },
-    {
-      "question": "Will Ethereum dip to $1,000 by December 31, 2026?",
-      "market_price": 0.12,
-      "our_estimate": 0.01,
-      "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.11,
-      "real_edge": -0.11,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 1355840.872784004,
-      "signals": {
-        "current_price": 63897,
-        "target": 2026.0,
-        "direction": "DIP",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
-        "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $67,500 in July?",
-      "market_price": 0.375,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.125,
-      "real_edge": 0.125,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 1169688.4582999984,
-      "signals": {
-        "current_price": 63897,
+        "current_price": 60000,
         "target": 67500.0,
         "direction": "UNKNOWN",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
@@ -273,40 +240,40 @@
       "n_models": 1,
       "volume": 1063103.3067109971,
       "signals": {
-        "current_price": 63897,
+        "current_price": 60000,
         "target": 2026.0,
         "direction": "UNKNOWN",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $85 in July?",
-      "market_price": 0.45,
-      "our_estimate": 0.019,
-      "quant_estimate": 0.019,
+      "market_price": 0.445,
+      "our_estimate": 0.0156,
+      "quant_estimate": 0.0156,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.431,
-      "real_edge": -0.431,
+      "edge": -0.4294,
+      "real_edge": -0.4294,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 967904.053590997,
+      "volume": 974925.0410559968,
       "signals": {
         "current_price": 70,
         "target": 85.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 2.08,
+        "z_score": 2.15,
         "recent_closes": [],
         "vix": 20
       }
@@ -314,23 +281,23 @@
     {
       "question": "Will the Fed decrease interest rates by 25 bps after the September 2026 meeting?",
       "market_price": 0.0395,
-      "our_estimate": 0.0855,
-      "quant_estimate": 0.0855,
+      "our_estimate": 0.0835,
+      "quant_estimate": 0.0835,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.046,
-      "real_edge": 0.046,
+      "edge": 0.044,
+      "real_edge": 0.044,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 914523.4887180019,
+      "volume": 919396.0487180019,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "small_cut_data_dependent"
       }
@@ -349,122 +316,68 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 829903.1885230009,
+      "volume": 829943.431463001,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "hike_very_unlikely"
       }
     },
     {
-      "question": "Will Bitcoin dip to $57,500 in July?",
-      "market_price": 0.145,
-      "our_estimate": 0.4205,
-      "quant_estimate": 0.4205,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.2755,
-      "real_edge": 0.2755,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 791769.2147079996,
-      "signals": {
-        "current_price": 63897,
-        "target": 57500.0,
-        "direction": "DIP",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
-        "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
-      }
-    },
-    {
       "question": "Will Bitcoin reach $70,000 in July?",
-      "market_price": 0.155,
+      "market_price": 0.135,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.345,
-      "real_edge": 0.345,
+      "edge": 0.365,
+      "real_edge": 0.365,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 737761.8629539993,
+      "volume": 803716.2798609992,
       "signals": {
-        "current_price": 63897,
+        "current_price": 60000,
         "target": 70000.0,
         "direction": "UNKNOWN",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
-      "question": "Will Bitcoin reach $75,000 in July?",
-      "market_price": 0.0325,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will Bitcoin dip to $57,500 in July?",
+      "market_price": 0.155,
+      "our_estimate": 0.7359,
+      "quant_estimate": 0.7359,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4675,
-      "real_edge": 0.4675,
+      "edge": 0.5809,
+      "real_edge": 0.5809,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 732853.0141470009,
+      "volume": 800196.1630379996,
       "signals": {
-        "current_price": 63897,
-        "target": 75000.0,
-        "direction": "UNKNOWN",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "current_price": 60000,
+        "target": 57500.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
-      }
-    },
-    {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $95 in July?",
-      "market_price": 0.093,
-      "our_estimate": 0.01,
-      "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.083,
-      "real_edge": -0.083,
-      "categories": [
-        "oil"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 732439.9724280003,
-      "signals": {
-        "current_price": 70,
-        "target": 95.0,
-        "direction": "HIGH",
-        "days_left": 14,
-        "daily_vol": 0.025,
-        "annual_vol": null,
-        "z_score": 3.26,
-        "recent_closes": [],
-        "vix": 20
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
@@ -481,153 +394,241 @@
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 727853.1827280001,
+      "volume": 749261.5872940003,
       "signals": {}
     },
     {
-      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
-      "market_price": 0.605,
-      "our_estimate": 0.85,
-      "quant_estimate": 0.85,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.245,
-      "real_edge": 0.245,
-      "categories": [
-        "fed_rate"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 727398.4854259997,
-      "signals": {
-        "vix": 20,
-        "tbill_rate": 4.0,
-        "yield_10y": 4.3,
-        "fear_greed": 25,
-        "yield_curve_spread": 0.2999999999999998,
-        "logic": "no_change_base"
-      }
-    },
-    {
-      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $90 in July?",
-      "market_price": 0.1875,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $95 in July?",
+      "market_price": 0.1115,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.1775,
-      "real_edge": -0.1775,
+      "edge": -0.1015,
+      "real_edge": -0.1015,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 632946.1292119998,
+      "volume": 745155.8986240005,
       "signals": {
         "current_price": 70,
-        "target": 90.0,
+        "target": 95.0,
         "direction": "HIGH",
-        "days_left": 14,
+        "days_left": 13,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 2.69,
+        "z_score": 3.39,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will Gold (GC) hit (HIGH) $6,000 by end of December?",
-      "market_price": 0.085,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $90 in July?",
+      "market_price": 0.218,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.415,
-      "real_edge": 0.415,
+      "edge": -0.208,
+      "real_edge": -0.208,
       "categories": [
-        "gold"
+        "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 484150.9741279994,
-      "signals": {}
+      "volume": 731339.1335529999,
+      "signals": {
+        "current_price": 70,
+        "target": 90.0,
+        "direction": "HIGH",
+        "days_left": 13,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 2.79,
+        "recent_closes": [],
+        "vix": 20
+      }
     },
     {
-      "question": "Will the Fed Pause\u2013Pause\u2013Pause in the next three decisions (Jun\u2013Jul\u2013Sep)?",
-      "market_price": 0.625,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
+      "market_price": 0.61,
+      "our_estimate": 0.85,
+      "quant_estimate": 0.85,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.125,
-      "real_edge": -0.125,
+      "edge": 0.24,
+      "real_edge": 0.24,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 187459.44877599998,
+      "volume": 728437.1732679999,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 25,
+        "fear_greed": 27,
         "yield_curve_spread": 0.2999999999999998,
-        "logic": "unclassified_fed"
+        "logic": "no_change_base"
       }
     },
     {
-      "question": "Will Bitcoin reach $68,000 July 13-19?",
-      "market_price": 0.031,
+      "question": "Will Bitcoin dip to $55,000 in July?",
+      "market_price": 0.0595,
+      "our_estimate": 0.4905,
+      "quant_estimate": 0.4905,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.431,
+      "real_edge": 0.431,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 529404.9920810002,
+      "signals": {
+        "current_price": 60000,
+        "target": 55000.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $62,000 on July 17?",
+      "market_price": 0.9565,
+      "our_estimate": 0.3975,
+      "quant_estimate": 0.3975,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.559,
+      "real_edge": -0.559,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 141527.19771399949,
+      "signals": {
+        "current_price": 60000,
+        "target": 62000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $64,000 on July 17?",
+      "market_price": 0.345,
+      "our_estimate": 0.3045,
+      "quant_estimate": 0.3045,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.0405,
+      "real_edge": -0.0405,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 66885.968086,
+      "signals": {
+        "current_price": 60000,
+        "target": 64000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Bitcoin Up or Down on July 17?",
+      "market_price": 0.105,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.469,
-      "real_edge": 0.469,
+      "edge": 0.395,
+      "real_edge": 0.395,
       "categories": [
-        "crypto"
+        "crypto",
+        "stocks"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 108883.53307499994,
+      "volume": 48143.507373,
       "signals": {
-        "current_price": 63897,
-        "target": 68000.0,
-        "direction": "UNKNOWN",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
-        "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "type": "direction",
+        "change_24h": 0
       }
     },
     {
-      "question": "Will the price of Ethereum be above $1,900 on July 17?",
-      "market_price": 0.175,
+      "question": "Will the price of Ethereum be above $1,800 on July 17?",
+      "market_price": 0.9305,
       "our_estimate": 0.95,
       "quant_estimate": 0.95,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.775,
-      "real_edge": 0.775,
+      "edge": 0.0195,
+      "real_edge": 0.0,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 34761.71507499997,
+      "volume": 42977.96372799999,
       "signals": {
-        "current_price": 63897,
+        "current_price": 60000,
+        "target": 1800.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Ethereum be above $1,900 on July 17?",
+      "market_price": 0.085,
+      "our_estimate": 0.95,
+      "quant_estimate": 0.95,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.865,
+      "real_edge": 0.865,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 40048.856955999974,
+      "signals": {
+        "current_price": 60000,
         "target": 1900.0,
         "direction": "ABOVE",
-        "change_24h": -1.49,
-        "change_7d": 1.05,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 14,
-        "high_24h": 64914,
-        "low_24h": 63866
+        "days_left": 13,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     }
   ]
