@@ -1,22 +1,22 @@
 {
-  "trained_at": "2026-07-23T19:32:38.861142+00:00",
+  "trained_at": "2026-07-23T21:17:36.248361+00:00",
   "n_validated_bets": 10805,
-  "validation_rejected": 119811,
+  "validation_rejected": 119949,
   "quality_rejected": 0,
-  "expected_filtered": 119811,
+  "expected_filtered": 119949,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 31346,
-    "not_resolved": 88465
+    "action_not_a_bet:'NO_BET'": 31353,
+    "not_resolved": 88596
   },
   "model_stats": {
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
+    "ai_semantic": {
+      "n": 495,
+      "brier": 0.183783,
+      "market_brier": 0.230458,
+      "improvement": 0.046674,
+      "wins": 350,
+      "wr": 0.7071
     },
     "microstructure": {
       "n": 10805,
@@ -26,21 +26,13 @@
       "wins": 5865,
       "wr": 0.5428
     },
-    "ai_semantic": {
-      "n": 495,
-      "brier": 0.183783,
-      "market_brier": 0.230458,
-      "improvement": 0.046674,
-      "wins": 350,
-      "wr": 0.7071
-    },
-    "orderbook": {
-      "n": 10804,
-      "brier": 0.224794,
-      "market_brier": 0.227936,
-      "improvement": 0.003142,
-      "wins": 6062,
-      "wr": 0.5611
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
     },
     "external_data": {
       "n": 10805,
@@ -49,13 +41,21 @@
       "improvement": 1e-05,
       "wins": 6381,
       "wr": 0.5906
+    },
+    "orderbook": {
+      "n": 10804,
+      "brier": 0.224794,
+      "market_brier": 0.227936,
+      "improvement": 0.003142,
+      "wins": 6062,
+      "wr": 0.5611
     }
   },
   "weights": {
-    "time_series": 0.0,
-    "microstructure": 0.197959,
     "ai_semantic": 0.751304,
-    "orderbook": 0.050576,
-    "external_data": 0.000161
+    "microstructure": 0.197959,
+    "time_series": 0.0,
+    "external_data": 0.000161,
+    "orderbook": 0.050576
   }
 }
