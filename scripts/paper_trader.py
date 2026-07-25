@@ -33,6 +33,20 @@ from src.market_client import MarketClient
 from src.prediction_engine import PredictionEngine
 from src.strategy_adapter import StrategyAdapter, MarketRegime
 
+# V2-pipeline flag. When USE_V2_PIPELINE=1 the paper trader wraps the
+# EnsemblePredictor with AdaptiveEnsemble, blends in the XGBoost meta model,
+# and applies the CategoryGate — same machinery v2_collector.py uses for
+# the shadow ledger. This makes it possible to run V2 as a real paper book
+# (V6-V2-paper arm) to validate the shadow numbers with live-book semantics.
+USE_V2_PIPELINE = os.environ.get("USE_V2_PIPELINE", "0") == "1"
+V2_ADAPTIVE_BLEND = float(os.environ.get("V2_ADAPTIVE_BLEND", "0.5") or 0.5)
+V2_META_BLEND = float(os.environ.get("V2_META_BLEND", "0.5") or 0.5)
+
+if USE_V2_PIPELINE:
+    from src.adaptive_ensemble import AdaptiveEnsemble
+    from src.category_gate import CategoryGate
+    from src.meta_model import XGBoostMetaModel
+
 DATA_DIR = "data"
 # Paths and category filter can be overridden via env vars to run multiple
 # parallel paper-trading "arms" (V3, V4, etc.) in the same cycle without
@@ -222,17 +236,49 @@ def save_state(state: dict):
 # SCAN + TRADE
 # =========================================================
 
+def _install_v2_pipeline(engine, blend: float):
+    """Monkey-patch AdaptiveEnsemble onto the engine's combine step. Mirrors
+    the wiring in scripts/v2_collector.py:install_adaptive_ensemble.
+    """
+    adaptive = AdaptiveEnsemble(blend=blend)
+    original_combine = engine.ensemble.combine
+
+    def adaptive_combine(estimates, variances, _model_names_holder=[]):
+        names = _model_names_holder[0] if _model_names_holder else None
+        try:
+            return adaptive.combine(estimates, variances, model_names=names)
+        except Exception:
+            return original_combine(estimates, variances)
+
+    engine.ensemble.combine = adaptive_combine
+    engine.ensemble._adaptive = adaptive
+
+
 def scan_and_trade(state: dict, n_markets: int = 30):
     """Scan markets, run predictions, place paper trades."""
     print(f"\n  PAPER TRADER — Scanning {n_markets} markets")
     print(f"  State file: {PAPER_FILE}")
     if TRADE_CATEGORIES_FILTER:
         print(f"  Category filter: ONLY {sorted(TRADE_CATEGORIES_FILTER)}")
+    if USE_V2_PIPELINE:
+        print(f"  V2 pipeline: ON (adaptive blend={V2_ADAPTIVE_BLEND}, meta blend={V2_META_BLEND})")
     print(f"  Cash: ${state['cash']:.2f} | Open positions: {len(state['open_positions'])}")
 
     engine = PredictionEngine(backtest_mode=False, total_equity=state["equity"])
     client = MarketClient()
     strategy = StrategyAdapter(total_equity=state["equity"])
+
+    v2_gate = None
+    v2_meta = None
+    if USE_V2_PIPELINE:
+        _install_v2_pipeline(engine, V2_ADAPTIVE_BLEND)
+        v2_gate = CategoryGate()
+        meta_file = os.path.join(DATA_DIR, "meta_model.xgb")
+        v2_meta = XGBoostMetaModel.load(meta_file)
+        if v2_meta is not None and v2_meta.loaded:
+            print(f"  V2 meta-model: LOADED (blend={V2_META_BLEND})")
+        else:
+            print(f"  V2 meta-model: not loaded — using adaptive ensemble only")
 
     # Update regime from Fear & Greed
     try:
@@ -369,14 +415,50 @@ def scan_and_trade(state: dict, n_markets: int = 30):
                 token_id=token_id,
             )
 
-            # Run strategy evaluation
-            strat = strategy.evaluate_entry(market, prediction)
             elapsed = time.time() - t0
 
             edge = prediction["edge"]["edge"]
             prob = prediction["prediction"]["probability"]
             price = prediction["market"]["current_price"]
             models = ",".join(prediction["ensemble"]["model_names"])
+
+            # V2 pipeline: blend meta-model into prob, apply category gate.
+            # Runs BEFORE strategy.evaluate_entry so the strategy sees the
+            # meta-adjusted edge and the gate can veto low-conviction bets.
+            if USE_V2_PIPELINE:
+                cat_for_gate = classify_market(market.get("question", ""), market)
+                if v2_meta is not None and v2_meta.loaded and 0.0 < V2_META_BLEND <= 1.0:
+                    model_estimates = {}
+                    for mname, mresult in prediction.get("sub_models", {}).items():
+                        est = mresult.get("estimate")
+                        if est is not None:
+                            model_estimates[mname] = float(est)
+                    meta_input = {
+                        "market_price": price,
+                        "days_left": market.get("_days_left"),
+                        "context": {},
+                        "model_estimates": model_estimates,
+                        "prediction_round": 1,
+                        "abs_edge": abs(edge),
+                    }
+                    meta_prob = v2_meta.predict_proba(meta_input)
+                    if meta_prob is not None:
+                        prob = (1 - V2_META_BLEND) * prob + V2_META_BLEND * meta_prob
+                        edge = prob - price
+                        # Re-inject into prediction so downstream sizing sees it
+                        prediction["prediction"]["probability"] = prob
+                        prediction["edge"]["edge"] = edge
+
+                gate_decision = v2_gate.decide(cat_for_gate, abs_edge=abs(edge))
+                if not gate_decision.get("allow", True):
+                    if abs(edge) >= 0.03:
+                        q = market.get("question", "")[:50]
+                        print(f"  [{i+1:>2}] V2-GATE-BLOCK [{cat_for_gate}] {q}  edge={edge:+.3f}")
+                    continue
+
+            # Run strategy evaluation (after V2 adjustments so gate + meta
+            # affect sizing / entry decision)
+            strat = strategy.evaluate_entry(market, prediction)
 
             if not strat["should_enter"]:
                 if abs(edge) >= 0.03:

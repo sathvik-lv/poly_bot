@@ -237,6 +237,43 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v5_live_candidate_weight_analytics.json"
 
       # ============================================================
+      # V6 — V2-PIPELINE as a real paper book. Tests whether V2 shadow's
+      # +14.67%/mo signal holds when run through a live-book with entry
+      # gate + per-trade cap + real fill semantics. Same adaptive ensemble
+      # + XGBoost meta + category gate as v2_collector, but with
+      # paper_trader's book management instead of just shadow logging.
+      # Traded categories left open (no PAPER_TRADER_TRADE_CATEGORIES) so
+      # the V2 category gate does the filtering, matching V2 shadow.
+      # ============================================================
+      - name: V6 scan (V2 pipeline as real paper)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 18
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
+          PAPER_TRADER_MAX_TRADE_PCT: "0.025"
+          USE_V2_PIPELINE: "1"
+          V2_ADAPTIVE_BLEND: "0.5"
+          V2_META_BLEND: "0.5"
+
+      - name: V6 resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
+
+      - name: V6 report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
+
+      # ============================================================
       # SAME-WINDOW COMPARISON across all 6 arms
       # Reads data/comparison_anchor.json, replays each arm from $10k
       # using only post-anchor activity. Apples-to-apples report.
