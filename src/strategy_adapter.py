@@ -113,7 +113,12 @@ class CapitalAllocator:
     """
 
     MAX_TOTAL_DEPLOYMENT = 0.60  # NEVER deploy more than 60% of bankroll
-    KELLY_FRACTION = 1 / 3       # 1/3 Kelly — proven optimal in backtests
+    # 1/3 Kelly default; override via KELLY_DIVISOR env for arms that need
+    # tighter sizing (V5-live-candidate uses 1/4 = KELLY_DIVISOR=4).
+    _kelly_div = float(os.environ.get("KELLY_DIVISOR", "3") or 3)
+    if _kelly_div <= 0:
+        _kelly_div = 3
+    KELLY_FRACTION = 1 / _kelly_div
 
     def __init__(self, total_equity: float = 10000.0):
         self.total_equity = total_equity
