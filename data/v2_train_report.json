@@ -1,22 +1,22 @@
 {
-  "trained_at": "2026-07-26T14:53:51.421090+00:00",
+  "trained_at": "2026-07-26T18:17:17.216418+00:00",
   "n_validated_bets": 10864,
-  "validation_rejected": 123891,
+  "validation_rejected": 124107,
   "quality_rejected": 0,
-  "expected_filtered": 123891,
+  "expected_filtered": 124107,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 31553,
-    "not_resolved": 92338
+    "action_not_a_bet:'NO_BET'": 31565,
+    "not_resolved": 92542
   },
   "model_stats": {
-    "ai_semantic": {
-      "n": 495,
-      "brier": 0.183783,
-      "market_brier": 0.230458,
-      "improvement": 0.046674,
-      "wins": 350,
-      "wr": 0.7071
+    "microstructure": {
+      "n": 10864,
+      "brier": 0.215283,
+      "market_brier": 0.228017,
+      "improvement": 0.012735,
+      "wins": 5910,
+      "wr": 0.544
     },
     "external_data": {
       "n": 10864,
@@ -26,13 +26,13 @@
       "wins": 6419,
       "wr": 0.5909
     },
-    "orderbook": {
-      "n": 10863,
-      "brier": 0.224843,
-      "market_brier": 0.228015,
-      "improvement": 0.003172,
-      "wins": 6102,
-      "wr": 0.5617
+    "ai_semantic": {
+      "n": 495,
+      "brier": 0.183783,
+      "market_brier": 0.230458,
+      "improvement": 0.046674,
+      "wins": 350,
+      "wr": 0.7071
     },
     "time_series": {
       "n": 3,
@@ -42,20 +42,20 @@
       "wins": 2,
       "wr": 0.6667
     },
-    "microstructure": {
-      "n": 10864,
-      "brier": 0.215283,
-      "market_brier": 0.228017,
-      "improvement": 0.012735,
-      "wins": 5910,
-      "wr": 0.544
+    "orderbook": {
+      "n": 10863,
+      "brier": 0.224843,
+      "market_brier": 0.228015,
+      "improvement": 0.003172,
+      "wins": 6102,
+      "wr": 0.5617
     }
   },
   "weights": {
-    "ai_semantic": 0.745698,
+    "microstructure": 0.203464,
     "external_data": 0.00016,
-    "orderbook": 0.050678,
+    "ai_semantic": 0.745698,
     "time_series": 0.0,
-    "microstructure": 0.203464
+    "orderbook": 0.050678
   }
 }
