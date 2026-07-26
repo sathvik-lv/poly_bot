@@ -1,13 +1,13 @@
 {
-  "trained_at": "2026-07-25T22:16:01.366507+00:00",
-  "n_validated_bets": 10860,
-  "validation_rejected": 122848,
+  "trained_at": "2026-07-26T00:31:38.383596+00:00",
+  "n_validated_bets": 10864,
+  "validation_rejected": 122994,
   "quality_rejected": 0,
-  "expected_filtered": 122848,
+  "expected_filtered": 122994,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 31516,
-    "not_resolved": 91332
+    "action_not_a_bet:'NO_BET'": 31520,
+    "not_resolved": 91474
   },
   "model_stats": {
     "time_series": {
@@ -18,14 +18,6 @@
       "wins": 2,
       "wr": 0.6667
     },
-    "microstructure": {
-      "n": 10860,
-      "brier": 0.21529,
-      "market_brier": 0.228009,
-      "improvement": 0.012719,
-      "wins": 5907,
-      "wr": 0.5439
-    },
     "ai_semantic": {
       "n": 495,
       "brier": 0.183783,
@@ -34,28 +26,36 @@
       "wins": 350,
       "wr": 0.7071
     },
+    "external_data": {
+      "n": 10864,
+      "brier": 0.228007,
+      "market_brier": 0.228017,
+      "improvement": 1e-05,
+      "wins": 6419,
+      "wr": 0.5909
+    },
     "orderbook": {
-      "n": 10859,
-      "brier": 0.224837,
-      "market_brier": 0.228007,
-      "improvement": 0.003169,
-      "wins": 6099,
+      "n": 10863,
+      "brier": 0.224843,
+      "market_brier": 0.228015,
+      "improvement": 0.003172,
+      "wins": 6102,
       "wr": 0.5617
     },
-    "external_data": {
-      "n": 10860,
-      "brier": 0.227999,
-      "market_brier": 0.228009,
-      "improvement": 1e-05,
-      "wins": 6417,
-      "wr": 0.5909
+    "microstructure": {
+      "n": 10864,
+      "brier": 0.215283,
+      "market_brier": 0.228017,
+      "improvement": 0.012735,
+      "wins": 5910,
+      "wr": 0.544
     }
   },
   "weights": {
     "time_series": 0.0,
-    "microstructure": 0.20327,
-    "ai_semantic": 0.745925,
-    "orderbook": 0.050646,
-    "external_data": 0.00016
+    "ai_semantic": 0.745698,
+    "external_data": 0.00016,
+    "orderbook": 0.050678,
+    "microstructure": 0.203464
   }
 }
