@@ -1,15 +1,39 @@
 {
-  "trained_at": "2026-07-26T10:17:51.500655+00:00",
+  "trained_at": "2026-07-26T12:20:20.377241+00:00",
   "n_validated_bets": 10864,
-  "validation_rejected": 123491,
+  "validation_rejected": 123705,
   "quality_rejected": 0,
-  "expected_filtered": 123491,
+  "expected_filtered": 123705,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 31539,
-    "not_resolved": 91952
+    "action_not_a_bet:'NO_BET'": 31545,
+    "not_resolved": 92160
   },
   "model_stats": {
+    "orderbook": {
+      "n": 10863,
+      "brier": 0.224843,
+      "market_brier": 0.228015,
+      "improvement": 0.003172,
+      "wins": 6102,
+      "wr": 0.5617
+    },
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
+    },
+    "external_data": {
+      "n": 10864,
+      "brier": 0.228007,
+      "market_brier": 0.228017,
+      "improvement": 1e-05,
+      "wins": 6419,
+      "wr": 0.5909
+    },
     "ai_semantic": {
       "n": 495,
       "brier": 0.183783,
@@ -25,37 +49,13 @@
       "improvement": 0.012735,
       "wins": 5910,
       "wr": 0.544
-    },
-    "external_data": {
-      "n": 10864,
-      "brier": 0.228007,
-      "market_brier": 0.228017,
-      "improvement": 1e-05,
-      "wins": 6419,
-      "wr": 0.5909
-    },
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
-    },
-    "orderbook": {
-      "n": 10863,
-      "brier": 0.224843,
-      "market_brier": 0.228015,
-      "improvement": 0.003172,
-      "wins": 6102,
-      "wr": 0.5617
     }
   },
   "weights": {
-    "ai_semantic": 0.745698,
-    "microstructure": 0.203464,
-    "external_data": 0.00016,
+    "orderbook": 0.050678,
     "time_series": 0.0,
-    "orderbook": 0.050678
+    "external_data": 0.00016,
+    "ai_semantic": 0.745698,
+    "microstructure": 0.203464
   }
 }
