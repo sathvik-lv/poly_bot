@@ -82,6 +82,54 @@ except ValueError:
     MAX_TRADE_PCT = 0.0
 if MAX_TRADE_PCT < 0:
     MAX_TRADE_PCT = 0.0
+
+# Per-liquidity-tier absolute-dollar caps. When set, replaces MAX_TRADE_PCT
+# with a bet ceiling that depends on the market's liquidity tier (HIGH /
+# MEDIUM / LOW). Lets HIGH-tier markets absorb bigger bets while keeping
+# LOW-tier bets tight enough to avoid slippage.
+# Format: JSON like {"HIGH": 3000, "MEDIUM": 1000, "LOW": 250}
+# Empty / unset = disabled (falls back to MAX_TRADE_PCT).
+_raw_tier_caps = os.environ.get("PAPER_TRADER_TIER_CAPS", "").strip()
+TIER_CAPS: dict | None = None
+if _raw_tier_caps:
+    try:
+        _parsed = json.loads(_raw_tier_caps)
+        if isinstance(_parsed, dict):
+            TIER_CAPS = {k.upper(): float(v) for k, v in _parsed.items()
+                         if k.upper() in ("HIGH", "MEDIUM", "LOW") and float(v) > 0}
+            if not TIER_CAPS:
+                TIER_CAPS = None
+    except (ValueError, json.JSONDecodeError):
+        TIER_CAPS = None
+
+# Keyword-based liquidity tier classification. Empirical on ~131 V3a+Test 0
+# trades: HIGH markets rare (5%), MEDIUM dominant (82%), LOW ~13%.
+_HIGH_TIER_KW = (
+    "nba playoffs", "nfl playoffs", "super bowl", "bitcoin", "ethereum",
+    " btc ", "presidential", "wimbledon final", "us open final",
+    "world cup final", "fed decision", "trump ", "openai",
+)
+_LOW_TIER_KW = (
+    "swedish open", "hamburg", "atp challenger", "wta 250",
+    "lol:", "league of legends", "counter-strike", " cs:",
+    "esports", "undercard", "west bengal", "prelim",
+    "challenger", "assists o/u", "rebounds o/u 0.5",
+    "roland garros wta",
+)
+
+
+def liquidity_tier(question: str) -> str:
+    """HIGH / MEDIUM / LOW based on Polymarket-observed depth for the question's
+    market type. Defaults to MEDIUM (the workhorse tier: MLB, ATP Masters, IPL,
+    major geopolitics)."""
+    q = (question or "").lower()
+    if any(k in q for k in _HIGH_TIER_KW):
+        return "HIGH"
+    if any(k in q for k in _LOW_TIER_KW):
+        return "LOW"
+    return "MEDIUM"
+
+
 GAMMA_API = "https://gamma-api.polymarket.com"
 
 # Category-tiered Kelly multipliers (HIGH/MEDIUM/SKIP).
@@ -521,6 +569,16 @@ def scan_and_trade(state: dict, n_markets: int = 30):
                 if trade_amount > cap_dollars:
                     trade_amount = cap_dollars
 
+            # Per-tier absolute-dollar cap. Applied AFTER the equity cap so
+            # tier cap is the tighter of (equity%, tier$). Lets HIGH-tier
+            # markets absorb bigger bets while keeping LOW-tier tight.
+            _tier_for_cap = None
+            if TIER_CAPS is not None:
+                _tier_for_cap = liquidity_tier(market.get("question", ""))
+                tier_cap_dollars = TIER_CAPS.get(_tier_for_cap)
+                if tier_cap_dollars is not None and trade_amount > tier_cap_dollars:
+                    trade_amount = tier_cap_dollars
+
             if trade_amount <= 0 or trade_amount > state["cash"]:
                 continue
 
@@ -543,6 +601,7 @@ def scan_and_trade(state: dict, n_markets: int = 30):
                 "category": category,
                 "tier_applied": tier_applied,
                 "tier_mult": tier_mult,
+                "liquidity_tier": _tier_for_cap or liquidity_tier(market.get("question", "")),
                 "action": action,
                 "entry_price": price,
                 "predicted_prob": prob,

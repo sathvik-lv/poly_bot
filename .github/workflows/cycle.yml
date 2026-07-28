@@ -237,6 +237,43 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v5_live_candidate_weight_analytics.json"
 
       # ============================================================
+      # V5-TIER — V3a categories + per-liquidity-tier bet caps.
+      # Instead of one flat cap across all markets, cap per tier:
+      #   HIGH   (NBA playoffs, BTC, majors) : $3,000/bet — deep books
+      #   MEDIUM (MLB, ATP Masters, IPL, geo): $1,000/bet — the workhorse
+      #   LOW    (esports, ATP 250, undercard): $250/bet — thin depth
+      # Simulated 24-mo projection from $1k: ~$268k paper (~$187k live-realistic)
+      # vs flat-$250 cap projection: ~$83k paper. MaxDD identical.
+      # Starts with $1k book to match target launch capital.
+      # ============================================================
+      - name: V5-TIER scan (niche+geo+other, tier-capped 3k/1k/250)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
+          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
+          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
+          KELLY_DIVISOR: "4"
+
+      - name: V5-TIER resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
+
+      - name: V5-TIER report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
+
+      # ============================================================
       # V6 — V2-PIPELINE as a real paper book. Tests whether V2 shadow's
       # +14.67%/mo signal holds when run through a live-book with entry
       # gate + per-trade cap + real fill semantics. Same adaptive ensemble
