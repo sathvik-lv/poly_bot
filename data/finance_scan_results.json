@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-30T03:13:38.788773+00:00",
+  "timestamp": "2026-07-30T05:54:21.691543+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,13 +26,7 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 64165,
-      "change_24h": 0.43366,
-      "change_7d": -2.48729,
-      "change_30d": 7.15975,
-      "ath": 126080,
-      "high_24h": 64640,
-      "low_24h": 63251,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
@@ -40,24 +34,24 @@
       "classification": "Fear"
     }
   },
-  "n_markets": 26,
-  "n_with_edge": 25,
+  "n_markets": 22,
+  "n_with_edge": 20,
   "results": [
     {
       "question": "Will no Fed rate cuts happen in 2026?",
-      "market_price": 0.8885,
-      "our_estimate": 0.0869,
+      "market_price": 0.8905,
+      "our_estimate": 0.0825,
       "quant_estimate": 0.0825,
-      "ai_estimate": 0.09,
-      "ai_reasoning": "The low VIX (20) and modest fear/greed (28) suggest market calm, while the slightly positive yield\u2011curve spread and steady Treasury yields indicate the Fed still has room to ease if growth weakens. The quantitative model\u2019s estimate of ~8% for no cuts aligns with these signals, implying a low likelihood that the Fed will hold rates steady throughout 2026.",
-      "edge": -0.8016,
-      "real_edge": -0.8016,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.808,
+      "real_edge": -0.808,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(41%)+AI(59%)",
-      "n_models": 2,
-      "volume": 6666115.174585997,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 6670107.769518001,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -69,19 +63,19 @@
     },
     {
       "question": "Fed rate hike in 2026?",
-      "market_price": 0.615,
-      "our_estimate": 0.0283,
+      "market_price": 0.665,
+      "our_estimate": 0.02,
       "quant_estimate": 0.02,
-      "ai_estimate": 0.03,
-      "ai_reasoning": "The quantitative model and key signals (low VIX, modest yield curve spread, fear\u2011greed in fear territory) indicate a very low likelihood of a Fed hike in 2026, and recent market pricing reflects that expectation. Structural factors such as a flattening yield curve and subdued inflation pressures further reduce the chance of additional tightening.",
-      "edge": -0.5867,
-      "real_edge": -0.5867,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.645,
+      "real_edge": -0.645,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(17%)+AI(83%)",
-      "n_models": 2,
-      "volume": 5645666.915796999,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 5932628.046095998,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -93,73 +87,46 @@
     },
     {
       "question": "Will Bitcoin dip to $45,000 by December 31, 2026?",
-      "market_price": 0.265,
-      "our_estimate": 0.1371,
+      "market_price": 0.27,
+      "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.25,
-      "ai_reasoning": "Bitcoin is currently ~30% above the $45k target and has been trending down 7\u2011day. With 125 trading days left, a sustained ~0.2% daily decline is needed, which is plausible under a risk\u2011off macro backdrop (high yields, VIX, fear index). However, the current volatility regime and lack of a clear structural trigger keep the probability moderate rather than high.",
-      "edge": -0.1279,
-      "real_edge": -0.1279,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant(47%)+AI(53%)",
-      "n_models": 2,
-      "volume": 3839522.315436001,
-      "signals": {
-        "current_price": 64165,
-        "target": 2026.0,
-        "direction": "DIP",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $67,500 in July?",
-      "market_price": 0.0335,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4665,
-      "real_edge": 0.4665,
+      "edge": -0.26,
+      "real_edge": -0.26,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2671530.496109001,
+      "volume": 3839528.4554359987,
       "signals": {
-        "current_price": 64165,
-        "target": 67500.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "current_price": 60000,
+        "target": 2026.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $95 in July?",
-      "market_price": 0.039,
+      "market_price": 0.061,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 0.01,
-      "ai_reasoning": "WTI is currently at $70, requiring a ~35% increase to reach $95 in the remaining one day of July. With a daily volatility of only 2.5%, such a move corresponds to a z-score above 12, making it virtually impossible. Macro indicators (low fear index, modest yields) show no catalyst for a sudden spike.",
-      "edge": -0.029,
-      "real_edge": -0.029,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.051,
+      "real_edge": -0.051,
       "categories": [
         "oil"
       ],
-      "models": "quant(22%)+AI(78%)",
-      "n_models": 2,
-      "volume": 2372935.2693130006,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 2391737.4790260005,
       "signals": {
         "current_price": 70,
         "target": 95.0,
@@ -174,19 +141,19 @@
     },
     {
       "question": "Will 1 Fed rate cut happen in 2026?",
-      "market_price": 0.075,
+      "market_price": 0.065,
       "our_estimate": 0.0825,
       "quant_estimate": 0.0825,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0075,
+      "edge": 0.0175,
       "real_edge": 0.0,
       "categories": [
         "fed_rate"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2269758.0290639997,
+      "volume": 2271727.9892900004,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -197,20 +164,47 @@
       }
     },
     {
+      "question": "Will Ethereum dip to $1,500 by December 31, 2026?",
+      "market_price": 0.433,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.423,
+      "real_edge": -0.423,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1940440.9335680006,
+      "signals": {
+        "current_price": 60000,
+        "target": 2026.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 1,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
       "question": "Will the Fed increase interest rates by 25 bps after the September 2026 meeting?",
-      "market_price": 0.525,
+      "market_price": 0.555,
       "our_estimate": 0.02,
       "quant_estimate": 0.02,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "The 10\u2011year yield at 4.3% and a VIX of 20 suggest a still\u2011tight but not extreme environment, while the fear\u2011greed index of 28 signals market anxiety.  The Fed\u2019s recent stance and the model\u2019s \u201chike_very_unlikely\u201d logic point to a low chance of a 25\u2011bp hike in September 2026, though elevated yields keep a small tail risk.",
-      "edge": -0.505,
-      "real_edge": -0.505,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.535,
+      "real_edge": -0.535,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(27%)+AI(73%)",
-      "n_models": 2,
-      "volume": 1418215.7993200002,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1470887.6775349998,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -221,47 +215,20 @@
       }
     },
     {
-      "question": "Will Bitcoin dip to $60,000 in July?",
-      "market_price": 0.0305,
-      "our_estimate": 0.0552,
-      "quant_estimate": 0.0552,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0247,
-      "real_edge": 0.0247,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 1309360.407204,
-      "signals": {
-        "current_price": 64165,
-        "target": 60000.0,
-        "direction": "DIP",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
-      }
-    },
-    {
       "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
-      "market_price": 0.445,
+      "market_price": 0.395,
       "our_estimate": 0.85,
       "quant_estimate": 0.85,
-      "ai_estimate": 0.85,
-      "ai_reasoning": "The low VIX (20) and modest fear/greed reading (28) indicate a calm market environment, while the 10\u2011year yield at 4.3% and a slightly positive yield\u2011curve spread suggest no immediate pressure for the Fed to move rates. The quantitative fed_rate model also points to an 85% chance of a hold after the September 2026 meeting.",
-      "edge": 0.405,
-      "real_edge": 0.405,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.455,
+      "real_edge": 0.455,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(33%)+AI(67%)",
-      "n_models": 2,
-      "volume": 1304741.397141,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 1371977.7343029992,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -273,46 +240,46 @@
     },
     {
       "question": "Will Bitcoin dip to $62,500 in July?",
-      "market_price": 0.2785,
-      "our_estimate": 0.4525,
-      "quant_estimate": 0.4525,
+      "market_price": 0.299,
+      "our_estimate": 0.9,
+      "quant_estimate": 0.9,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.174,
-      "real_edge": 0.174,
+      "edge": 0.601,
+      "real_edge": 0.601,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 979883.1978950002,
+      "volume": 995028.698797,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 62500.0,
         "direction": "DIP",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Fed Rate Hike by September 2026 Meeting?",
-      "market_price": 0.535,
+      "market_price": 0.545,
       "our_estimate": 0.02,
       "quant_estimate": 0.02,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "Current data shows a flat yield curve (0.3% spread), modest VIX (20), and a 10\u2011year yield of 4.3%\u2014all pointing to a neutral stance. With inflation pressures easing and the Fed\u2019s policy rate near 4.0%, the odds of a rate hike by September\u202f2026 are very low, consistent with the model\u2019s 2% estimate.",
-      "edge": -0.515,
-      "real_edge": -0.515,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.525,
+      "real_edge": -0.525,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(43%)+AI(57%)",
-      "n_models": 2,
-      "volume": 541164.858962,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 541187.1096209998,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -324,56 +291,29 @@
     },
     {
       "question": "Will Ethereum reach $2,000 in July?",
-      "market_price": 0.235,
+      "market_price": 0.165,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.265,
-      "real_edge": 0.265,
+      "edge": 0.335,
+      "real_edge": 0.335,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 526838.760064,
+      "volume": 531541.4271349999,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 2000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
-      }
-    },
-    {
-      "question": "Will Ethereum reach $2,100 in July?",
-      "market_price": 0.0315,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4685,
-      "real_edge": 0.4685,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 362304.44775899994,
-      "signals": {
-        "current_price": 64165,
-        "target": 2100.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
-        "daily_vol": 0.035,
-        "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
@@ -381,16 +321,16 @@
       "market_price": 0.595,
       "our_estimate": 0.02,
       "quant_estimate": 0.02,
-      "ai_estimate": 0.02,
-      "ai_reasoning": "The yield curve remains mildly positively sloped and short\u2011term rates are near 4%, indicating little pressure for a tightening cycle, while the VIX and Fear & Greed Index signal low market stress. Combined with the model's 0.02 estimate and the 'hike_very_unlikely' logic, a rate hike before the October 2026 meeting appears highly improbable.",
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
       "edge": -0.575,
       "real_edge": -0.575,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant(17%)+AI(83%)",
-      "n_models": 2,
-      "volume": 329066.174219,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 329310.076657,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
@@ -402,19 +342,19 @@
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $90 in July?",
-      "market_price": 0.139,
-      "our_estimate": 0.0022,
+      "market_price": 0.245,
+      "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": 1e-05,
-      "ai_reasoning": "A 20% jump in a single day would require an 11\u2011plus sigma move given the 2.5% daily volatility, which is astronomically unlikely. Macro fundamentals, supply\u2011demand balance, and the absence of any imminent shock make a $90 level in July virtually impossible.",
-      "edge": -0.1368,
-      "real_edge": -0.1368,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.235,
+      "real_edge": -0.235,
       "categories": [
         "oil"
       ],
-      "models": "quant(22%)+AI(78%)",
-      "n_models": 2,
-      "volume": 258832.0548990001,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 266547.68485,
       "signals": {
         "current_price": 70,
         "target": 90.0,
@@ -428,235 +368,238 @@
       }
     },
     {
-      "question": "Golden State Valkyries vs. Phoenix Mercury",
-      "market_price": 0.875,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": 0.5,
-      "ai_reasoning": "The provided financial data lacks direct relevance to a basketball game outcome. Market indicators like Bitcoin's decline or VIX levels don't correlate with sports performance. The 0.5 estimate reflects neutral probability without actionable signals.",
-      "edge": -0.375,
-      "real_edge": -0.375,
+      "question": "Will Ethereum dip to $1,800 in July?",
+      "market_price": 0.1095,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.0995,
+      "real_edge": -0.0995,
       "categories": [
-        "gold"
+        "crypto"
       ],
-      "models": "quant(50%)+AI(50%)",
-      "n_models": 2,
-      "volume": 123924.33756899998,
-      "signals": {}
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 130659.46461,
+      "signals": {
+        "current_price": 60000,
+        "target": 1800.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 1,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the Fed increase interest rates by 25 bps after the October 2026 meeting?",
+      "market_price": 0.225,
+      "our_estimate": 0.02,
+      "quant_estimate": 0.02,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.205,
+      "real_edge": -0.205,
+      "categories": [
+        "fed_rate"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 99103.08808200002,
+      "signals": {
+        "vix": 20,
+        "tbill_rate": 4.0,
+        "yield_10y": 4.3,
+        "fear_greed": 28,
+        "yield_curve_spread": 0.2999999999999998,
+        "logic": "hike_very_unlikely"
+      }
     },
     {
       "question": "Bitcoin Up or Down on July 30?",
-      "market_price": 0.625,
-      "our_estimate": 0.531,
+      "market_price": 0.565,
+      "our_estimate": 0.5,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.55,
-      "ai_reasoning": "Bitcoin shows a modest 24\u2011hour gain of 0.43% amid a fearful market (Fear & Greed 28) and a slightly negative 7\u2011day trend, suggesting limited upside momentum. Macro indicators are neutral, so the chance of closing higher today is slightly above a coin flip.",
-      "edge": -0.094,
-      "real_edge": -0.094,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.065,
+      "real_edge": -0.065,
       "categories": [
         "crypto",
         "stocks"
       ],
-      "models": "quant(38%)+AI(62%)",
-      "n_models": 2,
-      "volume": 85414.98582799998,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 93988.457888,
       "signals": {
         "type": "direction",
-        "change_24h": 0.43366
+        "change_24h": 0
       }
     },
     {
       "question": "Will Bitcoin reach $65,000 in July?",
-      "market_price": 0.645,
-      "our_estimate": 0.2375,
+      "market_price": 0.505,
+      "our_estimate": 0.5,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.15,
-      "ai_reasoning": "The price needs only about a 1.3% rise to hit $65,000, but daily volatility is modest (~3.5%) and the 7\u2011day trend is slightly bearish, making a precise $65k close in the next day unlikely. However, the current Fear & Greed level of 28 (Fear) suggests limited upside momentum, supporting a low but non\u2011zero chance.",
-      "edge": -0.4075,
-      "real_edge": -0.4075,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.005,
+      "real_edge": 0.0,
       "categories": [
         "crypto"
       ],
-      "models": "quant(25%)+AI(75%)",
-      "n_models": 2,
-      "volume": 70382.767954,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 90007.316261,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 65000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will the price of Bitcoin be above $64,000 on July 30?",
-      "market_price": 0.625,
-      "our_estimate": 0.95,
-      "quant_estimate": 0.95,
+      "market_price": 0.555,
+      "our_estimate": 0.0326,
+      "quant_estimate": 0.0326,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.325,
-      "real_edge": 0.325,
+      "edge": -0.5224,
+      "real_edge": -0.5224,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 52484.385244000005,
+      "volume": 56892.605578,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 64000.0,
         "direction": "ABOVE",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
-      "question": "Golden State Valkyries vs. Phoenix Mercury: O/U 157.5",
-      "market_price": 0.61,
+      "question": "Will Bitcoin reach $68,000 July 27-August 2?",
+      "market_price": 0.035,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
-      "ai_estimate": 0.5,
-      "ai_reasoning": "No relevant team or game-specific data provided; macro indicators show mixed signals (Fear & Greed low, Bitcoin slight up, oil/gold unknown). Hence the baseline model's 0.5 estimate is most appropriate with low confidence.",
-      "edge": -0.11,
-      "real_edge": -0.11,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.465,
+      "real_edge": 0.465,
       "categories": [
-        "gold"
+        "crypto"
       ],
-      "models": "quant(50%)+AI(50%)",
-      "n_models": 2,
-      "volume": 40204.02589799999,
-      "signals": {}
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 44091.688013,
+      "signals": {
+        "current_price": 60000,
+        "target": 68000.0,
+        "direction": "UNKNOWN",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 1,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
     },
     {
       "question": "Will Bitcoin dip to $62,000 July 27-August 2?",
-      "market_price": 0.285,
-      "our_estimate": 0.3268,
-      "quant_estimate": 0.3268,
+      "market_price": 0.305,
+      "our_estimate": 0.9,
+      "quant_estimate": 0.9,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.0418,
-      "real_edge": 0.0418,
+      "edge": 0.595,
+      "real_edge": 0.595,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 40017.31736100001,
+      "volume": 42429.410691000005,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 62000.0,
         "direction": "DIP",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
-    },
-    {
-      "question": "Spread: Golden State Valkyries (-5.5)",
-      "market_price": 0.72,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.22,
-      "real_edge": -0.22,
-      "categories": [
-        "gold"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 38771.46473399999,
-      "signals": {}
-    },
-    {
-      "question": "Golden State Valkyries vs. Phoenix Mercury: O/U 155.5",
-      "market_price": 0.69,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.19,
-      "real_edge": -0.19,
-      "categories": [
-        "gold"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 38275.00197399999,
-      "signals": {}
     },
     {
       "question": "Will the price of Bitcoin be above $66,000 on July 31?",
-      "market_price": 0.105,
-      "our_estimate": 0.1942,
-      "quant_estimate": 0.2102,
-      "ai_estimate": 0.18,
-      "ai_reasoning": "With Bitcoin currently at $64,165 and a 24\u2011hour high of $64,640, the price would need to climb roughly 3% in the remaining 24\u202fhours. The 7\u2011day trend is negative, volatility is moderate (3.5\u202f%), and the Fear & Greed Index signals bearish sentiment, all of which lower the odds of breaching $66,000 by the end of July 31.",
-      "edge": 0.0892,
-      "real_edge": 0.0892,
+      "market_price": 0.085,
+      "our_estimate": 0.01,
+      "quant_estimate": 0.01,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": -0.075,
+      "real_edge": -0.075,
       "categories": [
         "crypto"
       ],
-      "models": "quant(47%)+AI(53%)",
-      "n_models": 2,
-      "volume": 28714.274476,
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 31869.243076,
       "signals": {
-        "current_price": 64165,
+        "current_price": 60000,
         "target": 66000.0,
         "direction": "ABOVE",
-        "change_24h": 0.43,
-        "change_7d": -2.49,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
         "days_left": 1,
-        "high_24h": 64640,
-        "low_24h": 63251
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
-      "question": "Golden State Valkyries vs. Phoenix Mercury: O/U 156.5",
-      "market_price": 0.645,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
+      "question": "Will the price of Bitcoin be above $62,000 on July 31?",
+      "market_price": 0.915,
+      "our_estimate": 0.1744,
+      "quant_estimate": 0.1744,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.145,
-      "real_edge": -0.145,
+      "edge": -0.7406,
+      "real_edge": -0.7406,
       "categories": [
-        "gold"
+        "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 27954.915302999998,
-      "signals": {}
-    },
-    {
-      "question": "Spread: Golden State Valkyries (-4.5)",
-      "market_price": 0.75,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.25,
-      "real_edge": -0.25,
-      "categories": [
-        "gold"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 26994.890255000002,
-      "signals": {}
+      "volume": 21856.328767000003,
+      "signals": {
+        "current_price": 60000,
+        "target": 62000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 1,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
     }
   ]
 }
