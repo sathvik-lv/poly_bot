@@ -1,15 +1,31 @@
 {
-  "trained_at": "2026-07-31T21:29:54.787169+00:00",
-  "n_validated_bets": 10918,
-  "validation_rejected": 131191,
+  "trained_at": "2026-07-31T23:17:02.452372+00:00",
+  "n_validated_bets": 10920,
+  "validation_rejected": 131306,
   "quality_rejected": 0,
-  "expected_filtered": 131191,
+  "expected_filtered": 131306,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 32152,
-    "not_resolved": 99039
+    "action_not_a_bet:'NO_BET'": 32169,
+    "not_resolved": 99137
   },
   "model_stats": {
+    "orderbook": {
+      "n": 10919,
+      "brier": 0.224736,
+      "market_brier": 0.227933,
+      "improvement": 0.003198,
+      "wins": 6141,
+      "wr": 0.5624
+    },
+    "external_data": {
+      "n": 10920,
+      "brier": 0.227925,
+      "market_brier": 0.227935,
+      "improvement": 1e-05,
+      "wins": 6458,
+      "wr": 0.5914
+    },
     "ai_semantic": {
       "n": 495,
       "brier": 0.183783,
@@ -18,29 +34,13 @@
       "wins": 350,
       "wr": 0.7071
     },
-    "external_data": {
-      "n": 10918,
-      "brier": 0.227953,
-      "market_brier": 0.227963,
-      "improvement": 1e-05,
-      "wins": 6457,
-      "wr": 0.5914
-    },
-    "orderbook": {
-      "n": 10917,
-      "brier": 0.224764,
-      "market_brier": 0.227961,
-      "improvement": 0.003197,
-      "wins": 6140,
-      "wr": 0.5624
-    },
     "microstructure": {
-      "n": 10918,
-      "brier": 0.215105,
-      "market_brier": 0.227963,
-      "improvement": 0.012858,
-      "wins": 5941,
-      "wr": 0.5441
+      "n": 10920,
+      "brier": 0.215075,
+      "market_brier": 0.227935,
+      "improvement": 0.012861,
+      "wins": 5943,
+      "wr": 0.5442
     },
     "time_series": {
       "n": 3,
@@ -52,10 +52,10 @@
     }
   },
   "weights": {
-    "ai_semantic": 0.743939,
+    "orderbook": 0.05097,
     "external_data": 0.000159,
-    "orderbook": 0.050957,
-    "microstructure": 0.204944,
+    "ai_semantic": 0.743892,
+    "microstructure": 0.204979,
     "time_series": 0.0
   }
 }
