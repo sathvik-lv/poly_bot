@@ -1,22 +1,30 @@
 {
-  "trained_at": "2026-08-01T19:28:16.159973+00:00",
+  "trained_at": "2026-08-01T21:14:47.431131+00:00",
   "n_validated_bets": 10927,
-  "validation_rejected": 132017,
+  "validation_rejected": 132246,
   "quality_rejected": 0,
-  "expected_filtered": 132017,
+  "expected_filtered": 132246,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 32251,
-    "not_resolved": 99766
+    "action_not_a_bet:'NO_BET'": 32270,
+    "not_resolved": 99976
   },
   "model_stats": {
-    "external_data": {
-      "n": 10927,
-      "brier": 0.227912,
-      "market_brier": 0.227922,
-      "improvement": 1e-05,
-      "wins": 6462,
-      "wr": 0.5914
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
+    },
+    "orderbook": {
+      "n": 10926,
+      "brier": 0.224718,
+      "market_brier": 0.22792,
+      "improvement": 0.003202,
+      "wins": 6145,
+      "wr": 0.5624
     },
     "ai_semantic": {
       "n": 495,
@@ -26,14 +34,6 @@
       "wins": 350,
       "wr": 0.7071
     },
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
-    },
     "microstructure": {
       "n": 10927,
       "brier": 0.215056,
@@ -42,20 +42,20 @@
       "wins": 5949,
       "wr": 0.5444
     },
-    "orderbook": {
-      "n": 10926,
-      "brier": 0.224718,
-      "market_brier": 0.22792,
-      "improvement": 0.003202,
-      "wins": 6145,
-      "wr": 0.5624
+    "external_data": {
+      "n": 10927,
+      "brier": 0.227912,
+      "market_brier": 0.227922,
+      "improvement": 1e-05,
+      "wins": 6462,
+      "wr": 0.5914
     }
   },
   "weights": {
-    "external_data": 0.000159,
-    "ai_semantic": 0.743785,
     "time_series": 0.0,
+    "orderbook": 0.051026,
+    "ai_semantic": 0.743785,
     "microstructure": 0.205029,
-    "orderbook": 0.051026
+    "external_data": 0.000159
   }
 }
