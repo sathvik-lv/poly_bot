@@ -1,15 +1,23 @@
 {
-  "trained_at": "2026-08-01T21:14:47.431131+00:00",
-  "n_validated_bets": 10927,
-  "validation_rejected": 132246,
+  "trained_at": "2026-08-01T22:17:35.371875+00:00",
+  "n_validated_bets": 10928,
+  "validation_rejected": 132435,
   "quality_rejected": 0,
-  "expected_filtered": 132246,
+  "expected_filtered": 132435,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 32270,
-    "not_resolved": 99976
+    "action_not_a_bet:'NO_BET'": 32301,
+    "not_resolved": 100134
   },
   "model_stats": {
+    "orderbook": {
+      "n": 10927,
+      "brier": 0.224702,
+      "market_brier": 0.227905,
+      "improvement": 0.003204,
+      "wins": 6146,
+      "wr": 0.5625
+    },
     "time_series": {
       "n": 3,
       "brier": 0.174446,
@@ -18,13 +26,13 @@
       "wins": 2,
       "wr": 0.6667
     },
-    "orderbook": {
-      "n": 10926,
-      "brier": 0.224718,
-      "market_brier": 0.22792,
-      "improvement": 0.003202,
-      "wins": 6145,
-      "wr": 0.5624
+    "external_data": {
+      "n": 10928,
+      "brier": 0.227897,
+      "market_brier": 0.227907,
+      "improvement": 1e-05,
+      "wins": 6463,
+      "wr": 0.5914
     },
     "ai_semantic": {
       "n": 495,
@@ -35,27 +43,19 @@
       "wr": 0.7071
     },
     "microstructure": {
-      "n": 10927,
-      "brier": 0.215056,
-      "market_brier": 0.227922,
+      "n": 10928,
+      "brier": 0.215042,
+      "market_brier": 0.227907,
       "improvement": 0.012866,
-      "wins": 5949,
-      "wr": 0.5444
-    },
-    "external_data": {
-      "n": 10927,
-      "brier": 0.227912,
-      "market_brier": 0.227922,
-      "improvement": 1e-05,
-      "wins": 6462,
-      "wr": 0.5914
+      "wins": 5950,
+      "wr": 0.5445
     }
   },
   "weights": {
+    "orderbook": 0.051057,
     "time_series": 0.0,
-    "orderbook": 0.051026,
-    "ai_semantic": 0.743785,
-    "microstructure": 0.205029,
-    "external_data": 0.000159
+    "external_data": 0.000159,
+    "ai_semantic": 0.743761,
+    "microstructure": 0.205023
   }
 }
