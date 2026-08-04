@@ -1,13 +1,13 @@
 {
-  "trained_at": "2026-08-04T11:43:24.093775+00:00",
-  "n_validated_bets": 10963,
-  "validation_rejected": 135808,
+  "trained_at": "2026-08-04T14:44:38.493704+00:00",
+  "n_validated_bets": 10969,
+  "validation_rejected": 135956,
   "quality_rejected": 0,
-  "expected_filtered": 135808,
+  "expected_filtered": 135956,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 32676,
-    "not_resolved": 103132
+    "action_not_a_bet:'NO_BET'": 32694,
+    "not_resolved": 103262
   },
   "model_stats": {
     "time_series": {
@@ -18,21 +18,21 @@
       "wins": 2,
       "wr": 0.6667
     },
-    "external_data": {
-      "n": 10963,
-      "brier": 0.22792,
-      "market_brier": 0.22793,
-      "improvement": 1e-05,
-      "wins": 6492,
-      "wr": 0.5922
-    },
     "microstructure": {
-      "n": 10963,
-      "brier": 0.215059,
-      "market_brier": 0.22793,
-      "improvement": 0.012872,
-      "wins": 5979,
+      "n": 10969,
+      "brier": 0.215211,
+      "market_brier": 0.227942,
+      "improvement": 0.012731,
+      "wins": 5983,
       "wr": 0.5454
+    },
+    "orderbook": {
+      "n": 10968,
+      "brier": 0.224691,
+      "market_brier": 0.22794,
+      "improvement": 0.00325,
+      "wins": 6178,
+      "wr": 0.5633
     },
     "ai_semantic": {
       "n": 495,
@@ -42,20 +42,20 @@
       "wins": 350,
       "wr": 0.7071
     },
-    "orderbook": {
-      "n": 10962,
-      "brier": 0.224678,
-      "market_brier": 0.227928,
-      "improvement": 0.003251,
-      "wins": 6174,
-      "wr": 0.5632
+    "external_data": {
+      "n": 10969,
+      "brier": 0.227932,
+      "market_brier": 0.227942,
+      "improvement": 1e-05,
+      "wins": 6496,
+      "wr": 0.5922
     }
   },
   "weights": {
     "time_series": 0.0,
-    "external_data": 0.000159,
-    "microstructure": 0.204945,
-    "ai_semantic": 0.743134,
-    "orderbook": 0.051762
+    "microstructure": 0.20316,
+    "orderbook": 0.051863,
+    "ai_semantic": 0.744818,
+    "external_data": 0.00016
   }
 }
