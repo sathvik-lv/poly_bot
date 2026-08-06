@@ -167,6 +167,8 @@ def main():
     arms = [
         ("Test 0 (real, all categories)",
          lambda: replay_paper_arm("data/paper_trades.json", anchor_dt)),
+        ("Test 0-TIER (real, all cats, tier caps 3k/1k/250)",
+         lambda: replay_paper_arm("data/test0_tier_paper_trades.json", anchor_dt)),
         ("V3a (real, niche+geo+other)",
          lambda: replay_paper_arm("data/v3a_paper_trades.json", anchor_dt)),
         ("V3b (real, niche+geo+sports)",

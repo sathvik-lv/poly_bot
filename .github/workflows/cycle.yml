@@ -72,6 +72,39 @@ jobs:
         continue-on-error: true
 
       # ============================================================
+      # Test 0-TIER — Broadest baseline (all categories) with per-tier
+      # bet caps (HIGH $3k / MED $1k / LOW $250). Test 0's V1 pipeline
+      # signal at tier-capped sizing. Direct counterpart to V6-TIER's
+      # V2-pipeline-at-tier-caps. Tells us whether the tier-cap sizing
+      # rule is additive to the V1 baseline (Test 0) as well as V2.
+      # ============================================================
+      - name: Test 0-TIER scan (all cats, tier caps 3k/1k/250)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 15
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
+          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
+          ENABLE_CATEGORY_TIERS: "1"
+
+      - name: Test 0-TIER resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
+
+      - name: Test 0-TIER report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
+
+      # ============================================================
       # V3a — Paper trader, ONLY {niche_sports, geopolitics, other}
       # User's V3 proposal. Walk-forward backtest: ROI +103.6%, MaxDD 3.77%
       # ============================================================
