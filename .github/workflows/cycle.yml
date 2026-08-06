@@ -160,45 +160,10 @@ jobs:
           PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
           PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
 
-      # ============================================================
-      # V4-AI — Test hypothesis: AI semantic has edge on the categories
-      # where microstructure DOESN'T (crypto, geopolitics, elections,
-      # tech_ai). Training run with live_predictions added showed AI at
-      # 70.7% WR on n=440. This arm specifically isolates that signal by
-      # trading ONLY the previously-SKIP categories with AI ON.
-      # If WR holds at >65% after ~30 closed trades, we've doubled the
-      # bot's edge surface area. If WR collapses, AI was sample-biased.
-      # ============================================================
-      - name: V4-AI scan (crypto+geo+elections+tech_ai, AI on)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "crypto,geopolitics,elections,tech_ai,macro,oil_energy,fed_rate"
-          ENABLE_AI_SEMANTIC: "1"
-          # Per-trade cap: no single AI-driven bet may exceed 2.5% of equity.
-          # Backstop after a single election trade lost 5.5% (Kelly + AI
-          # over-confidence). Geopolitics signal (n=11, 90.9% WR, +$210) is
-          # kept; oversized outliers are clipped.
-          PAPER_TRADER_MAX_TRADE_PCT: "0.025"
-
-      - name: V4-AI resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
-
-      - name: V4-AI report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v4_ai_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v4_ai_weight_analytics.json"
+      # V4-AI arm removed 2026-08-06 — proven negative signal
+      # (WR 55.6%, ROI -19.83%, MaxDD 20.09% after 27 trades).
+      # AI-on-SKIP-categories hypothesis disproven. Data file
+      # data/v4_ai_paper_trades.json kept for historical reference.
 
       # ============================================================
       # V5 — LIVE-CANDIDATE paper arm. Mirrors the exact config we would
@@ -311,6 +276,41 @@ jobs:
           PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
 
       # ============================================================
+      # V6-TIER — LIVE-LAUNCH CANDIDATE. Combines V6's proven V2 pipeline
+      # (adaptive+meta+gate, 82.9% WR on n=41, ~3.7 trades/day — 7x V3a's
+      # rate) with V5-TIER's per-liquidity-tier caps (HIGH $3k / MED $1k
+      # / LOW $250). If V6-TIER holds V6's WR and Ret/DD at tier-capped
+      # sizing, this is the config we push to real money.
+      # ============================================================
+      - name: V6-TIER scan (V2 pipeline + tier caps 3k/1k/250)
+        run: python scripts/paper_trader.py --scan -n 50
+        timeout-minutes: 18
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
+          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
+          USE_V2_PIPELINE: "1"
+          V2_ADAPTIVE_BLEND: "0.5"
+          V2_META_BLEND: "0.5"
+
+      - name: V6-TIER resolve
+        run: python scripts/paper_trader.py --resolve
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
+
+      - name: V6-TIER report
+        run: python scripts/paper_trader.py --report
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
+          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
+
+      # ============================================================
       # SAME-WINDOW COMPARISON across all 6 arms
       # Reads data/comparison_anchor.json, replays each arm from $10k
       # using only post-anchor activity. Apples-to-apples report.
@@ -335,26 +335,10 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
 
-      # ============================================================
-      # TEST 1 — Parallel shadow ledger (Kelly fraction stress test)
-      # Same Kelly determination as Test 0, only the allocation
-      # multiplier varies in the report (1/8x, 1/5x, 1/4x, 1/3x, 1/2x, 1x).
-      # Writes only to data/test1_ledger.jsonl — does not touch Test 0.
-      # ============================================================
-      - name: Test 1 collector (200 markets, re-predict 6h)
-        run: python scripts/test1_collector.py -n 200
-        timeout-minutes: 20
-        continue-on-error: true
-
-      - name: Test 1 resolver
-        run: python scripts/test1_resolver.py
-        timeout-minutes: 5
-        continue-on-error: true
-
-      - name: Test 1 compounded report
-        run: python scripts/test1_report.py
-        timeout-minutes: 1
-        continue-on-error: true
+      # Test 1 shadow ledger removed from CI 2026-08-06 — flat at 50% WR
+      # after 20 post-anchor trades, no signal. Existing ledger file
+      # (data/test1_ledger.jsonl + archives) kept for trainer input;
+      # scripts/test1_collector.py kept because v2_collector imports helpers.
 
       # ============================================================
       # V2 — parallel pipeline (adaptive ensemble + category gate)
