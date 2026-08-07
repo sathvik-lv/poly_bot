@@ -1,38 +1,22 @@
 {
-  "trained_at": "2026-08-07T21:57:26.262407+00:00",
-  "n_validated_bets": 11027,
-  "validation_rejected": 138848,
+  "trained_at": "2026-08-07T22:53:54.310235+00:00",
+  "n_validated_bets": 11029,
+  "validation_rejected": 138969,
   "quality_rejected": 0,
-  "expected_filtered": 138848,
+  "expected_filtered": 138969,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 33044,
-    "not_resolved": 105804
+    "action_not_a_bet:'NO_BET'": 33049,
+    "not_resolved": 105920
   },
   "model_stats": {
-    "microstructure": {
-      "n": 11027,
-      "brier": 0.21499,
-      "market_brier": 0.227982,
-      "improvement": 0.012992,
-      "wins": 6027,
-      "wr": 0.5466
-    },
-    "orderbook": {
-      "n": 11026,
-      "brier": 0.224661,
-      "market_brier": 0.22798,
-      "improvement": 0.003319,
-      "wins": 6218,
-      "wr": 0.5639
-    },
-    "external_data": {
-      "n": 11027,
-      "brier": 0.227972,
-      "market_brier": 0.227982,
-      "improvement": 1e-05,
-      "wins": 6536,
-      "wr": 0.5927
+    "ai_semantic": {
+      "n": 495,
+      "brier": 0.183783,
+      "market_brier": 0.230458,
+      "improvement": 0.046674,
+      "wins": 350,
+      "wr": 0.7071
     },
     "time_series": {
       "n": 3,
@@ -42,20 +26,36 @@
       "wins": 2,
       "wr": 0.6667
     },
-    "ai_semantic": {
-      "n": 495,
-      "brier": 0.183783,
-      "market_brier": 0.230458,
-      "improvement": 0.046674,
-      "wins": 350,
-      "wr": 0.7071
+    "external_data": {
+      "n": 11029,
+      "brier": 0.22796,
+      "market_brier": 0.22797,
+      "improvement": 1e-05,
+      "wins": 6538,
+      "wr": 0.5928
+    },
+    "microstructure": {
+      "n": 11029,
+      "brier": 0.214962,
+      "market_brier": 0.22797,
+      "improvement": 0.013008,
+      "wins": 6029,
+      "wr": 0.5466
+    },
+    "orderbook": {
+      "n": 11028,
+      "brier": 0.224648,
+      "market_brier": 0.227968,
+      "improvement": 0.00332,
+      "wins": 6219,
+      "wr": 0.5639
     }
   },
   "weights": {
-    "microstructure": 0.206239,
-    "orderbook": 0.052687,
-    "external_data": 0.000159,
+    "ai_semantic": 0.740716,
     "time_series": 0.0,
-    "ai_semantic": 0.740916
+    "external_data": 0.000159,
+    "microstructure": 0.206437,
+    "orderbook": 0.052688
   }
 }
