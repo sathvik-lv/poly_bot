@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-08T23:47:52.468131+00:00",
+  "timestamp": "2026-08-09T04:39:04.260200+00:00",
   "financial_data": {
     "oil": {
       "error": "all sources failed",
@@ -26,43 +26,37 @@
       "symbol": "sp500"
     },
     "btc": {
-      "price": 64929,
-      "change_24h": 0.09946,
-      "change_7d": 3.39214,
-      "change_30d": 2.76994,
-      "ath": 126080,
-      "high_24h": 65140,
-      "low_24h": 64800,
+      "error": "all sources failed",
       "symbol": "btc"
     },
     "fear_greed": {
-      "value": 30,
+      "value": 31,
       "classification": "Fear"
     }
   },
-  "n_markets": 14,
-  "n_with_edge": 14,
+  "n_markets": 18,
+  "n_with_edge": 17,
   "results": [
     {
       "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
       "market_price": 0.625,
       "our_estimate": 0.85,
       "quant_estimate": 0.85,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
+      "ai_estimate": 0.85,
+      "ai_reasoning": "The low VIX (20) and modest Fear & Greed index (31) indicate a calm market environment, while the flat yield curve (spread ~0.3%) and stable short\u2011term rates suggest limited pressure for the Fed to move rates. These conditions align with the model's base expectation of no change after the September 2026 meeting.",
       "edge": 0.225,
       "real_edge": 0.225,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 4980231.612126001,
+      "models": "quant(31%)+AI(69%)",
+      "n_models": 2,
+      "volume": 4982411.9899150105,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 30,
+        "fear_greed": 31,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "no_change_base"
       }
@@ -70,23 +64,23 @@
     {
       "question": "Will the Fed increase interest rates by 25 bps after the September 2026 meeting?",
       "market_price": 0.355,
-      "our_estimate": 0.02,
+      "our_estimate": 0.0283,
       "quant_estimate": 0.02,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.335,
-      "real_edge": -0.335,
+      "ai_estimate": 0.03,
+      "ai_reasoning": "The market is in a low\u2011volatility regime (VIX ~20), yields are modest with a shallow 10\u2011year/2\u2011year spread (~0.30), and sentiment is firmly in fear territory, all pointing to a very low likelihood of a rate hike. The quantitative model already assigns a 2% probability, and given the supportive macro backdrop, a slight upward adjustment to about 3% is appropriate.",
+      "edge": -0.3267,
+      "real_edge": -0.3267,
       "categories": [
         "fed_rate"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 4246417.282540002,
+      "models": "quant(17%)+AI(83%)",
+      "n_models": 2,
+      "volume": 4276593.78098,
       "signals": {
         "vix": 20,
         "tbill_rate": 4.0,
         "yield_10y": 4.3,
-        "fear_greed": 30,
+        "fear_greed": 31,
         "yield_curve_spread": 0.2999999999999998,
         "logic": "hike_very_unlikely"
       }
@@ -96,317 +90,422 @@
       "market_price": 0.205,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
+      "ai_estimate": 0.01,
+      "ai_reasoning": "With Bitcoin currently at $60k and only 21 days to reach $45k, a 25% drop would require a ~7\u2011sigma move given the 3.5% daily volatility, which is highly unlikely in a stable trendless environment. Macro and structural factors do not suggest a sudden crash, so the probability remains very low.",
       "edge": -0.195,
       "real_edge": -0.195,
       "categories": [
         "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
+      "models": "quant(31%)+AI(69%)",
+      "n_models": 2,
       "volume": 4015144.734603001,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
         "target": 2026.0,
         "direction": "DIP",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will Ethereum dip to $1,500 by December 31, 2026?",
-      "market_price": 0.4405,
+      "market_price": 0.4385,
       "our_estimate": 0.01,
       "quant_estimate": 0.01,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.4305,
-      "real_edge": -0.4305,
+      "edge": -0.4285,
+      "real_edge": -0.4285,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 2054307.7829790006,
+      "volume": 2054455.512979,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
         "target": 2026.0,
         "direction": "DIP",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $110 in August?",
-      "market_price": 0.046,
-      "our_estimate": 0.01,
+      "market_price": 0.0435,
+      "our_estimate": 0.011,
       "quant_estimate": 0.01,
+      "ai_estimate": 0.012,
+      "ai_reasoning": "WTI would need to rise from $70 to $110 (~57%) in just 21 days, which at a daily volatility of 2.5% corresponds to a ~3.95\u2011sigma move\u2014extremely unlikely under normal market conditions. The macro backdrop shows risk\u2011off sentiment (Fear & Greed Index 31) and no supportive supply shocks, making such a sharp spike improbable.",
+      "edge": -0.0325,
+      "real_edge": -0.0325,
+      "categories": [
+        "oil"
+      ],
+      "models": "quant(50%)+AI(50%)",
+      "n_models": 2,
+      "volume": 352225.66222700005,
+      "signals": {
+        "current_price": 70,
+        "target": 110.0,
+        "direction": "HIGH",
+        "days_left": 21,
+        "daily_vol": 0.025,
+        "annual_vol": null,
+        "z_score": 3.95,
+        "recent_closes": [],
+        "vix": 20
+      }
+    },
+    {
+      "question": "Will WTI Crude Oil (WTI) hit (HIGH) $85 in August?",
+      "market_price": 0.42,
+      "our_estimate": 0.0451,
+      "quant_estimate": 0.0451,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.036,
-      "real_edge": -0.036,
+      "edge": -0.3749,
+      "real_edge": -0.3749,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 352203.113817,
+      "volume": 322743.38407799986,
       "signals": {
         "current_price": 70,
-        "target": 110.0,
+        "target": 85.0,
         "direction": "HIGH",
-        "days_left": 22,
+        "days_left": 21,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 3.85,
+        "z_score": 1.69,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
       "question": "Will Bitcoin reach $67,500 in August?",
-      "market_price": 0.595,
-      "our_estimate": 0.5,
+      "market_price": 0.565,
+      "our_estimate": 0.3306,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.095,
-      "real_edge": -0.095,
+      "ai_estimate": 0.18,
+      "ai_reasoning": "With a 3.5% daily volatility, the 21\u2011day standard deviation is about 16%, so a +12.5% move (to $67,500) is roughly 0.8\u03c3, giving a ~22% chance under a neutral trend. The current fear\u2011greed index and lack of clear bullish momentum lower that figure to roughly 18%.",
+      "edge": -0.2344,
+      "real_edge": -0.2344,
       "categories": [
         "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 221819.792301,
+      "models": "quant(47%)+AI(53%)",
+      "n_models": 2,
+      "volume": 223451.8363670001,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
         "target": 67500.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
-      }
-    },
-    {
-      "question": "Will Bitcoin dip to $57,500 in August?",
-      "market_price": 0.135,
-      "our_estimate": 0.4592,
-      "quant_estimate": 0.4592,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.3242,
-      "real_edge": 0.3242,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 164656.996964,
-      "signals": {
-        "current_price": 64929,
-        "target": 57500.0,
-        "direction": "DIP",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
-        "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
-      }
-    },
-    {
-      "question": "Will Bitcoin reach $66,000 August 3-9?",
-      "market_price": 0.105,
-      "our_estimate": 0.5,
-      "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.395,
-      "real_edge": 0.395,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 150758.76572900004,
-      "signals": {
-        "current_price": 64929,
-        "target": 66000.0,
-        "direction": "UNKNOWN",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
-        "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will WTI Crude Oil (WTI) hit (HIGH) $80 in August?",
-      "market_price": 0.695,
-      "our_estimate": 0.1274,
-      "quant_estimate": 0.1274,
+      "market_price": 0.735,
+      "our_estimate": 0.1219,
+      "quant_estimate": 0.1219,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.5676,
-      "real_edge": -0.5676,
+      "edge": -0.6131,
+      "real_edge": -0.6131,
       "categories": [
         "oil"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 144435.90594899998,
+      "volume": 177640.87778,
       "signals": {
         "current_price": 70,
         "target": 80.0,
         "direction": "HIGH",
-        "days_left": 22,
+        "days_left": 21,
         "daily_vol": 0.025,
         "annual_vol": null,
-        "z_score": 1.14,
+        "z_score": 1.17,
         "recent_closes": [],
         "vix": 20
       }
     },
     {
-      "question": "Will Ethereum reach $2,000 August 3-9?",
-      "market_price": 0.0475,
+      "question": "Will Bitcoin dip to $57,500 in August?",
+      "market_price": 0.135,
+      "our_estimate": 0.7847,
+      "quant_estimate": 0.7907,
+      "ai_estimate": 0.78,
+      "ai_reasoning": "Bitcoin is currently trading around $60k with a modest daily volatility of 3.5%, and the Fear & Greed Index indicates fearful sentiment, which historically increases downside pressure. Over the next 21 days, a 4.2% drop to $57.5k is within one standard deviation of expected price movement given the volatility, making the dip plausible. However, the lack of concrete macro data (oil, gold, yields, equities) limits confidence in the forecast.",
+      "edge": 0.6497,
+      "real_edge": 0.6497,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(44%)+AI(56%)",
+      "n_models": 2,
+      "volume": 165327.852458,
+      "signals": {
+        "current_price": 60000,
+        "target": 57500.0,
+        "direction": "DIP",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be above $64,000 on August 9?",
+      "market_price": 0.967,
+      "our_estimate": 0.2741,
+      "quant_estimate": 0.3437,
+      "ai_estimate": 0.22,
+      "ai_reasoning": "With Bitcoin at $60,000 and a 21\u2011day horizon, a 6.7% rise to $64,000 would require about 0.84 standard deviations of upside movement; given the 3.5% daily volatility, the implied one\u2011sided probability is roughly 20\u201125%. Macro signals are neutral (low fear index, flat equity and bond markets), suggesting limited upward momentum, so the likelihood is modest but not negligible.",
+      "edge": -0.6929,
+      "real_edge": -0.6929,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(44%)+AI(56%)",
+      "n_models": 2,
+      "volume": 158150.36908099995,
+      "signals": {
+        "current_price": 60000,
+        "target": 64000.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will Bitcoin reach $66,000 August 3-9?",
+      "market_price": 0.095,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.4525,
-      "real_edge": 0.4525,
+      "edge": 0.405,
+      "real_edge": 0.405,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 119206.089803,
+      "volume": 156144.4516750001,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
+        "target": 66000.0,
+        "direction": "UNKNOWN",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the Fed decrease interest rates by 25 bps after the October 2026 meeting?",
+      "market_price": 0.065,
+      "our_estimate": 0.0798,
+      "quant_estimate": 0.0795,
+      "ai_estimate": 0.08,
+      "ai_reasoning": "The model estimate suggests only an ~8% chance of a 25\u2011bp cut after the October 2026 meeting, reflecting a still\u2011restrictive stance given elevated 10\u2011year yields, modest yield\u2011curve steepening, and low fear\u2011greed sentiment. While VIX is relatively low indicating calm markets, the Fed is likely to remain data\u2011dependent and wait for clearer signs of inflation easing before easing policy.",
+      "edge": 0.0148,
+      "real_edge": 0.0,
+      "categories": [
+        "fed_rate"
+      ],
+      "models": "quant(43%)+AI(57%)",
+      "n_models": 2,
+      "volume": 145280.53372600002,
+      "signals": {
+        "vix": 20,
+        "tbill_rate": 4.0,
+        "yield_10y": 4.3,
+        "fear_greed": 31,
+        "yield_curve_spread": 0.2999999999999998,
+        "logic": "small_cut_data_dependent"
+      }
+    },
+    {
+      "question": "Will Ethereum reach $2,000 in August?",
+      "market_price": 0.675,
+      "our_estimate": 0.3948,
+      "quant_estimate": 0.5,
+      "ai_estimate": 0.32,
+      "ai_reasoning": "The market is in a risk\u2011off regime (VIX elevated, Fear & Greed at 31) and macro indicators such as 10\u2011year yields and oil prices are mixed, limiting upside momentum for ETH. With only ~21 days left and modest daily volatility, the odds of ETH breaching $2,000 remain below 50%, though not negligible.",
+      "edge": -0.2802,
+      "real_edge": -0.2802,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(42%)+AI(58%)",
+      "n_models": 2,
+      "volume": 78532.57284899996,
+      "signals": {
+        "current_price": 60000,
         "target": 2000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Bitcoin be between $62,000 and $64,000 on August 9?",
+      "market_price": 0.0345,
+      "our_estimate": 0.5,
+      "quant_estimate": 0.5,
+      "ai_estimate": null,
+      "ai_reasoning": "All 8 models failed (rate limited)",
+      "edge": 0.4655,
+      "real_edge": 0.4655,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant_only",
+      "n_models": 1,
+      "volume": 71448.64980799999,
+      "signals": {
+        "current_price": 60000,
+        "target": 64000.0,
+        "direction": "UNKNOWN",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Will Ethereum reach $2,500 in August?",
-      "market_price": 0.031,
-      "our_estimate": 0.5,
+      "market_price": 0.033,
+      "our_estimate": 0.2406,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.469,
-      "real_edge": 0.469,
+      "ai_estimate": 0.01,
+      "ai_reasoning": "Ethereum's current price is vastly above the $2,500 target, requiring a >95% decline in just three weeks. With only moderate daily volatility (3.5%) and no clear bearish trend or macro catalysts indicated, such a move is extremely unlikely.",
+      "edge": 0.2076,
+      "real_edge": 0.2076,
       "categories": [
         "crypto"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 56426.08757900001,
+      "models": "quant(47%)+AI(53%)",
+      "n_models": 2,
+      "volume": 59186.768753000004,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
         "target": 2500.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
-      }
-    },
-    {
-      "question": "Will the price of Ethereum be above $2,000 on August 10?",
-      "market_price": 0.031,
-      "our_estimate": 0.95,
-      "quant_estimate": 0.95,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.919,
-      "real_edge": 0.919,
-      "categories": [
-        "crypto"
-      ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 37864.775025,
-      "signals": {
-        "current_price": 64929,
-        "target": 2000.0,
-        "direction": "ABOVE",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
-        "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     },
     {
       "question": "Bitcoin Up or Down on August 9?",
-      "market_price": 0.395,
-      "our_estimate": 0.5,
+      "market_price": 0.245,
+      "our_estimate": 0.531,
       "quant_estimate": 0.5,
-      "ai_estimate": null,
-      "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": 0.105,
-      "real_edge": 0.105,
+      "ai_estimate": 0.55,
+      "ai_reasoning": "The 24\u2011hour price change is flat and the Fear & Greed Index signals mild fear, suggesting limited immediate momentum, while the neutral quantitative model estimate of 0.5 implies a roughly even chance; given the lack of strong directional macro cues, a modest upside bias of about 55% is plausible but with only moderate confidence.",
+      "edge": 0.286,
+      "real_edge": 0.286,
       "categories": [
         "crypto",
         "stocks"
       ],
-      "models": "quant_only",
-      "n_models": 1,
-      "volume": 35669.262136000005,
+      "models": "quant(38%)+AI(62%)",
+      "n_models": 2,
+      "volume": 57493.44328500001,
       "signals": {
         "type": "direction",
-        "change_24h": 0.09946
+        "change_24h": 0
       }
     },
     {
       "question": "Will the price of Bitcoin be between $64,000 and $66,000 on August 9?",
-      "market_price": 0.9685,
+      "market_price": 0.96,
       "our_estimate": 0.5,
       "quant_estimate": 0.5,
       "ai_estimate": null,
       "ai_reasoning": "All 8 models failed (rate limited)",
-      "edge": -0.4685,
-      "real_edge": -0.4685,
+      "edge": -0.46,
+      "real_edge": -0.46,
       "categories": [
         "crypto"
       ],
       "models": "quant_only",
       "n_models": 1,
-      "volume": 33153.06855999999,
+      "volume": 35548.851279999995,
       "signals": {
-        "current_price": 64929,
+        "current_price": 60000,
         "target": 66000.0,
         "direction": "UNKNOWN",
-        "change_24h": 0.1,
-        "change_7d": 3.39,
+        "change_24h": 0,
+        "change_7d": 0,
         "daily_vol": 0.035,
-        "days_left": 22,
-        "high_24h": 65140,
-        "low_24h": 64800
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
+      }
+    },
+    {
+      "question": "Will the price of Ethereum be above $1,900 on August 9?",
+      "market_price": 0.835,
+      "our_estimate": 0.9755,
+      "quant_estimate": 0.95,
+      "ai_estimate": 0.98,
+      "ai_reasoning": "Ethereum's current price of $60,000 is vastly above the $1,900 threshold, making a drop below that level extremely unlikely even with typical crypto volatility. The 24\u2011hour and 7\u2011day changes are zero, indicating a stable price regime, and the daily volatility of 3.5% would need an implausible >96% decline to breach $1,900.",
+      "edge": 0.1405,
+      "real_edge": 0.1405,
+      "categories": [
+        "crypto"
+      ],
+      "models": "quant(15%)+AI(85%)",
+      "n_models": 2,
+      "volume": 22462.484566,
+      "signals": {
+        "current_price": 60000,
+        "target": 1900.0,
+        "direction": "ABOVE",
+        "change_24h": 0,
+        "change_7d": 0,
+        "daily_vol": 0.035,
+        "days_left": 21,
+        "high_24h": 60000,
+        "low_24h": 60000
       }
     }
   ]
