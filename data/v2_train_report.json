@@ -1,38 +1,22 @@
 {
-  "trained_at": "2026-08-09T11:43:33.679283+00:00",
-  "n_validated_bets": 11056,
-  "validation_rejected": 140557,
+  "trained_at": "2026-08-09T13:17:00.880477+00:00",
+  "n_validated_bets": 11060,
+  "validation_rejected": 140646,
   "quality_rejected": 0,
-  "expected_filtered": 140557,
+  "expected_filtered": 140646,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
     "action_not_a_bet:'NO_BET'": 33365,
-    "not_resolved": 107192
+    "not_resolved": 107281
   },
   "model_stats": {
-    "microstructure": {
-      "n": 11056,
-      "brier": 0.215013,
-      "market_brier": 0.228029,
-      "improvement": 0.013016,
-      "wins": 6048,
-      "wr": 0.547
-    },
     "orderbook": {
-      "n": 11055,
-      "brier": 0.22471,
-      "market_brier": 0.228027,
-      "improvement": 0.003317,
-      "wins": 6235,
+      "n": 11059,
+      "brier": 0.22472,
+      "market_brier": 0.228035,
+      "improvement": 0.003315,
+      "wins": 6237,
       "wr": 0.564
-    },
-    "external_data": {
-      "n": 11056,
-      "brier": 0.228019,
-      "market_brier": 0.228029,
-      "improvement": 1e-05,
-      "wins": 6556,
-      "wr": 0.593
     },
     "ai_semantic": {
       "n": 495,
@@ -42,6 +26,14 @@
       "wins": 350,
       "wr": 0.7071
     },
+    "external_data": {
+      "n": 11060,
+      "brier": 0.228027,
+      "market_brier": 0.228037,
+      "improvement": 1e-05,
+      "wins": 6560,
+      "wr": 0.5931
+    },
     "time_series": {
       "n": 3,
       "brier": 0.174446,
@@ -49,13 +41,21 @@
       "improvement": -0.006818,
       "wins": 2,
       "wr": 0.6667
+    },
+    "microstructure": {
+      "n": 11060,
+      "brier": 0.215026,
+      "market_brier": 0.228037,
+      "improvement": 0.013011,
+      "wins": 6052,
+      "wr": 0.5472
     }
   },
   "weights": {
-    "microstructure": 0.206547,
-    "orderbook": 0.052637,
+    "orderbook": 0.052611,
+    "ai_semantic": 0.74074,
     "external_data": 0.000159,
-    "ai_semantic": 0.740657,
-    "time_series": 0.0
+    "time_series": 0.0,
+    "microstructure": 0.206491
   }
 }
