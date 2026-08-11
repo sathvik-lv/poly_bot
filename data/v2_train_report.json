@@ -1,22 +1,30 @@
 {
-  "trained_at": "2026-08-11T06:28:07.653845+00:00",
+  "trained_at": "2026-08-11T07:25:45.093470+00:00",
   "n_validated_bets": 11065,
-  "validation_rejected": 142798,
+  "validation_rejected": 142886,
   "quality_rejected": 0,
-  "expected_filtered": 142798,
+  "expected_filtered": 142886,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 33509,
-    "not_resolved": 109289
+    "action_not_a_bet:'NO_BET'": 33511,
+    "not_resolved": 109375
   },
   "model_stats": {
-    "external_data": {
+    "orderbook": {
+      "n": 11064,
+      "brier": 0.224731,
+      "market_brier": 0.228045,
+      "improvement": 0.003314,
+      "wins": 6238,
+      "wr": 0.5638
+    },
+    "microstructure": {
       "n": 11065,
-      "brier": 0.228037,
+      "brier": 0.215024,
       "market_brier": 0.228047,
-      "improvement": 1e-05,
-      "wins": 6561,
-      "wr": 0.593
+      "improvement": 0.013023,
+      "wins": 6055,
+      "wr": 0.5472
     },
     "ai_semantic": {
       "n": 495,
@@ -26,13 +34,13 @@
       "wins": 350,
       "wr": 0.7071
     },
-    "orderbook": {
-      "n": 11064,
-      "brier": 0.224731,
-      "market_brier": 0.228045,
-      "improvement": 0.003314,
-      "wins": 6238,
-      "wr": 0.5638
+    "external_data": {
+      "n": 11065,
+      "brier": 0.228037,
+      "market_brier": 0.228047,
+      "improvement": 1e-05,
+      "wins": 6561,
+      "wr": 0.593
     },
     "time_series": {
       "n": 3,
@@ -41,21 +49,13 @@
       "improvement": -0.006818,
       "wins": 2,
       "wr": 0.6667
-    },
-    "microstructure": {
-      "n": 11065,
-      "brier": 0.215024,
-      "market_brier": 0.228047,
-      "improvement": 0.013023,
-      "wins": 6055,
-      "wr": 0.5472
     }
   },
   "weights": {
-    "external_data": 0.000159,
-    "ai_semantic": 0.74061,
     "orderbook": 0.052586,
-    "time_series": 0.0,
-    "microstructure": 0.206645
+    "microstructure": 0.206645,
+    "ai_semantic": 0.74061,
+    "external_data": 0.000159,
+    "time_series": 0.0
   }
 }
