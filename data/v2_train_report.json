@@ -1,22 +1,22 @@
 {
-  "trained_at": "2026-08-13T23:59:18.908683+00:00",
+  "trained_at": "2026-08-14T02:36:40.983820+00:00",
   "n_validated_bets": 11065,
-  "validation_rejected": 146222,
+  "validation_rejected": 146281,
   "quality_rejected": 0,
-  "expected_filtered": 146222,
+  "expected_filtered": 146281,
   "quality_reject_rate": 0.0,
   "rejection_reasons": {
-    "action_not_a_bet:'NO_BET'": 33693,
-    "not_resolved": 112529
+    "action_not_a_bet:'NO_BET'": 33713,
+    "not_resolved": 112568
   },
   "model_stats": {
-    "time_series": {
-      "n": 3,
-      "brier": 0.174446,
-      "market_brier": 0.167627,
-      "improvement": -0.006818,
-      "wins": 2,
-      "wr": 0.6667
+    "orderbook": {
+      "n": 11064,
+      "brier": 0.224731,
+      "market_brier": 0.228045,
+      "improvement": 0.003314,
+      "wins": 6238,
+      "wr": 0.5638
     },
     "microstructure": {
       "n": 11065,
@@ -26,13 +26,13 @@
       "wins": 6055,
       "wr": 0.5472
     },
-    "external_data": {
-      "n": 11065,
-      "brier": 0.228037,
-      "market_brier": 0.228047,
-      "improvement": 1e-05,
-      "wins": 6561,
-      "wr": 0.593
+    "time_series": {
+      "n": 3,
+      "brier": 0.174446,
+      "market_brier": 0.167627,
+      "improvement": -0.006818,
+      "wins": 2,
+      "wr": 0.6667
     },
     "ai_semantic": {
       "n": 495,
@@ -42,20 +42,20 @@
       "wins": 350,
       "wr": 0.7071
     },
-    "orderbook": {
-      "n": 11064,
-      "brier": 0.224731,
-      "market_brier": 0.228045,
-      "improvement": 0.003314,
-      "wins": 6238,
-      "wr": 0.5638
+    "external_data": {
+      "n": 11065,
+      "brier": 0.228037,
+      "market_brier": 0.228047,
+      "improvement": 1e-05,
+      "wins": 6561,
+      "wr": 0.593
     }
   },
   "weights": {
-    "time_series": 0.0,
+    "orderbook": 0.052586,
     "microstructure": 0.206645,
-    "external_data": 0.000159,
+    "time_series": 0.0,
     "ai_semantic": 0.74061,
-    "orderbook": 0.052586
+    "external_data": 0.000159
   }
 }
