@@ -13,8 +13,9 @@ Newest entries at the top. Each device: pull + read this before working, append 
   scripts would otherwise overwrite ledgers with empty state: the checkout has
   no `continue-on-error`, and a follow-up step aborts unless
   `data/paper_trades.json` exists.
-- `private-dashboards/refresh.yml` updated to clone the data repo into
-  `_src/poly_bot/data` (read-only deploy key), so `POLY_ROOT` resolves as before.
+- The downstream dashboards repo's refresh workflow was updated to clone the data
+  repo into `_src/poly_bot/data` (read-only deploy key) so `POLY_ROOT` resolves as
+  before. Details in that repo's own worklog.
 - Cancelled the 01:26 UTC scheduled run mid-flight: it was on the pre-migration
   SHA and its `-X theirs` rebase would have resurrected `data/`. One cycle lost.
 - **To run locally:** `git clone git@github.com:sathvik-lv/poly_bot-data.git data`
