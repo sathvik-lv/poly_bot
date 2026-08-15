@@ -28,6 +28,29 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # data/ now lives in the PRIVATE repo sathvik-lv/poly_bot-data, so live
+      # paper positions, ledgers and fitted weights are no longer published
+      # hourly to this public repo. Deliberately NO continue-on-error here:
+      # if this checkout fails, the scripts would start from empty state and
+      # silently break ledger continuity across every experiment arm. Better
+      # to fail the run loudly than to corrupt the data.
+      - name: Checkout private data repo into data/
+        uses: actions/checkout@v4
+        with:
+          repository: sathvik-lv/poly_bot-data
+          ssh-key: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
+          path: data
+
+      # Second guard: a checkout can "succeed" with an empty/partial tree.
+      # Refuse to run the cycle unless the core ledger is actually present.
+      - name: Verify data/ is populated
+        run: |
+          test -f data/paper_trades.json || {
+            echo "::error::data/paper_trades.json missing — data repo checkout looks empty. Aborting before scripts can overwrite ledgers with empty state."
+            exit 1
+          }
+          echo "data/ OK ($(find data -type f | wc -l) files)"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -473,11 +496,15 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
+      # Results are committed to the PRIVATE data repo, not this one.
+      # No continue-on-error: a silent push failure would mean the cycle's
+      # data is lost without anyone noticing.
       - name: Commit results
+        working-directory: data
         run: |
           git config user.name "poly-bot[bot]"
           git config user.email "poly-bot[bot]@users.noreply.github.com"
-          git add data/
+          git add -A
           if git diff --staged --quiet; then
             echo "Nothing to commit"
           else

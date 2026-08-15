@@ -1,5 +1,11 @@
-# Training data (tracked by git for checkpointing)
-# data/ is intentionally committed for resume capability
+# Results data lives in the PRIVATE repo sathvik-lv/poly_bot-data.
+# This repo is public, and data/ holds live paper positions, per-arm
+# ledgers and fitted model weights — committing it here published a
+# real-time trade feed on every cycle. CI clones the private data repo
+# into data/ (see .github/workflows/cycle.yml); to run locally:
+#   git clone git@github.com:sathvik-lv/poly_bot-data.git data
+# Historical data/ remains in this repo's git history prior to the move.
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
