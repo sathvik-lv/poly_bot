@@ -19,9 +19,20 @@ Newest entries at the top. Each device: pull + read this before working, append 
   SHA and its `-X theirs` rebase would have resurrected `data/`. One cycle lost.
 - **To run locally:** `git clone git@github.com:sathvik-lv/poly_bot-data.git data`
   — your existing local `data/` is now untracked and will go stale.
-- **Unresolved:** `data/test1_ledger.jsonl` is 94.9 MB, against GitHub's hard
-  100 MB per-file limit. `rotate_ledger.py` is not keeping up. When it crosses,
-  pushes to the data repo will be rejected and results will stop saving.
+- **Ledger rotation fixed** (this was misdiagnosed at first — test1 is frozen at
+  94.9 MB since 2026-08-06, NOT growing, so it was never going to hit 100 MB).
+  Real defect: rotation only archived records that were *resolved* AND older
+  than `KEEP_DAYS`, so unresolved records could never be archived. test1 is
+  98.9% unresolved — hence "no records to archive" every cycle at 94.9 MB.
+  v2_ledger has the same defect slower: ~40% of aging records unresolved, floor
+  climbing ~0.5 MB/day toward the 100 MB push-rejection cap (~2-3 months out).
+  Fix: `MAX_UNRESOLVED_DAYS = 90` makes dead unresolved records archivable, and
+  `RETIRED_LEDGERS` archives frozen test1 in full.
+  Verified on a clone of real data: test1 95.0 MB -> 0 bytes with 100,333
+  records still readable and 0 duplicates; v2 (threshold forced) 75.8 -> 54.0 MB,
+  48,667 readable, 0 duplicates, 0 old-unresolved left pinned; 219 tests pass.
+  Safe because every CI consumer reads via `ledger_reader`/`data_validator`,
+  which glob archives + current and dedup.
 - Not done (deliberate): parameters stay in `cycle.yml` rather than Secrets —
   GitHub masks a secret's exact string everywhere, so `"0.5"` would blank every
   probability in the logs, and `"4"` is under the 3-char masking floor anyway.
