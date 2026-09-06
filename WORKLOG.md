@@ -35,6 +35,13 @@ Newest entries at the top. Each device: pull + read this before working, append 
   +3.3%, t=−1.49), winning 72.1% where the real prices imply 79.4%. Needs ~240
   trades to call that effect, ~496 for its Brier gap, and the 91 trades are only
   ~29 days / 49 day-family blocks, so effective n is roughly half of nominal.
+- V6-TIER vs its control Test 0-TIER (same tier caps, V1 vs V2 pipeline), both
+  re-priced: v6 −10.4%/trade vs test0 −0.2%/trade. They agree on direction on
+  38/39 shared markets, so P&L can't separate them; v6's *extra* trades (the ones
+  the V2 gate admits and the control skips) are the worse half, −15.4% vs −4.4%.
+  V2 does sharpen probabilities — Brier 0.194 vs control's 0.234 on identical
+  markets — but the real market price is 0.176, so there is nothing to harvest.
+  V6-TIER is labelled LIVE-LAUNCH CANDIDATE in `cycle.yml`; it should not be.
 - The "50+ resolved trades" bar in CLAUDE.md is far too low: per-trade sd is ~57%,
   so n=50 can only detect an edge of ≥23%/trade. P&L is the wrong yardstick.
   Paired Brier on the shadow ledger is: 3,424 resolved records already carry a
