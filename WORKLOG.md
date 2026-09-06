@@ -2,6 +2,35 @@
 
 Newest entries at the top. Each device: pull + read this before working, append + push after working.
 
+## 2026-09-06 — MacBook
+- Caught this device up: it was 156 commits behind and still had the old tracked
+  `data/`. Fast-forwarded, then re-cloned the data repo into `data/` over HTTPS
+  (no SSH key on this machine; the keychain credential works).
+- Reviewed paper-trading results. Headline numbers are **not real**: the main arm
+  shows +48.3% (201 closed, 74.1% win) but 90% of its closed trades — 98-100% on
+  v3c/v6 — booked `entry_price` at exactly $0.500.
+- Cause: `src/prediction_engine.py:999` does
+  `outcome_prices.get("Yes", 0.5)`. Markets whose outcomes are player/team names
+  ("US Open ATP: Zverev vs Halys" -> `['Alexander Zverev','Quentin Halys']`) have
+  no `Yes` key, so the engine silently prices them at 0.5. The scanner's own
+  filter (`scripts/paper_trader.py:424-430`) already falls back to the first
+  outcome price, so these markets pass the 0.05-0.95 gate on their real price and
+  are then modelled, sized and settled at a fabricated 50c. Winners pay 2x.
+- Re-priced the closed trades against real snapshot prices in `price_history.json`
+  (nearest snapshot within 1h, n=135): ROI falls from +61% to +20.3%, per-trade
+  mean +4.4% with sd 64% (t=0.79 — not distinguishable from zero), and 5 trades
+  supply $1,022 of the $1,158. Model Brier on those trades **0.226 vs the real
+  market price's 0.142** — the ensemble is much worse than just reading the price.
+- Same fallback contaminates training: `market_price == 0.5` on 87.6% of
+  `v2_ledger.jsonl` and 62.7% of `live_predictions.jsonl`. So the "market_brier
+  0.2337 / improvement +0.009" in `v2_train_report.json` is measured against a
+  constant coin flip (Brier 0.25), not against the market.
+- v4_ai is the control: it traded real Yes/No markets at real prices and lost
+  19.8%. Consistent with the honest backtest (no edge vs market).
+- Next: fix is a first-outcome fallback in the engine (and line 823/499), but it
+  invalidates every arm's ledger history — those need resetting or re-labelling
+  before any cross-arm comparison means anything. Not touched yet.
+
 ## 2026-08-15 — Windows PC
 - Security audit across all repos. This one is public and was committing `data/`
   hourly — publishing live paper positions, per-arm ledgers and fitted weights.
