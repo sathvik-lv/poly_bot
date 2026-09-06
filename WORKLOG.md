@@ -42,6 +42,12 @@ Newest entries at the top. Each device: pull + read this before working, append 
   V2 does sharpen probabilities — Brier 0.194 vs control's 0.234 on identical
   markets — but the real market price is 0.176, so there is nothing to harvest.
   V6-TIER is labelled LIVE-LAUNCH CANDIDATE in `cycle.yml`; it should not be.
+- Dashboards updated to match (see that repo's worklog for detail): V6-Tier and
+  Test 0-Tier were missing from its arm list entirely, and its poly page now
+  carries a re-settled-at-real-prices section beside every booked ROI. Its
+  refresh workflow could also silently overwrite good bundles with zeros when the
+  private data checkout failed — the code repo is public so the root still looked
+  valid; guarded now.
 - The "50+ resolved trades" bar in CLAUDE.md is far too low: per-trade sd is ~57%,
   so n=50 can only detect an edge of ≥23%/trade. P&L is the wrong yardstick.
   Paired Brier on the shadow ledger is: 3,424 resolved records already carry a
