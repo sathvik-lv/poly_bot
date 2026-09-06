@@ -30,6 +30,16 @@ Newest entries at the top. Each device: pull + read this before working, append 
 - Next: fix is a first-outcome fallback in the engine (and line 823/499), but it
   invalidates every arm's ledger history — those need resetting or re-labelling
   before any cross-arm comparison means anything. Not touched yet.
+- Power check on v6_tier (n=91, the arm closest to a "go live" call): 90/91 are
+  0.5-priced, 68 re-priceable. Re-priced it is **−10.4%/trade** (95% CI −24% to
+  +3.3%, t=−1.49), winning 72.1% where the real prices imply 79.4%. Needs ~240
+  trades to call that effect, ~496 for its Brier gap, and the 91 trades are only
+  ~29 days / 49 day-family blocks, so effective n is roughly half of nominal.
+- The "50+ resolved trades" bar in CLAUDE.md is far too low: per-trade sd is ~57%,
+  so n=50 can only detect an edge of ≥23%/trade. P&L is the wrong yardstick.
+  Paired Brier on the shadow ledger is: 3,424 resolved records already carry a
+  real price, model 0.1515 vs market 0.1530, diff −0.0015, t=−4.20 — significant
+  but economically tiny. That is the only channel with enough n today.
 
 ## 2026-08-15 — Windows PC
 - Security audit across all repos. This one is public and was committing `data/`
