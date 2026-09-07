@@ -1,6 +1,31 @@
 # Worklog
 
-Newest entries at the top. Each device: pull + read this before working, append + push after working.
+Newest entries at the top. Three devices — **Windows PC**, **MacBook**, **Mobile** —
+share this file and nothing else: no shared chat, memory or disk. Each device:
+`git pull` + read this *before* working; append an entry + commit + push *after*
+working. Work recorded here is done — don't redo it. Use one of those three device
+labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
+
+## 2026-09-07 — Mobile (3-device worklog sync)
+
+- Set the cross-device protocol up for **three** devices — Windows PC, MacBook and
+  **Mobile** (this one, Claude on the web). It had only ever named two.
+- Added **`CLAUDE.md`** carrying the protocol. This was the actual gap: the convention
+  only lived inside `WORKLOG.md`, so a session that had not already been told to read
+  the worklog never read it — which is why context kept being re-explained by hand and
+  work got repeated. `CLAUDE.md` is loaded automatically on every device, so
+  "pull → read WORKLOG → don't redo → append + push" now happens unprompted.
+- Normalised this file's header to the wording shared by all 12 repos, naming the three
+  device labels `brain` parses.
+- Verified this repo was already exactly at `origin` before the change: clean tree,
+  nothing ahead or behind.
+- Protocol added to the **existing** `CLAUDE.md` (above `## Architecture`) rather than
+  replacing it — the engine/architecture notes there are unchanged.
+- **Documented that `data/` is a separate private repo**, which `CLAUDE.md` did not say.
+  It is git-ignored here and CI clones `sathvik-lv/poly_bot-data` into it, so a fresh
+  clone of poly_bot alone has no `data/` and every script reading it fails. Both the SSH
+  and HTTPS clone lines are recorded — the MacBook has no SSH key and needs HTTPS.
+- **Next:** nothing open here. The protocol applies from the next session on any device.
 
 ## 2026-09-06 — MacBook
 - Caught this device up: it was 156 commits behind and still had the old tracked
