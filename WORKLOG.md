@@ -6,6 +6,68 @@ share this file and nothing else: no shared chat, memory or disk. Each device:
 working. Work recorded here is done — don't redo it. Use one of those three device
 labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
 
+## 2026-09-10 — Windows PC (full repo audit: the model is worse than the market)
+
+- Re-ran the 09-06 MacBook audit end-to-end on **fresh data**. It holds, but the key
+  sign is the other way round: **against an independent baseline the model is
+  significantly WORSE than the market**, not −0.0015 better.
+- **Local `data/` was stale and I nearly published numbers off it.** It has no `.git`
+  — it is the abandoned pre-migration tracked directory, ~4 weeks behind (V6-TIER
+  n=27 locally vs n=102 real). Cloned `poly_bot-data` to a scratch dir and redid
+  everything. Anyone auditing must clone the data repo first; `git pull` in this
+  repo does *not* refresh `data/`.
+- **Why the MacBook's "−0.0015 model better" was wrong in direction:** it scored the
+  model against the ledger's own `market_price` column. Scored against
+  `price_history.json` snapshots instead, on records where both exist:
+
+  | snapshot window | n | uniq mkts | model Brier | market Brier | diff | t |
+  |---|---|---|---|---|---|---|
+  | ±2h  | 1253 | 711  | 0.1941 | 0.1763 | **+0.0178** | +5.59 |
+  | ±6h  | 1618 | 899  | 0.1920 | 0.1718 | **+0.0202** | +6.90 |
+  | ±24h | 2015 | 1055 | 0.1912 | 0.1679 | **+0.0233** | +8.35 |
+
+  Positive = model worse. Dedup to one observation per market makes it worse
+  (+0.0265 to +0.0352, t=+5.3 to +7.9), so it is not a clustering artifact. Every
+  window agrees. This matches `rolling_accuracy.json` (April, n=5,211, real
+  `pre_price`): ensemble 0.1672 vs market 0.1670 — that honest backtest was right
+  all along, and live is now measurably *negative*.
+- Ledger `market_price` sanity-checked against snapshots: bug-priced rows mean
+  |diff| 0.186 / 5.8% agree; real-priced rows mean |diff| 0.006 / **95.3% agree**.
+  So the real-priced *prices* are fine — it is using that column as the *baseline*
+  that flatters the model.
+- **Contamination, fresh data, 907 closed trades — 858 bug-priced (94.6%):**
+  V3a/V3b/V3c/V5/V5-TIER/Test0-TIER **100%**, V6-TIER 99%, V6 98%, Test 0 91%.
+  v2_ledger 83% of rows at 0.5, live_predictions 63%. V4-AI is 3.7% — it traded
+  real Yes/No markets and is the accidental clean control.
+- **Re-priced at real snapshots, no arm has an edge.** Booked +50%..+81%/trade
+  collapses to −7%..+9%, and **every 95% CI contains zero**: Test 0 +3.7% (t=0.70),
+  Test0-TIER +0.6% (0.09), V3a −5.0% (−0.85), V3b +9.2% (1.31), V3c −4.4% (−0.79),
+  V5 +3.5% (0.46), V5-TIER +8.2% (1.32), V6 −7.3% (−1.37), **V6-TIER −7.1%
+  (−1.14)**, V4-AI −12.4% (−0.75).
+- Tried and **rejected**: "the Brier edge converts to money". Betting the model's
+  side at |edge|>0.01 on real prices appeared to give +29.8%/trade, t=+16.6, with
+  realised WR 73.8% vs market-implied 55.9%. A +17.9pp gap over 3,348 markets is
+  not credible and is arithmetically inconsistent with a 0.0037 Brier gap — it is
+  an artifact of scoring against the contaminated `market_price` column. Do not
+  resurrect this test in that form.
+- **Trained artifacts are fitted to a coin flip.** `v2_train_report.json`
+  market_brier 0.2337 and `meta_model.xgb.info.json` market_brier 0.2388 — a
+  constant 0.5 scores 0.25, and the honest market is ~0.17. So the meta model's
+  val_brier 0.2301 is ~0.06 *worse* than the market while reporting
+  "improvement +0.0087". `model_weights.json` (ai_semantic 0.429 / microstructure
+  0.446) is fitted on those same comparisons.
+- Bug provenance: lines 499 / 823 / 999 have had `outcome_prices.get("Yes", 0.5)`
+  since `2467dcf8`, the **first commit** of `prediction_engine.py`. Not a
+  regression. **Zero tests reference `outcome_prices`** — nothing ever guarded it.
+- Sound and worth keeping: the CI/rotation/`ledger_reader`/`data_validator`/tier-cap
+  plumbing, `paper_trader.py:424-430`'s correct first-outcome fallback, the
+  `pre_price` honest-backtest methodology, and V4-AI's honest −19.8%.
+- **Next:** do not deploy capital; the VPS/live plan is shelved, not scheduled. Fix
+  order if resumed: (1) first-outcome fallback at engine 499/823/999, (2) a test
+  that fails on a no-`Yes` market, (3) reset or hard-label every arm ledger,
+  (4) re-accumulate and re-measure against snapshots — not against
+  `market_price`. Expect the honest answer to stay "no alpha".
+
 ## 2026-09-07 — Mobile (3-device worklog sync)
 
 - Set the cross-device protocol up for **three** devices — Windows PC, MacBook and
