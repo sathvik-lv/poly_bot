@@ -3,17 +3,17 @@
 The "buy cheap, sell when market catches up or collect $1 on resolution" strategy.
 
 Scans for markets where authoritative external data disagrees with Polymarket:
-1. Sports: Compare Polymarket odds vs professional sportsbook odds (The Odds API)
-2. Crypto price: Compare vs options-implied probabilities
-3. Weather: NOAA forecasts vs market pricing (when weather markets exist)
+1. Crypto price: log-normal model from exchange price + realised volatility
+2. Weather: NOAA forecasts vs market pricing (when weather markets exist)
 
-When sportsbooks say Team A has 60% chance but Polymarket prices it at 30%,
-that's a buy signal. Sportsbooks are sharper — they have millions in action
-keeping them efficient. Polymarket crowd is slower to update.
+Sportsbook-vs-Polymarket comparison lives in scripts/divergence_study.py. The
+old sports section here never produced a single comparison: it requested
+markets=h2h,outrights, which the Odds API rejects for game sports (HTTP 422,
+silently skipped). A naive "fix" would burn the 500/month free quota in about
+a day, so it was removed rather than repaired.
 
 Usage:
-    python scripts/niche_scanner.py              # full scan
-    python scripts/niche_scanner.py --sports     # sports only
+    python scripts/niche_scanner.py
 """
 
 import json
@@ -21,7 +21,6 @@ import os
 import re
 import sys
 from datetime import datetime, timezone
-from difflib import SequenceMatcher
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -31,82 +30,6 @@ load_dotenv()
 
 GAMMA_API = "https://gamma-api.polymarket.com"
 DATA_DIR = "data"
-
-
-# =============================================================
-# Sports Odds (The Odds API — free tier: 500 requests/month)
-# =============================================================
-
-class SportsOddsSource:
-    """Fetch real sportsbook odds from The Odds API (free, 500 req/month).
-
-    Covers: NFL, NBA, NHL, MLB, MLS, FIFA, UFC, etc.
-    Returns implied probabilities from sharp books (Pinnacle, Betfair).
-    """
-
-    BASE_URL = "https://api.the-odds-api.com/v4"
-
-    # Sports keys for active markets
-    SPORTS = [
-        "soccer_fifa_world_cup",
-        "soccer_uefa_champs_league",
-        "basketball_nba",
-        "icehockey_nhl",
-        "baseball_mlb",
-        "americanfootball_nfl",
-        "soccer_epl",
-        "soccer_spain_la_liga",
-        "mma_mixed_martial_arts",
-    ]
-
-    def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.environ.get("ODDS_API_KEY")
-        self.session = requests.Session()
-
-    def fetch_odds(self, sport: str = None) -> list[dict]:
-        """Fetch current odds from sportsbooks."""
-        if not self.api_key:
-            return []
-
-        results = []
-        sports_to_check = [sport] if sport else self.SPORTS
-
-        for s in sports_to_check:
-            try:
-                resp = self.session.get(f"{self.BASE_URL}/sports/{s}/odds/", params={
-                    "apiKey": self.api_key,
-                    "regions": "us,eu",
-                    "markets": "h2h,outrights",
-                    "oddsFormat": "decimal",
-                }, timeout=15)
-
-                if resp.status_code != 200:
-                    continue
-
-                for event in resp.json():
-                    for bookmaker in event.get("bookmakers", []):
-                        # Prefer sharp books
-                        if bookmaker["key"] not in ("pinnacle", "betfair", "bet365", "draftkings"):
-                            continue
-                        for market in bookmaker.get("markets", []):
-                            for outcome in market.get("outcomes", []):
-                                decimal_odds = outcome.get("price", 0)
-                                if decimal_odds <= 1:
-                                    continue
-                                implied_prob = 1.0 / decimal_odds
-                                results.append({
-                                    "sport": s,
-                                    "event": f"{event.get('home_team', '')} vs {event.get('away_team', '')}",
-                                    "outcome": outcome.get("name", ""),
-                                    "implied_prob": round(implied_prob, 4),
-                                    "decimal_odds": decimal_odds,
-                                    "bookmaker": bookmaker["key"],
-                                    "commence_time": event.get("commence_time", ""),
-                                })
-            except Exception:
-                continue
-
-        return results
 
 
 # =============================================================
@@ -255,18 +178,21 @@ class CryptoPriceSource:
             return None
 
     def get_btc_price_prob(self, target_price: float, days_until: int,
-                           direction: str = "above") -> float:
+                           direction: str = "above") -> float | None:
         """Estimate probability BTC is above/below target in N days.
 
         Uses log-normal model with historical volatility from Binance.
+        Returns None when price or volatility is unavailable — Binance blocks
+        the US IPs GitHub runners use, and the old 0.5 fallback turned that
+        outage into a fake 50% edge against every extreme-priced market.
         """
         current = self._get_btc_price()
         if not current:
-            return 0.5
+            return None
 
         annual_vol = self._get_btc_volatility()
         if not annual_vol:
-            return 0.5
+            return None
 
         import numpy as np
         from scipy.stats import norm
@@ -370,48 +296,34 @@ class NOAAWeatherSource:
 # Market Matching — Match external data to Polymarket markets
 # =============================================================
 
-def fetch_polymarket_sports() -> list[dict]:
-    """Fetch sports-related Polymarket markets."""
-    session = requests.Session()
-    all_markets = []
-    for offset in [0, 100, 200]:
-        try:
-            resp = session.get(f"{GAMMA_API}/markets", params={
-                "limit": 100, "active": True, "closed": False,
-                "order": "volume24hr", "ascending": False, "offset": offset,
-            }, timeout=15)
-            all_markets.extend(resp.json())
-        except Exception:
-            break
+_CRYPTO_TARGET = re.compile(
+    r"\b(bitcoin|btc|ethereum|eth)\b.*?\b(above|below|over|under|hit|reach|dip|fall|drop)\b"
+    r".*?\$\s?(\d[\d,]*(?:\.\d+)?)\s*([km])?\b",
+    re.IGNORECASE,
+)
+_ABOVE_WORDS = {"above", "over", "hit", "reach"}
 
-    sports_kw = ["win", "nba", "nhl", "nfl", "mlb", "fifa", "world cup",
-                 "championship", "finals", "stanley cup", "super bowl",
-                 "champions league", "la liga", "premier league", "ufc"]
 
-    sports = []
-    for m in all_markets:
-        q = m.get("question", "").lower()
-        if any(kw in q for kw in sports_kw):
-            prices = m.get("outcomePrices", "[]")
-            if isinstance(prices, str):
-                try:
-                    prices = json.loads(prices)
-                except json.JSONDecodeError:
-                    continue
-            if not prices:
-                continue
-            yes_p = float(prices[0])
-            if yes_p <= 0 or yes_p >= 1:
-                continue
-            sports.append({
-                "question": m.get("question", ""),
-                "yes_price": yes_p,
-                "volume": float(m.get("volume", 0) or 0),
-                "id": m.get("id"),
-                "end_date": m.get("endDate", ""),
-            })
+def parse_crypto_target(question: str) -> dict | None:
+    """Coin, direction and dollar target from a crypto threshold question.
 
-    return sports
+    The target is the first '$' amount after an explicit direction word. The
+    old greedy pattern captured the LAST digit in the question, so "above
+    $84,000 on September 12" parsed as a $2 target and produced 99% "edges".
+    """
+    m = _CRYPTO_TARGET.search(question or "")
+    if not m:
+        return None
+    try:
+        target = float(m.group(3).replace(",", ""))
+    except ValueError:
+        return None
+    target *= {"k": 1e3, "m": 1e6}.get((m.group(4) or "").lower(), 1.0)
+    return {
+        "coin": "ethereum" if m.group(1).lower() in ("ethereum", "eth") else "bitcoin",
+        "direction": "above" if m.group(2).lower() in _ABOVE_WORDS else "below",
+        "target_price": target,
+    }
 
 
 def fetch_polymarket_crypto_price() -> list[dict]:
@@ -429,12 +341,10 @@ def fetch_polymarket_crypto_price() -> list[dict]:
             break
 
     crypto_price = []
-    price_pattern = re.compile(r'(bitcoin|btc|ethereum|eth).*(above|below|hit|reach|price).*\$?([\d,]+)', re.I)
-
     for m in all_markets:
         q = m.get("question", "")
-        match = price_pattern.search(q)
-        if not match:
+        parsed = parse_crypto_target(q)
+        if not parsed:
             continue
 
         prices = m.get("outcomePrices", "[]")
@@ -449,24 +359,13 @@ def fetch_polymarket_crypto_price() -> list[dict]:
         if yes_p <= 0 or yes_p >= 1:
             continue
 
-        target_str = match.group(3).replace(",", "")
-        try:
-            target_price = float(target_str)
-        except ValueError:
-            continue
-
-        coin = "bitcoin" if "btc" in match.group(1).lower() or "bitcoin" in match.group(1).lower() else "ethereum"
-        direction = "above" if any(w in match.group(2).lower() for w in ["above", "hit", "reach"]) else "below"
-
         crypto_price.append({
             "question": q,
             "yes_price": yes_p,
             "volume": float(m.get("volume", 0) or 0),
             "id": m.get("id"),
             "end_date": m.get("endDate", ""),
-            "coin": coin,
-            "target_price": target_price,
-            "direction": direction,
+            **parsed,
         })
 
     return crypto_price
@@ -477,12 +376,6 @@ def fetch_polymarket_crypto_price() -> list[dict]:
 # =============================================================
 
 def main():
-    import argparse
-    parser = argparse.ArgumentParser(description="Niche Data Alpha Scanner")
-    parser.add_argument("--sports", action="store_true", help="Sports only")
-    parser.add_argument("--crypto", action="store_true", help="Crypto price only")
-    args = parser.parse_args()
-
     print("=" * 70)
     print("  NICHE DATA ALPHA SCANNER")
     print("  Buy underpriced, sell when market catches up or collect $1")
@@ -491,70 +384,62 @@ def main():
     signals = []
 
     # --- 1. Crypto price threshold markets ---
-    if not args.sports:
-        print("\n  [1] Crypto Price Markets...")
-        crypto_markets = fetch_polymarket_crypto_price()
-        print(f"    Found {len(crypto_markets)} crypto price markets")
+    print("\n  [1] Crypto Price Markets...")
+    crypto_markets = fetch_polymarket_crypto_price()
+    print(f"    Found {len(crypto_markets)} crypto price markets")
 
-        if crypto_markets:
-            crypto_src = CryptoPriceSource()
-            for m in crypto_markets:
-                try:
-                    # Days until resolution
-                    days = 30  # default
-                    if m["end_date"]:
-                        try:
-                            end = datetime.fromisoformat(m["end_date"].replace("Z", "+00:00"))
-                            days = max(1, (end - datetime.now(timezone.utc)).days)
-                        except Exception:
-                            pass
+    if crypto_markets:
+        crypto_src = CryptoPriceSource()
+        n_unpriced = 0
+        for m in crypto_markets:
+            try:
+                # Days until resolution
+                days = 30  # default
+                if m["end_date"]:
+                    try:
+                        end = datetime.fromisoformat(m["end_date"].replace("Z", "+00:00"))
+                        days = max(1, (end - datetime.now(timezone.utc)).days)
+                    except Exception:
+                        pass
 
-                    if m["coin"] != "bitcoin":
-                        continue  # only BTC for now
+                if m["coin"] != "bitcoin":
+                    continue  # only BTC for now
 
-                    model_prob = crypto_src.get_btc_price_prob(
-                        m["target_price"], days, m["direction"])
-                    market_prob = m["yes_price"]
-                    edge = model_prob - market_prob
-
-                    if abs(edge) > 0.08:
-                        action = "BUY_YES" if edge > 0 else "BUY_NO"
-                        signal = {
-                            "source": "crypto_quant",
-                            "question": m["question"][:70],
-                            "market_price": market_prob,
-                            "model_prob": round(model_prob, 4),
-                            "edge": round(edge, 4),
-                            "abs_edge": round(abs(edge), 4),
-                            "action": action,
-                            "market_id": m["id"],
-                            "target_price": m["target_price"],
-                            "days_until": days,
-                        }
-                        signals.append(signal)
-                        direction = "UNDERPRICED" if edge > 0 else "OVERPRICED"
-                        print(f"    {direction}: {m['question'][:55]}")
-                        print(f"      Market={market_prob:.3f} Model={model_prob:.3f} "
-                              f"Edge={edge:+.3f} -> {action}")
-                except Exception:
+                model_prob = crypto_src.get_btc_price_prob(
+                    m["target_price"], days, m["direction"])
+                if model_prob is None:
+                    n_unpriced += 1
                     continue
+                market_prob = m["yes_price"]
+                edge = model_prob - market_prob
 
-    # --- 2. Sports odds comparison ---
-    if not args.crypto:
-        print("\n  [2] Sports Odds Markets...")
-        odds_key = os.environ.get("ODDS_API_KEY")
-        if odds_key:
-            sports_src = SportsOddsSource(odds_key)
-            book_odds = sports_src.fetch_odds()
-            poly_sports = fetch_polymarket_sports()
-            print(f"    Sportsbook outcomes: {len(book_odds)}")
-            print(f"    Polymarket sports: {len(poly_sports)}")
-            # TODO: match and compare
-        else:
-            poly_sports = fetch_polymarket_sports()
-            print(f"    Polymarket sports markets: {len(poly_sports)}")
-            print(f"    No ODDS_API_KEY set — get free key at the-odds-api.com")
-            print(f"    (500 free requests/month, covers NBA/NHL/FIFA/UFC)")
+                if abs(edge) > 0.08:
+                    action = "BUY_YES" if edge > 0 else "BUY_NO"
+                    signal = {
+                        "source": "crypto_quant",
+                        "question": m["question"][:70],
+                        "market_price": market_prob,
+                        "model_prob": round(model_prob, 4),
+                        "edge": round(edge, 4),
+                        "abs_edge": round(abs(edge), 4),
+                        "action": action,
+                        "market_id": m["id"],
+                        "target_price": m["target_price"],
+                        "days_until": days,
+                    }
+                    signals.append(signal)
+                    direction = "UNDERPRICED" if edge > 0 else "OVERPRICED"
+                    print(f"    {direction}: {m['question'][:55]}")
+                    print(f"      Market={market_prob:.3f} Model={model_prob:.3f} "
+                          f"Edge={edge:+.3f} -> {action}")
+            except Exception:
+                continue
+        if n_unpriced:
+            print(f"    Skipped {n_unpriced} markets: BTC price/volatility unavailable "
+                  f"(no signal rather than a fabricated one)")
+
+    # --- 2. Sports: see scripts/divergence_study.py ---
+    print("\n  [2] Sports: handled by scripts/divergence_study.py")
 
     # --- 3. Weather ---
     print("\n  [3] Weather Markets...")

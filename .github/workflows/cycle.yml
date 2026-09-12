@@ -482,6 +482,22 @@ jobs:
         timeout-minutes: 3
         continue-on-error: true
 
+      # Divergence study: sportsbook consensus vs Polymarket on the same games.
+      # Observation only — nothing trades. Self-throttles to one poll every
+      # DIVERGENCE_POLL_HOURS and paces Odds API credits (free tier 500/mo);
+      # /sports and /events are free, only /odds costs a credit.
+      - name: Divergence study — collect
+        run: python scripts/divergence_study.py collect
+        timeout-minutes: 6
+        continue-on-error: true
+
+      - name: Divergence study — resolve + report
+        run: |
+          python scripts/divergence_study.py resolve
+          python scripts/divergence_study.py report
+        timeout-minutes: 4
+        continue-on-error: true
+
       - name: Rotate old price snapshots
         run: python scripts/rotate_snapshots.py
         timeout-minutes: 1

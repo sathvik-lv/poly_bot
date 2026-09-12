@@ -6,6 +6,54 @@ share this file and nothing else: no shared chat, memory or disk. Each device:
 working. Work recorded here is done — don't redo it. Use one of those three device
 labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
 
+## 2026-09-12 — Windows PC (divergence study: sportsbooks vs Polymarket)
+
+- Built an **observation-only** study of the one defensible thesis left in the repo:
+  do de-vigged sportsbook lines (Odds API) disagree with Polymarket on the *same*
+  game, and when they do, does the result go the book's way often enough to beat
+  Polymarket's **executable** price? `scripts/divergence_study.py collect|resolve|report`,
+  pure logic in `src/divergence.py`, CI steps right after the niche scanner. Writes
+  `data/divergence_log.jsonl`, `divergence_state.json`, `divergence_report.json`.
+- **Why niche_scanner's sports half never produced a comparison in 5 months:** it asked
+  for `markets=h2h,outrights`, which the Odds API rejects for game sports —
+  HTTP 422 `INVALID_MARKET_COMBO`, costs 0 credits, swallowed by
+  `if status != 200: continue`. The CI key is fine. **Removed rather than repaired**:
+  a naive fix is 9 sports × 2 regions × ~20 cycles/day ≈ 360 credits/day and would
+  drain the 500/month free tier in about a day, starving the study.
+- Quota facts, verified via `x-requests-last`: `/sports` and `/events` are **free**;
+  `/odds` costs 1 credit per sport key per region and returns every game in that key
+  (one credit on NCAAF prices ~40-70 games). The collector polls at most every 3h and
+  paces spend evenly to the 1st of next month with a 25-credit reserve (~3/poll now).
+  Spent 10 credits this session (8 probing, 2 on a live test written to a scratch dir,
+  not the data repo); 490 left.
+- Coverage is good: 420 Polymarket match-winner markets paired to book games across
+  32 sport keys in a 48h window (NCAAF, EFL, EPL, Bundesliga, J-League, NFL, MMA…).
+  Tennis is thin: the API lists only Grand Slam draws, and Gamma's ATP tag currently
+  holds only outrights.
+- Method guards carried over from the audit: a missing price is `None`, never 0.5;
+  divergence is measured against bid/ask, not mid; one closing snapshot per market;
+  stats clustered per game (a soccer match's three legs are one observation); entry
+  prices limited to 0.05–0.95; no verdict below 30 resolved markets.
+- **First live snapshot** (1 poll, EFL League One/Two, 69 pairs, 23 games): median
+  |divergence| 0.5pp, p90 1.4pp, **zero above 2pp**. Polymarket prices favourites
+  ~1-2pp *above* the books, leaving ~1pp executable on the other side. One poll proves
+  nothing; this is only a first look.
+- niche_scanner crypto had two bugs, both fixed with tests: (1) returned 0.5 when
+  Binance volatility was unavailable — Binance blocks US IPs, so that was every CI run —
+  now returns None and skips; **CI should now emit zero crypto signals instead of 13
+  fake ones**. (2) the greedy target regex captured the *last digit* in the question
+  ("above $84,000 on September 12" → a $2 target → "99% edge"); now
+  `parse_crypto_target`. **Still wrong and deliberately not fixed** (out of scope):
+  time to expiry is floored at one whole day, and "reach/hit/dip" are touch questions
+  priced with a terminal-price model. Run locally it still prints 11-31pp "edges" —
+  do not trust `niche_signals.json`; nothing in this repo reads it.
+- Tests 219 → 310.
+- **Next:** let it collect 3-4 weeks, then `python scripts/divergence_study.py report`
+  (also in the CI log and `data/divergence_report.json`). ≥30 resolved markets for any
+  verdict; realistically a few hundred games before the MDE drops under ~5%.
+  `divergence_log.jsonl` grows ~0.5-1 MB/day — add it to `rotate_ledger.py` within
+  ~3 months. The engine 0.5 fix (lines 499/823/999) is still not done.
+
 ## 2026-09-10 — Windows PC (full repo audit: the model is worse than the market)
 
 - Re-ran the 09-06 MacBook audit end-to-end on **fresh data**. It holds, but the key
