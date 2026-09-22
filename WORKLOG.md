@@ -6,6 +6,50 @@ share this file and nothing else: no shared chat, memory or disk. Each device:
 working. Work recorded here is done — don't redo it. Use one of those three device
 labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
 
+## 2026-09-22 — Windows PC (divergence study: 10-day checkpoint, read-only)
+
+- No code changed. Cloned `poly_bot-data` fresh and read the 10-day accumulation to
+  answer "how are the results coming through" — recording it here so the headline
+  number in `divergence_report.json` doesn't get quoted without the caveat below.
+- 46 polls / 9.6 days, 2,448 pairs, 1,007 markets, 497 games, **957 resolved**. 149
+  credits spent, 338 left — on pace for the free tier.
+- Cadence is running at ~4.8 polls/day, not the ~8/day the 3h gate allows (median gap
+  5.0h, 31 of 45 gaps >4h, max 8.6h). Cause not dug into; likely the hourly cycle
+  occasionally overruns and the concurrency group (`cancel-in-progress: false`) blocks
+  the next scheduled tick rather than queuing it. Not urgent — the credit budget has
+  headroom either way — but explains why n is building slower than the "3-4 weeks to
+  a first look" estimate from 09-12 assumed.
+- **The two well-powered checks both say no detectable edge:**
+  - Brier, book vs Polymarket mid, clustered per game (n=467 games / 957 obs):
+    diff **+0.0000173**, t=0.044, 95% CI [-0.00075, +0.00078]. Dead center on zero —
+    sportsbooks are not measurably sharper than Polymarket here.
+  - Strategy at the **0.00** edge threshold (bet the better side whenever there is
+    any daylight at all) — the best-powered strategy bucket, n=345 clustered games:
+    mean **-0.8%/bet**, t=-0.09, 95% CI [-19.0%, +17.3%]. Also centered on zero, and
+    the CI already rules out anything larger than ~19%/bet in either direction.
+  - Separately, raw calibration on all 957 resolved, no edge filter: book-implied
+    win probability for the modelled side averaged 0.340 against a realised win rate
+    of 0.339 — matches to a tenth of a point.
+- **The report's headline bucket (edge ≥2pp, n=23 games) shows +51.9%/trade — this is
+  one outlier, not a signal.** One bet (Oregon Ducks, entry 6c, "against" the 92%
+  favourite, won) returned +1567% and alone accounts for the entire positive mean.
+  Drop that one row and the other 22 average **-17.0%**. MDE at n=23 is ±210%/bet, so
+  the bucket cannot currently distinguish a real edge from noise regardless of sign;
+  do not read anything into it in either direction yet. Same shape one bucket down
+  (0-2pp, n=495 individual bets): another single-bet outlier at +1011%, mean still
+  -1.1% overall.
+- Read together: no edge has shown up wherever there is enough data to tell, and the
+  one place that looks exciting is exactly the place with the least data. Correct
+  verdict per the tool's own gate is `INCONCLUSIVE`; my read leans toward "heading to
+  NEGATIVE/no-edge" rather than "just needs more data," but the >=2pp bucket itself
+  is nowhere near powered enough yet to call either way.
+- **Next:** keep collecting, untouched. Re-check after another ~4-6 weeks — at the
+  current ~2.3 qualifying (>=2pp) games/10 days, MDE only drops to a merely-usable
+  ~50-70%/bet range around n=150-200, i.e. several more months, unless a busier sports
+  window changes the arrival rate. If someone wants a faster read, the threshold=0.00
+  bucket is already reasonably powered and is the one to trust sooner. Worth a look:
+  why cadence is 4.8/day not ~8/day (cycle overlap vs the concurrency group).
+
 ## 2026-09-12 — Windows PC (divergence study: sportsbooks vs Polymarket)
 
 - Built an **observation-only** study of the one defensible thesis left in the repo:
