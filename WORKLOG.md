@@ -6,6 +6,37 @@ share this file and nothing else: no shared chat, memory or disk. Each device:
 working. Work recorded here is done — don't redo it. Use one of those three device
 labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
 
+## 2026-09-22 — Windows PC (retired the paper arms from CI; corrected CLAUDE.md)
+
+- **Removed 36 of 56 CI steps** (`cycle.yml` 543 → 226 lines): Test 0, Test 0-TIER,
+  V3a/b/c, V5, V5-TIER, V6, V6-TIER (27 steps), `compare_arms`, `compare_v1_v2`, and
+  the whole V2 block (collector, resolver, weight trainer, meta trainer, exit sim,
+  V2 report). Reason: 94.6% of 907 closed trades were booked at the fabricated $0.500
+  entry price, so every cycle was spending ~35 min accumulating fiction. `compare_arms`
+  went too — with the arms stopped it would reprint frozen "PROVEN EDGE" verdicts hourly.
+- **Nothing was deleted.** All ledgers/archives intact in the data repo; all scripts
+  still present and unit-tested (310 tests pass). Verified: YAML parses, 20 steps
+  remain, all 10 referenced scripts exist, and the diff removes only arm/V2/compare
+  lines — no kept step was altered.
+- **Kept, with the reason written into the file:** `price_snapshots` (real observed
+  data, no model in the loop — this is what made every honest re-pricing possible),
+  the divergence study, the arb/cross-platform scanners, and rotation.
+  **`live_tracker` kept deliberately** — it was *not* in the approved removal list, but
+  it shares the engine pricing bug (`live_predictions.jsonl` ≈63% fabricated 0.5), so
+  it is flagged in-file as raw engine output only, never a P&L record. If you want it
+  gone too, say so; I did not expand scope on my own.
+- **Corrected `CLAUDE.md`** — it is auto-loaded on every device, so its stale
+  "Current Status" was the highest-leverage misinformation in the repo. It now states
+  the edge question is closed (three well-powered measurements), lists every known
+  fabrication with file:line, and lists what is verified-correct. Also killed the
+  "50+ resolved trades" bar: per-trade sd ≈57% means n=50 only detects ≥23%/trade.
+- Two "do not "fix" this" notes recorded in CLAUDE.md, because both look like bugs and
+  are not: `BetaBinomialModel.update()` is immutable (returns a new model), and the
+  Wilson CI is correct as written (my Clopper-Pearson "reference" was the wrong one).
+- **Next:** nothing open. The engine 0.5 fix (~20 sites) remains undone and is only
+  worth doing if someone wants honest measurement — it will not create an edge. The
+  divergence collector keeps running; re-check in 4-6 weeks.
+
 ## 2026-09-22 — Windows PC (line-level audit of all 23.7k LOC + 1,791 commits)
 
 Read-only forensic pass over every module and the whole commit history, executing the

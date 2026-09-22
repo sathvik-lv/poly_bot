@@ -2,8 +2,8 @@ name: Poly Bot (Hourly)
 
 on:
   schedule:
-    # Hourly — adding v2 collector pushed total wall time past 30 min so
-    # consecutive cycles were overlapping and getting cancelled.
+    # Hourly. Wall time dropped sharply on 2026-09-22 when the ten paper-trading
+    # arms were removed (see the note below), so cycles no longer overlap.
     - cron: '0 * * * *'
   workflow_dispatch:
 
@@ -74,308 +74,44 @@ jobs:
           echo "ALPHA_VANTAGE_KEY=${{ secrets.ALPHA_VANTAGE_KEY }}" >> .env
           echo "ODDS_API_KEY=${{ secrets.ODDS_API_KEY }}" >> .env
 
-      - name: Scan + paper trade (50 markets)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          # Option B A/B test: paper_trader uses category tiers (sports/niche
-          # full Kelly, other half, rest skip). v2_collector still ungated.
-          # Compare WR + ROI grouped by tier_applied field after ~1 week.
-          ENABLE_CATEGORY_TIERS: "1"
-
-      - name: Resolve paper trades
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-
-      - name: Paper trade report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-
       # ============================================================
-      # Test 0-TIER — Broadest baseline (all categories) with per-tier
-      # bet caps (HIGH $3k / MED $1k / LOW $250). Test 0's V1 pipeline
-      # signal at tier-capped sizing. Direct counterpart to V6-TIER's
-      # V2-pipeline-at-tier-caps. Tells us whether the tier-cap sizing
-      # rule is additive to the V1 baseline (Test 0) as well as V2.
+      # PAPER-TRADING ARMS REMOVED 2026-09-22
+      #
+      # Removed: Test 0, Test 0-TIER, V3a, V3b, V3c, V5, V5-TIER, V6,
+      # V6-TIER (27 steps), the same-window comparison (compare_arms.py),
+      # and the whole V2 block (collector, resolver, weight trainer,
+      # meta trainer, exit sim, V2 report, V1-vs-V2).
+      #
+      # Why: src/prediction_engine.py lines 499/823/999 do
+      # `outcome_prices.get("Yes", 0.5)`. Markets whose outcomes are
+      # competitor names (most sports) have no "Yes" key, so the engine
+      # silently priced them at exactly $0.500. 94.6% of the 907 closed
+      # trades across all arms were booked at that fabricated price, and
+      # winners appeared to pay ~2x. Re-priced against real
+      # price_history.json snapshots, no arm had a positive edge whose 95%
+      # CI excluded zero. Two independent well-powered measurements agree
+      # there is no alpha: rolling_accuracy.json (April, n=5,211, real
+      # pre_prices, ensemble 0.1672 vs market 0.1670) and a September
+      # re-scoring against snapshots (n=1,055 markets, model 0.0233 WORSE,
+      # t=+8.35).
+      #
+      # So these steps were spending ~35 min of every cycle accumulating
+      # ledger rows that are fiction. compare_arms.py went too because with
+      # the arms stopped it would print the same frozen "PROVEN EDGE"
+      # verdicts every hour — a misleading artifact.
+      #
+      # NOTHING WAS DELETED. Every data file, ledger and archive is intact
+      # in the data repo, and every script remains in scripts/ and is still
+      # unit-tested. To revive any arm, fix the engine pricing first (~20
+      # sites — see the 2026-09-22 worklog entry; meta_model.py's feature
+      # vector matters as much as the engine lines), then reset or
+      # hard-label the existing ledgers, because pre-fix and post-fix rows
+      # are not comparable.
       # ============================================================
-      - name: Test 0-TIER scan (all cats, tier caps 3k/1k/250)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
-          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
-          ENABLE_CATEGORY_TIERS: "1"
 
-      - name: Test 0-TIER resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
-
-      - name: Test 0-TIER report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/test0_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/test0_tier_weight_analytics.json"
-
-      # ============================================================
-      # V3a — Paper trader, ONLY {niche_sports, geopolitics, other}
-      # User's V3 proposal. Walk-forward backtest: ROI +103.6%, MaxDD 3.77%
-      # ============================================================
-      - name: V3a scan (niche+geo+other)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
-
-      - name: V3a resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
-
-      - name: V3a report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3a_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3a_weight_analytics.json"
-
-      # ============================================================
-      # V3b — Paper trader, ONLY {niche_sports, geopolitics, sports}
-      # Walk-forward bench winner: ROI +93.9%, MaxDD 0.82%, Ret/DD 114
-      # ============================================================
-      - name: V3b scan (niche+geo+sports, no other)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,sports"
-
-      - name: V3b resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
-
-      - name: V3b report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3b_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3b_weight_analytics.json"
-
-      # ============================================================
-      # V3c — niche + geo + CORRECTED other (favorites only).
-      # 'other' underdog trades historically lose (21% WR vs 67% favorites).
-      # This drops the losing slice, expected to fix 'other'-category ROI.
-      # ============================================================
-      - name: V3c scan (niche+geo+favorite-other)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
-          PAPER_TRADER_OTHER_FAVORITES_ONLY: "1"
-
-      - name: V3c resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
-
-      - name: V3c report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v3c_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v3c_weight_analytics.json"
-
-      # V4-AI arm removed 2026-08-06 — proven negative signal
-      # (WR 55.6%, ROI -19.83%, MaxDD 20.09% after 27 trades).
-      # AI-on-SKIP-categories hypothesis disproven. Data file
-      # data/v4_ai_paper_trades.json kept for historical reference.
-
-      # ============================================================
-      # V5 — LIVE-CANDIDATE paper arm. Mirrors the exact config we would
-      # push to real money: niche_sports + geopolitics + other (the three
-      # categories proven across V3a/V3c/Test 0), 1/4 Kelly (tighter than
-      # default 1/3 for real-money conservatism), per-trade cap 2.5% of
-      # equity. Small $1k book to keep bet sizes market-realistic.
-      # Purpose: 2-3 weeks of real paper data at LIVE sizing before we
-      # commit real capital.
-      # ============================================================
-      - name: V5 scan (niche+geo+other, 1/4 Kelly, 2.5% cap)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_live_candidate_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_live_candidate_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
-          PAPER_TRADER_MAX_TRADE_PCT: "0.025"
-          KELLY_DIVISOR: "4"
-
-      - name: V5 resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_live_candidate_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_live_candidate_weight_analytics.json"
-
-      - name: V5 report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_live_candidate_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_live_candidate_weight_analytics.json"
-
-      # ============================================================
-      # V5-TIER — V3a categories + per-liquidity-tier bet caps.
-      # Instead of one flat cap across all markets, cap per tier:
-      #   HIGH   (NBA playoffs, BTC, majors) : $3,000/bet — deep books
-      #   MEDIUM (MLB, ATP Masters, IPL, geo): $1,000/bet — the workhorse
-      #   LOW    (esports, ATP 250, undercard): $250/bet — thin depth
-      # Simulated 24-mo projection from $1k: ~$268k paper (~$187k live-realistic)
-      # vs flat-$250 cap projection: ~$83k paper. MaxDD identical.
-      # Starts with $1k book to match target launch capital.
-      # ============================================================
-      - name: V5-TIER scan (niche+geo+other, tier-capped 3k/1k/250)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 15
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
-          PAPER_TRADER_TRADE_CATEGORIES: "niche_sports,geopolitics,other"
-          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
-          KELLY_DIVISOR: "4"
-
-      - name: V5-TIER resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
-
-      - name: V5-TIER report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v5_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v5_tier_weight_analytics.json"
-
-      # ============================================================
-      # V6 — V2-PIPELINE as a real paper book. Tests whether V2 shadow's
-      # +14.67%/mo signal holds when run through a live-book with entry
-      # gate + per-trade cap + real fill semantics. Same adaptive ensemble
-      # + XGBoost meta + category gate as v2_collector, but with
-      # paper_trader's book management instead of just shadow logging.
-      # Traded categories left open (no PAPER_TRADER_TRADE_CATEGORIES) so
-      # the V2 category gate does the filtering, matching V2 shadow.
-      # ============================================================
-      - name: V6 scan (V2 pipeline as real paper)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 18
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
-          PAPER_TRADER_MAX_TRADE_PCT: "0.025"
-          USE_V2_PIPELINE: "1"
-          V2_ADAPTIVE_BLEND: "0.5"
-          V2_META_BLEND: "0.5"
-
-      - name: V6 resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
-
-      - name: V6 report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_v2_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_v2_weight_analytics.json"
-
-      # ============================================================
-      # V6-TIER — LIVE-LAUNCH CANDIDATE. Combines V6's proven V2 pipeline
-      # (adaptive+meta+gate, 82.9% WR on n=41, ~3.7 trades/day — 7x V3a's
-      # rate) with V5-TIER's per-liquidity-tier caps (HIGH $3k / MED $1k
-      # / LOW $250). If V6-TIER holds V6's WR and Ret/DD at tier-capped
-      # sizing, this is the config we push to real money.
-      # ============================================================
-      - name: V6-TIER scan (V2 pipeline + tier caps 3k/1k/250)
-        run: python scripts/paper_trader.py --scan -n 50
-        timeout-minutes: 18
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
-          PAPER_TRADER_TIER_CAPS: '{"HIGH":3000,"MEDIUM":1000,"LOW":250}'
-          USE_V2_PIPELINE: "1"
-          V2_ADAPTIVE_BLEND: "0.5"
-          V2_META_BLEND: "0.5"
-
-      - name: V6-TIER resolve
-        run: python scripts/paper_trader.py --resolve
-        timeout-minutes: 3
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
-
-      - name: V6-TIER report
-        run: python scripts/paper_trader.py --report
-        timeout-minutes: 1
-        continue-on-error: true
-        env:
-          PAPER_TRADER_STATE_FILE: "data/v6_tier_paper_trades.json"
-          PAPER_TRADER_ANALYTICS_FILE: "data/v6_tier_weight_analytics.json"
-
-      # ============================================================
-      # SAME-WINDOW COMPARISON across all 6 arms
-      # Reads data/comparison_anchor.json, replays each arm from $10k
-      # using only post-anchor activity. Apples-to-apples report.
-      # ============================================================
-      - name: Same-window comparison report
-        run: python scripts/compare_arms.py
-        timeout-minutes: 1
-        continue-on-error: true
-
+      # Live tracker: kept deliberately, but note it shares the engine's
+      # pricing bug — live_predictions.jsonl is ~63% fabricated $0.500
+      # prices. Useful only as raw engine output, not as a P&L record.
       - name: Live tracker scan (record predictions for accuracy data)
         run: python scripts/live_tracker.py --scan -n 50
         timeout-minutes: 15
@@ -391,67 +127,9 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
 
-      # Test 1 shadow ledger removed from CI 2026-08-06 — flat at 50% WR
-      # after 20 post-anchor trades, no signal. Existing ledger file
-      # (data/test1_ledger.jsonl + archives) kept for trainer input;
-      # scripts/test1_collector.py kept because v2_collector imports helpers.
-
-      # ============================================================
-      # V2 — parallel pipeline (adaptive ensemble + category gate)
-      # PAUSED: holding v2 until v1 finishes its current data
-      # accumulation. Re-enable by removing `if: false` from each step.
-      # All v2 modules + scripts remain in the repo and unit-tested.
-      # ============================================================
-      - name: V2 collector (100 markets, adaptive + AI live A/B)
-        run: python scripts/v2_collector.py -n 100
-        timeout-minutes: 18
-        continue-on-error: true
-        env:
-          # Per-category meta blend — derived from per-category walk-forward
-          # Brier improvement on n=199 live bets:
-          #   sports/niche_sports: blend=0 (ensemble alone — meta hurts)
-          #   other:               blend=0.5 (50/50)
-          #   geopolitics:         blend=1.0 (meta dominant — best edge)
-          #   crypto/elections/etc: NOT TRADED (negative meta + ensemble)
-          ENABLE_META_BY_CATEGORY: "1"
-          # Activate AI semantic model: live A/B test of the new training
-          # finding (n=440, WR 70.7%, Brier improvement +0.0497 better
-          # than market). All other arms keep AI off as the control.
-          # Scan reduced 150 -> 100 + timeout 12 -> 18 min to absorb AI
-          # latency (~3-8s per market via Groq -> Gemini -> OpenRouter).
-          # Circuit breaker shuts AI off after 3 consecutive failures.
-          ENABLE_AI_SEMANTIC: "1"
-
-      - name: V2 resolver
-        run: python scripts/v2_resolver.py
-        timeout-minutes: 5
-        continue-on-error: true
-
-      - name: V2 weight trainer (refresh model_weights.json)
-        run: python scripts/v2_train_weights.py
-        timeout-minutes: 2
-        continue-on-error: true
-
-      - name: V2 meta-model trainer (XGBoost on ledger features)
-        run: python scripts/v2_train_meta.py
-        timeout-minutes: 5
-        continue-on-error: true
-
-      - name: V2 exit-decay simulator (observation only)
-        run: python scripts/v2_exit_sim.py
-        timeout-minutes: 1
-        continue-on-error: true
-
-      - name: V2 report
-        run: python scripts/v2_report.py
-        timeout-minutes: 1
-        continue-on-error: true
-
-      - name: V1 vs V2 comparison
-        run: python scripts/compare_v1_v2.py
-        timeout-minutes: 1
-        continue-on-error: true
-
+      # price_snapshots is the most valuable step in this file: it is real
+      # observed market data with no model in the loop, and it is what made
+      # the honest re-pricing of every arm possible. Do not remove it.
       - name: Price snapshots
         run: python scripts/price_snapshots.py
         timeout-minutes: 2
@@ -477,6 +155,9 @@ jobs:
         timeout-minutes: 3
         continue-on-error: true
 
+      # Emits nothing in CI by design: its BTC volatility source is Binance,
+      # which blocks the US IPs GitHub runners use, so the model returns None
+      # and the scanner skips rather than fabricating a signal.
       - name: Niche data scanner
         run: python scripts/niche_scanner.py
         timeout-minutes: 3
@@ -507,6 +188,8 @@ jobs:
       # per-file cap. Old resolved records get moved into gzipped monthly
       # archives under data/archive/. All readers glob current + archives
       # via src.ledger_reader so historical data stays available.
+      # divergence_log.jsonl grows ~1 MB/day and should be added here well
+      # before it approaches the cap.
       - name: Rotate large ledgers into archives
         run: python scripts/rotate_ledger.py
         timeout-minutes: 2
@@ -527,8 +210,8 @@ jobs:
             git commit -m "auto: cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
             # On overlapping cycles, prefer THIS run's data on conflict
             # ('theirs' in rebase = the commit being applied = our local commit).
-            # The next 30-min cycle will refresh anything we drop.
-            # Retry once in case another push lands during the rebase.
+            # The next cycle will refresh anything we drop.
+            # Retry in case another push lands during the rebase.
             for attempt in 1 2 3; do
               if git pull --rebase -X theirs && git push; then
                 echo "Push succeeded on attempt $attempt"
