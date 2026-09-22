@@ -6,6 +6,70 @@ share this file and nothing else: no shared chat, memory or disk. Each device:
 working. Work recorded here is done — don't redo it. Use one of those three device
 labels exactly (`brain` parses the field). Full protocol in `CLAUDE.md`.
 
+## 2026-09-22 — Windows PC (line-level audit of all 23.7k LOC + 1,791 commits)
+
+Read-only forensic pass over every module and the whole commit history, executing the
+math against reference values rather than reading it. New findings:
+
+- **`src/training_runner.py:258 _simulate_resolutions()` fabricates outcomes.** It calls
+  `tracker.record_outcome()` with `1.0` if price>0.9, `0.0` if price<0.1, else *the
+  direction of the price move* when |Δ|>0.15. Those fake outcomes feed the self-audit
+  that prints Brier/ECE/discrimination/ROI and sets `best_brier`. The third branch is
+  circular — outcome is defined as "did price rise", scored against models that read
+  price momentum. **Mitigation: dead code.** Nothing imports or runs it (only a
+  docstring in `historical_trainer.py:732` mentions it). Leave it dead; if anyone
+  revives it, that function must go first.
+- **The `brier=0.063` in 641 commit messages is a label-imbalance artifact — proven.**
+  `backtest_honest_preds.jsonl` has a YES base rate of **1.68%** (65 of 3,879). The
+  source `historical_markets.jsonl` is *fine* (16,319 YES / 28,351 NO of 44,670), so
+  the 0.05-0.95 price filter in `historical_trainer.py:318` selected a 98.3%-NO subset.
+  A **constant 0.23 predictor scores Brier 0.0619** on those labels — i.e. the
+  "achievement" was predicting one class against labels that were almost all that
+  class. CLAUDE.md already called the 0.063 wrong; this is the mechanism.
+  **Blast radius is contained:** only `v2_train_meta_full.py` trains on that file and
+  it is **not in CI**. CI's `v2_train_meta.py` uses the ledgers only.
+- **The 0.5 fabrication is systemic — ~20 sites, not the 3 from 09-06.** Beyond
+  `prediction_engine.py` 499/823/999: `meta_model.py:75,85-88` defaults market_price
+  *and all four sub-model estimates* to 0.5 in the feature vector (its docstring admits
+  it), `strategy_adapter.py:320,912` defaults price to 0.5 inside the price-sanity
+  filter and contrarian detector, `exit_simulator.py:104`, `self_improver.py:228,251`,
+  `paper_trader.py:907`, `prediction_engine.py:154,1053`.
+- **Hurst call-site bug:** `prediction_engine.py:197` computes `returns`, then line 202
+  passes **`prices`** (levels). Verified H saturates at 1.000 on random walks at n=500
+  and n=5000, so `regime_type` is always "trending". **Inert** — it only sets a
+  diagnostic label (the estimate comes from HMM+GARCH) and `time_series` weight is 0.0.
+- **150 `except: pass/continue` sites** (data_sources 10, niche_scanner 10,
+  prediction_engine 8). This is the mechanism that hid every bug above for five months.
+
+**What is genuinely correct — verified by execution, not by reading:**
+
+- **`src/statistics.py` (839 lines) is the real asset.** GARCH(1,1) recovered
+  ω=1.002e-05, α=0.1000, β=0.8500, persistence=0.9500 against true
+  1e-05/0.10/0.85/0.95 — near-exact MLE. GaussianHMM recovered regime means
+  −0.0204/+0.0193 against true ∓0.02. `kelly_with_uncertainty` gives full Kelly 0.20
+  for p=0.6 at even odds (exactly right) with shrinkage 0.909→0.667→0.400 as σ rises.
+  BetaBinomial(1,1)+update(8,2) → Beta(9,3), mean 0.750, CI (0.4822, 0.9398) — correct,
+  and immutable-style (returns a new model; `b.update(...)` alone is a no-op, which
+  looks like a bug and isn't). IsotonicCalibrator returns the correct PAV solution.
+  KL/JS are 0 for identical inputs. The "deterministic, no random sampling" claim holds.
+- **Wilson CI** in `category_gate.py` and `compare_arms.py` returns (0.4902, 0.9433) for
+  8/10, which matches the formula worked by hand. Correct — do not "fix" it against a
+  Clopper-Pearson reference.
+- **`rolling_backtest.py` / `rolling_accuracy.json` is the one trustworthy backtest:**
+  base rate 24.5%, n=5,211, market Brier 0.1670 vs ensemble 0.1672 (+0.0002). It
+  honestly reported no alpha in April and has survived every re-test since.
+- **Test suite: 310 tests / 434 assertions, zero skips, zero tautologies.**
+- `paper_trader.py:424-430` is the one place the price fallback was written correctly.
+- Several comments are honestly self-critical (`prediction_engine.py:152` records
+  "cannot beat market price (Brier 0.1781 vs market 0.1665)"; self_improver is
+  deliberately disabled with the reason stated). `historical_trainer.py`'s alarming
+  `sim_price` is just a rename of the real stored price — honest despite the name.
+
+- **Next:** nothing new shipped. If the engine 0.5 fix is ever done, it is ~20 sites and
+  `meta_model.build_feature_vector` matters as much as the engine lines. 19 of 31
+  scripts are in CI; the rest (incl. both old backtests and `v2_train_meta_full`) are
+  manual/dead.
+
 ## 2026-09-22 — Windows PC (divergence study: 10-day checkpoint, read-only)
 
 - No code changed. Cloned `poly_bot-data` fresh and read the 10-day accumulation to
